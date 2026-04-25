@@ -1,10 +1,11 @@
 #include <iostream>
+#include "utility.h"
 
 using namespace std;
 
 int main() {
 
-    cout << "Test Git Collab" << endl;
+    loadingBar();
 
     return 0;
 }
