@@ -4,8 +4,8 @@
 using namespace std;
 
 int main() {
-
-    loadingBar();
-
+    loadingScreen();
+    menuUtama();
+    
     return 0;
 }
