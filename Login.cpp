@@ -1,29 +1,29 @@
-// login.cpp
 #include "login.h"
-#include <iostream>
 
 using namespace std;
 
 bool prosesLogin() {
     int percobaan = 0;
-    string user, pass;
-    // Contoh data akun sederhana
-    string validUser = "admin";
-    string validPass = "123";
+    string inputUser, inputPass;
+    
+    string usernameBenar = "admin";
+    string passwordBenar = "123";
 
     while (percobaan < 3) {
-        cout << "\n=== HALAMAN LOGIN ===" << endl;
-        cout << "Username: "; cin >> user;
-        cout << "Password: "; cin >> pass;
+        cout << "\n--- SILAHKAN LOGIN ---" << endl;
+        cout << "Username: "; cin >> inputUser;
+        cout << "Password: "; cin >> inputPass;
 
-        if (user == validUser && pass == validPass) {
+        if (inputUser == usernameBenar && inputPass == passwordBenar) {
             cout << "Login Berhasil!" << endl;
-            return true;
+            return true; 
         } else {
             percobaan++;
-            cout << "Username/Password Salah! Percobaan: " << percobaan << endl;
+            cout << "Username atau Password Salah!" << endl;
+            cout << "Sisa percobaan: " << 3 - percobaan << endl;
         }
     }
-    cout << "Akses Ditolak!" << endl;
-    return false;
+
+    cout << "\nLogin Gagal! Akses Ditolak." << endl;
+    return false; 
 }
