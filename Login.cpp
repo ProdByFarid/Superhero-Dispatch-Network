@@ -1,36 +1,55 @@
 #include <iostream>
+#include <string>
 #include "login.h"
 
 using namespace std;
+
+struct Akun {
+    string username;
+    string password;
+    string role;
+};
 
 string prosesLogin() {
     int percobaan = 0;
     string inputUser, inputPass;
 
-    while (percobaan < 3) {
-        cout << "\n--- SILAHKAN LOGIN ---" << endl;
-        cout << "Username: "; cin >> inputUser;
-        cout << "Password: "; cin >> inputPass;
+    Akun daftarAkun[] = {
+        {"admin", "123", "admin"},
+        {"user", "123", "user"}
+    };
 
-        // ADMIN
-        if (inputUser == "admin" && inputPass == "123") {
-            cout << "Login Admin Berhasil!" << endl;
-            return "admin";
-        }
+    int jumlahAkun = sizeof(daftarAkun) / sizeof(daftarAkun[0]);
 
-        // USER
-        else if (inputUser == "user" && inputPass == "123") {
-            cout << "Login User Berhasil!" << endl;
-            return "user";
-        }
-
-        else {
-            percobaan++;
-            cout << "Username atau Password Salah!" << endl;
-            cout << "Sisa percobaan: " << 3 - percobaan << endl;
-        }
+    if (jumlahAkun == 0) {
+        cout << "Belum ada akun yang terdaftar!\n";
+        return "no_account";
     }
 
-    cout << "\nLogin Gagal! Akses Ditolak." << endl;
+    while (percobaan < 3) {
+        cout << "\n--- SILAHKAN LOGIN ---\n";
+        cout << "Username: ";
+        cin >> inputUser;
+        cout << "Password: ";
+        cin >> inputPass;
+
+        bool ditemukan = false;
+
+        for (int i = 0; i < jumlahAkun; i++) {
+            if (daftarAkun[i].username == inputUser &&
+                daftarAkun[i].password == inputPass) {
+
+                cout << "Login Berhasil!\n";
+
+                return daftarAkun[i].role; 
+            }
+        }
+
+        percobaan++;
+        cout << "Username atau Password Salah!\n";
+        cout << "Sisa percobaan: " << 3 - percobaan << endl;
+    }
+
+    cout << "\nLogin Gagal! Akses Ditolak.\n";
     return "invalid";
 }
