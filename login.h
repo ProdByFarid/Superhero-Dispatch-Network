@@ -1,9 +1,10 @@
 #ifndef LOGIN_H
 #define LOGIN_H
 
-#include <iostream>
-#include <string>
+#include <string>   
 
-bool prosesLogin();
+using namespace std;
+
+string prosesLogin();
 
 #endif
