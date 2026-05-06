@@ -1,29 +1,55 @@
+#include <iostream>
+#include <string>
 #include "login.h"
 
 using namespace std;
 
-bool prosesLogin() {
+struct Akun {
+    string username;
+    string password;
+    string role;
+};
+
+string prosesLogin() {
     int percobaan = 0;
     string inputUser, inputPass;
-    
-    string usernameBenar = "admin";
-    string passwordBenar = "123";
 
-    while (percobaan < 3) {
-        cout << "\n--- SILAHKAN LOGIN ---" << endl;
-        cout << "Username: "; cin >> inputUser;
-        cout << "Password: "; cin >> inputPass;
+    Akun daftarAkun[] = {
+        {"admin", "123", "admin"},
+        {"user", "123", "user"}
+    };
 
-        if (inputUser == usernameBenar && inputPass == passwordBenar) {
-            cout << "Login Berhasil!" << endl;
-            return true; 
-        } else {
-            percobaan++;
-            cout << "Username atau Password Salah!" << endl;
-            cout << "Sisa percobaan: " << 3 - percobaan << endl;
-        }
+    int jumlahAkun = sizeof(daftarAkun) / sizeof(daftarAkun[0]);
+
+    if (jumlahAkun == 0) {
+        cout << "Belum ada akun yang terdaftar!\n";
+        return "no_account";
     }
 
-    cout << "\nLogin Gagal! Akses Ditolak." << endl;
-    return false; 
+    while (percobaan < 3) {
+        cout << "\n--- SILAHKAN LOGIN ---\n";
+        cout << "Username: ";
+        cin >> inputUser;
+        cout << "Password: ";
+        cin >> inputPass;
+
+        bool ditemukan = false;
+
+        for (int i = 0; i < jumlahAkun; i++) {
+            if (daftarAkun[i].username == inputUser &&
+                daftarAkun[i].password == inputPass) {
+
+                cout << "Login Berhasil!\n";
+
+                return daftarAkun[i].role; 
+            }
+        }
+
+        percobaan++;
+        cout << "Username atau Password Salah!\n";
+        cout << "Sisa percobaan: " << 3 - percobaan << endl;
+    }
+
+    cout << "\nLogin Gagal! Akses Ditolak.\n";
+    return "invalid";
 }

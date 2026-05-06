@@ -1,0 +1,126 @@
+{
+  "heroes": [
+    {
+      "name": "Thundersize",
+      "points": 352,
+      "primary": "Combat",
+      "secondary": "Mobility",
+      "description": "Raksasa badai yang semakin besar dengan listrik.",
+      "stats": { "combat": 17, "vigor": 11, "mobility": 15, "charisma": 7, "intellect": 9 }
+    },
+    {
+      "name": "Subterfuge",
+      "points": 350,
+      "primary": "Stealth",
+      "secondary": "Intellect",
+      "description": "Ahli penyusup dan manipulasi pikiran.",
+      "stats": { "combat": 9, "vigor": 8, "mobility": 16, "charisma": 10, "intellect": 17 }
+    },
+    {
+      "name": "Horsegirl",
+      "points": 346,
+      "primary": "Mobility",
+      "secondary": "Vigor",
+      "description": "Centaur super cepat dengan gelombang kejut.",
+      "stats": { "combat": 10, "vigor": 16, "mobility": 17, "charisma": 8, "intellect": 7 }
+    },
+    {
+      "name": "The Illusioneer",
+      "points": 343,
+      "primary": "Charisma",
+      "secondary": "Intellect",
+      "description": "Pengendali ilusi yang terasa nyata.",
+      "stats": { "combat": 7, "vigor": 8, "mobility": 10, "charisma": 17, "intellect": 16 }
+    },
+    {
+      "name": "Winter",
+      "points": 326,
+      "primary": "Vigor",
+      "secondary": "Combat",
+      "description": "Penguasa musim dingin dengan zirah es.",
+      "stats": { "combat": 16, "vigor": 17, "mobility": 9, "charisma": 7, "intellect": 10 }
+    },
+    {
+      "name": "Durian",
+      "points": 311,
+      "primary": "Combat",
+      "secondary": "Vigor",
+      "description": "Hero berduri dengan serangan area beracun.",
+      "stats": { "combat": 17, "vigor": 16, "mobility": 8, "charisma": 6, "intellect": 9 }
+    },
+    {
+      "name": "Big Chungus",
+      "points": 309,
+      "primary": "Vigor",
+      "secondary": "Charisma",
+      "description": "Makhluk absurd dengan kekebalan absolut.",
+      "stats": { "combat": 10, "vigor": 17, "mobility": 6, "charisma": 16, "intellect": 8 }
+    },
+
+
+    {
+      "name": "Flambae",
+      "points": 300,
+      "primary": "Combat",
+      "secondary": "Vigor",
+      "description": "Petarung api dengan kekuatan fisik tinggi.",
+      "stats": { "combat": 16, "vigor": 15, "mobility": 9, "charisma": 7, "intellect": 8 }
+    },
+    {
+      "name": "Malevola",
+      "points": 295,
+      "primary": "Charisma",
+      "secondary": "Intellect",
+      "description": "Ahli diplomasi dan manipulasi sosial.",
+      "stats": { "combat": 6, "vigor": 8, "mobility": 9, "charisma": 17, "intellect": 16 }
+    },
+    {
+      "name": "Punch Up",
+      "points": 298,
+      "primary": "Combat",
+      "secondary": "Vigor",
+      "description": "Petarung jarak dekat murni.",
+      "stats": { "combat": 17, "vigor": 14, "mobility": 10, "charisma": 6, "intellect": 7 }
+    },
+    {
+      "name": "Golem",
+      "points": 305,
+      "primary": "Vigor",
+      "secondary": "Combat",
+      "description": "Tank pelindung dari batu raksasa.",
+      "stats": { "combat": 14, "vigor": 17, "mobility": 6, "charisma": 5, "intellect": 8 }
+    },
+    {
+      "name": "Prism",
+      "points": 290,
+      "primary": "Charisma",
+      "secondary": "Intellect",
+      "description": "Manipulator publik dengan ilusi kloning.",
+      "stats": { "combat": 6, "vigor": 7, "mobility": 10, "charisma": 16, "intellect": 15 }
+    },
+    {
+      "name": "Coupe",
+      "points": 280,
+      "primary": "Balanced",
+      "secondary": "Mobility",
+      "description": "Hero serbaguna dengan kemampuan terbang.",
+      "stats": { "combat": 11, "vigor": 11, "mobility": 12, "charisma": 11, "intellect": 11 }
+    },
+    {
+      "name": "Sonar",
+      "points": 300,
+      "primary": "Intellect",
+      "secondary": "Mobility",
+      "description": "Ahli investigasi dengan mode beast.",
+      "stats": { "combat": 12, "vigor": 10, "mobility": 14, "charisma": 8, "intellect": 17 }
+    },
+    {
+      "name": "Invisigal",
+      "points": 285,
+      "primary": "Mobility",
+      "secondary": "Stealth",
+      "description": "Hero tak terlihat untuk infiltrasi cepat.",
+      "stats": { "combat": 8, "vigor": 9, "mobility": 17, "charisma": 7, "intellect": 13 }
+    }
+  ]
+}

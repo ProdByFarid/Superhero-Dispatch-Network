@@ -1,0 +1,7 @@
+#ifndef ADMIN_H
+#define ADMIN_H
+
+void menuAdmin();
+void tampilkanHero();
+
+#endif
