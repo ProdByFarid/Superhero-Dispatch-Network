@@ -64,89 +64,111 @@ string title = R"(
 )";
 
 string titleA = R"(
-===============================================
-|                                             |
-|               WELCOME TO SDN                |
-|       Silahkan Pilih Role Untuk Login       |
-|                                             |
-===============================================
+==============================================
+                                                
+             🏢 WELCOME TO SDN 🏢               
+        Silahkan Pilih Role Untuk Login       
+                                                
+==============================================
+                                            
+   [1]. 👑 Head Of SDN               
+   [2]. 📞 Dispatcher             
+   [0]. 🔙 Keluar                              
+                                            
+==============================================
 )";
 
 string titleB = R"(
 ==============================================
-|                                            |
-|              SIGN IN TO SDN                |
-|    Gunakan Username Dan Password Anda      |
-|                                            |
+                                            
+            🔒 SIGN IN TO SDN 🔒             
+     Gunakan Username Dan Password Anda       
+                                            
 ==============================================
 )";
 
 string titleC = R"(
 =============================================
-|                                           |
-|                HEAD OF SDN                |
-|    Silahkan Pilih Yang Ingin Dikelola     |
-|                                           |
+                                            
+            👑 HEAD OF SDN 👑                
+    Silahkan Pilih Yang Ingin Dikelola     
+                                            
 =============================================
-|                                           |
-|  [1]. Kelola Data Superhero               |
-|  [2]. Kelola Data Dispatcher              |
-|  [0]. Keluar                              |
-|                                           |
+                                            
+   [1]. ⚙️  Kelola Data Superhero               
+   [2]. 📞 Kelola Data Dispatcher              
+   [0]. 🔙 Keluar                              
+                                            
 =============================================
 )";
 
 string titleD = R"(
 =============================================
-|                                           |
-|              HEY DISPATCHER!              |
-|        Mau Memulai Shift Hari Ini?        |
-|                                           |
+                                            
+           📞 HEY DISPATCHER! 📞             
+        Mau Memulai Shift Hari Ini?        
+                                            
 =============================================
 )";
 
 string titleE = R"(
 ===========================================
-|                                         |
-|          PENGELOLAAN SUPERHERO          |
-|                                         |
+                                          
+        🦸 PENGELOLAAN SUPERHERO 🦸          
+                                          
 ===========================================
-|                                         |
-|  [1]. Tambah Superhero                  |
-|  [2]. Lihat Database                    |
-|  [3]. Update Data Superhero             |
-|  [4]. Pecat Superhero                   |
-|  [0]. Kembali Ke Menu Admin             |
-|                                         |
+                                          
+   [1]. ➕ Tambah Superhero                  
+   [2]. 📄 Lihat Database                    
+   [3]. ✏️  Update Data Superhero             
+   [4]. 🗑️  Pecat Superhero                   
+   [0]. 🔙 Kembali Ke Menu Admin             
+                                          
 ===========================================
 )";
 
 string titleF = R"(
 ===========================================
-|                                         |
-|           SUPERHERO DATABASE            |
-|                                         |
+                                          
+         🛢️ SUPERHERO DATABASE 🛢️            
+                                          
 ===========================================
-|                                         |
-|  [1]. Lihat Semua Data                  |
-|  [2]. Urutkan Data                      |
-|  [3]. Cari Superhero                    |
-|  [0]. Kembali ke Database               |
-|                                         |
+                                         
+   [1]. 📄 Lihat Semua Data                  
+   [2]. 🔃 Urutkan Data                      
+   [3]. 🔍 Cari Superhero                    
+   [0]. 🔙 Kembali ke Database               
+                                         
 ===========================================
 )";
 
 string titleG = R"(
 ===========================================
-|                                         |
-|            SORTING DATABASE             |
-|                                         |
+                                          
+          🔃 SORTING DATABASE 🔃            
+                                          
 ===========================================
-|                                         |
-|  [1]. Urutkan Berdasarkan Nama          |
-|  [2]. Urutkan Berdasarkan Poin          |
-|  [0]. Keluar                            |
-|                                         |
+                                          
+   [1]. 🔤 Urutkan Berdasarkan Nama          
+   [2]. 🌟 Urutkan Berdasarkan Poin          
+   [0]. 🔙 Keluar                            
+                                      
+===========================================
+)";
+
+string titleH = R"(
+===========================================
+                                          
+      🧑‍💻 PENGELOLAAN DISPATCHER 🧑‍💻         
+                                          
+===========================================
+                                         
+   [1]. ➕ Tambah Dispatcher            
+   [2]. 📄 Lihat Data Dispatcher             
+   [3]. ✏️  Update Data Dispatcher            
+   [4]. 🗑️  Pecat Dispatcher            
+   [0]. 🔙 Kembali Ke Menu Admin             
+                                         
 ===========================================
 )";
 
@@ -177,8 +199,7 @@ void loadingScreen() {
 
 void loadingBar() {
     int bar = 15;
-    cout << "\n Hero Mobilisasi..." << endl;
-    
+    cout << "\n⌛ Hero Mobilisasi..." << endl;
 
     for (int i = 0; i <= bar; i++) {
         cout << "\r[";
@@ -221,7 +242,7 @@ string prosesLogin() {
 
         // 1. Cek Akun Manager
         if (inputUser == akunManager.username && inputPass == akunManager.password) {
-            cout << hijau << "\n[+] Login Berhasil. ";
+            cout << hijau << "\n✅ Login Berhasil. ";
             return akunManager.role;
         }
 
@@ -231,15 +252,15 @@ string prosesLogin() {
         if (!dataDisp["dispatchers"].empty()) {
             for (const auto& disp : dataDisp["dispatchers"]) {
                 if (disp["username"] == inputUser && disp["password"] == inputPass) {
-                    cout << hijau << "\n[+] Login Berhasil. ";
+                    cout << hijau << "\n✅ Login Berhasil. ";
                     return "dispatcher"; 
                 }
             }
         }
 
         percobaan++;
-        cout << merah << "\n[-] Username atau Password Salah!\n";
-        cout << merah << "[!] Warning: Sisa percobaan: " << 3 - percobaan << endl;
+        cout << merah << "\n❌ Username atau Password Salah!\n";
+        cout << kuning << "⚠️ Warning: Sisa percobaan: " << 3 - percobaan << endl;
         pause();
     }
 
@@ -367,7 +388,7 @@ void sortingHeroes() {
     int pilihanSort;
     do {
         clearScreen();
-        cout << emas << titleG << putih << endl;
+        cout << cyan << titleG << putih << endl;
         cout << "\nMasukkan Pilihan: ";
         cin >> pilihanSort;
         // GGG: Load data setiap kali masuk ke sub-menu sorting
@@ -439,7 +460,7 @@ void sortingHeroes() {
                 }
             }
             simpanDatabase(data);
-            cout << hijau << "\n[+] Data berhasil diurutkan berdasarkan Poin!" << putih << endl;
+            cout << hijau << "\n✅ Data berhasil diurutkan berdasarkan Poin!" << putih << endl;
             pause();
         } 
         else if (pilihanSort == 0) {
@@ -448,7 +469,7 @@ void sortingHeroes() {
             break;
         } 
         else {
-            cout << merah << "\n[!] Error: Pilihan Tidak Valid!" << putih << endl;
+            cout << merah << "\n Error: Pilihan Tidak Valid!" << putih << endl;
             pause();
         }
     } while (pilihanSort != 0);
@@ -509,7 +530,7 @@ void searchingHeroes() {
     if (!ditemukan) {
         clearScreen();
         cout << cyan << "\n<|     HASIL PENCARIAN DATA     |>" << endl;
-        cout << merah << "\n[-] Superhero tidak ditemukan!" << putih << endl;
+        cout << merah << "\n❌ Superhero tidak ditemukan!" << putih << endl;
     }
 }
 
@@ -535,11 +556,11 @@ void menuLihatDatabase() {
             searchingHeroes();
             pause();
         } else if (pilihan == 0) {
-            cout << merah << "\n[-] Anda Akan Kembali ke Menu Pengelolaan Superhero!" << endl;
+            cout << merah << "\n Anda Akan Kembali ke Menu Pengelolaan Superhero!" << endl;
             pause();
             break;
         } else {
-            cout << merah << "\n[!] Error: Pilihan Tidak Valid!" << endl;
+            cout << kuning << "\n⚠️ Error: Pilihan Tidak Valid!" << endl;
             pause();
         }
     } while (pilihan != 0);
@@ -552,7 +573,7 @@ void kelolaSuperhero() {
     int pilihan;
     do {
         clearScreen();
-        cout << emas << titleE << putih << endl;
+        cout << cyan << titleE << putih << endl;
         cout << "Masukkan Pilihan: ";
         cin >> pilihan;
 
@@ -639,7 +660,6 @@ void kelolaSuperhero() {
             pause();
         } 
         else if (pilihan == 2) {
-            // LIHAT DATABASE (Sub Menu)
             menuLihatDatabase();
         } 
         else if (pilihan == 3) {
@@ -699,7 +719,7 @@ void kelolaSuperhero() {
                 }
             }
             if (!found) {
-                cout << merah << "\n[-] Nama tidak ditemukan!" << putih << endl;
+                cout << merah << "\n❌ Nama tidak ditemukan!" << putih << endl;
             }
             pause();
         } else if (pilihan == 4) {
@@ -722,11 +742,11 @@ void kelolaSuperhero() {
                     char konfirmasi;
                     bool validInput = false;
                     
-                    string prompt = "\n[!] Warning: Apakah kamu yakin ingin memecat '" + (*it)["name"].get<string>() + "'? (y/n): ";
+                    string prompt = "\n⚠️ Warning: Apakah kamu yakin ingin memecat '" + (*it)["name"].get<string>() + "'? (y/n): ";
 
                     do {
                         // Cetak prompt
-                        cout << merah << prompt << putih;
+                        cout << kuning << prompt << putih;
                         cout.flush();
 
                         konfirmasi = getch(); 
@@ -741,9 +761,9 @@ void kelolaSuperhero() {
                             if (konfirmasi == 'y') {
                                 it = data["heroes"].erase(it); 
                                 simpanDatabase(data);
-                                cout << hijau << "\n[+] Superhero telah dipecat/dihapus." << putih << endl;
+                                cout << hijau << "\n✅ Superhero telah dipecat/dihapus." << putih << endl;
                             } else {
-                                cout << cyan << "\n[-] Pembatalan penghapusan." << putih << endl;
+                                cout << cyan << "\n❌ Pembatalan penghapusan." << putih << endl;
                                 ++it;
                             }
                         } else {
@@ -761,7 +781,7 @@ void kelolaSuperhero() {
             }
 
             if (!found) {
-                cout << merah << "\n[-] Nama tidak ditemukan!" << putih << endl;
+                cout << merah << "\n❌ Nama tidak ditemukan!" << putih << endl;
             }
             pause();
         }
@@ -776,21 +796,7 @@ void kelolaDispatcher() {
     int pilihan;
     do {
         clearScreen();
-        cout << emas << R"(
-===========================================
-|                                         |
-|          PENGELOLAAN DISPATCHER         |
-|                                         |
-===========================================
-|                                         |
-|  [1]. Tambah Akun Dispatcher            |
-|  [2]. Lihat Data Dispatcher             |
-|  [3]. Update Data Dispatcher            |
-|  [4]. Pecat/Hapus Dispatcher            |
-|  [0]. Kembali Ke Menu Admin             |
-|                                         |
-===========================================
-)" << putih << endl;
+        cout << emas << titleH << putih << endl;
         cout << "Masukkan Pilihan: ";
         cin >> pilihan;
 
@@ -823,7 +829,7 @@ void kelolaDispatcher() {
             data["dispatchers"].push_back(newDisp);
             simpanDatabaseDispatcher(data);
             
-            cout << hijau << "\n[+] Akun Dispatcher berhasil ditambahkan ke dispatcher.json!" << putih << endl;
+            cout << hijau << "\n✅ Akun Dispatcher Berhasil Ditambahkan!" << putih << endl;
             pause();
         } 
         else if (pilihan == 2) {
@@ -848,7 +854,7 @@ void kelolaDispatcher() {
             for (auto &disp : data["dispatchers"]) {
                 if (disp["username"] == userCari) {
                     found = true;
-                    cout << hijau << "\n[+] Ditemukan: " << disp["username"] << putih << endl;
+                    cout << hijau << "\n✅ Ditemukan: " << disp["username"] << putih << endl;
                     cout << "Apa yang ingin diupdate?" << endl;
                     cout << "\n[1]. Password" << endl;
                     cout << "[2]. Status Karyawan" << endl;
@@ -897,10 +903,10 @@ void kelolaDispatcher() {
                     char konfirmasi;
                     bool validInput = false;
                     
-                    string prompt = "\n[!] Warning: Apakah kamu yakin ingin menghapus akun '" + (*it)["username"].get<string>() + "'? (y/n): ";
+                    string prompt = "\n⚠️ Warning: Apakah kamu yakin ingin menghapus akun '" + (*it)["username"].get<string>() + "'? (y/n): ";
 
                     do {
-                        cout << merah << prompt << putih;
+                        cout << kuning << prompt << putih;
                         cout.flush();
 
                         konfirmasi = getch(); 
@@ -913,9 +919,9 @@ void kelolaDispatcher() {
                             if (konfirmasi == 'y') {
                                 it = data["dispatchers"].erase(it); 
                                 simpanDatabaseDispatcher(data);
-                                cout << hijau << "\n[+] Akun Dispatcher telah dihapus." << putih << endl;
+                                cout << hijau << "\n✅ Akun Dispatcher telah dihapus." << putih << endl;
                             } else {
-                                cout << cyan << "\n[-] Pembatalan penghapusan." << putih << endl;
+                                cout << merah << "\n❌ Pembatalan penghapusan." << putih << endl;
                                 ++it;
                             }
                         } else {
@@ -931,7 +937,7 @@ void kelolaDispatcher() {
             }
 
             if (!found) {
-                cout << merah << "\n[-] Username tidak ditemukan!" << putih << endl;
+                cout << merah << "\n❌ Username tidak ditemukan!" << putih << endl;
             }
             pause();
         }
@@ -952,14 +958,15 @@ void menuAdmin() {
             kelolaSuperhero();
         }
         else if (pilihan == 2) {
-            kelolaDispatcher(); // Memanggil fungsi CRUD Dispatcher
+            kelolaDispatcher();
         }
         else if (pilihan == 0) {
             cout << "Anda akan keluar dari menu ini...\n";
+            pause();
             break;
         }
         else {
-            cout << merah << "\n[!] Error: Pilihan tidak valid!" << endl;
+            cout << kuning << "\n⚠️  Error: Pilihan tidak valid!" << endl;
             pause();
         }
 
@@ -976,11 +983,7 @@ void menuUtama() {
 
     do {
         clearScreen();
-        cout << emas << titleA << putih << endl;
-        cout << "[1]. Head of SDN" << endl;
-        cout << "[2]. Dispatcher" << endl;
-        cout << "[0]. Keluar" << endl;
-        cout << endl;
+        cout << titleA << putih << endl;
         cout << "Masukkan Pilihan: ";
         cin >> pilihan;
 
@@ -1049,7 +1052,7 @@ void menuUtama() {
             pause();
         }
         else {
-            cout << merah << "\n[!] Error: Pilihan Tidak Valid!" << putih << endl;
+            cout << kuning << "\n⚠️ Error: Pilihan Tidak Valid!" << putih << endl;
             pause();
         }
 
@@ -1061,6 +1064,7 @@ void menuUtama() {
 
 // MAIN
 int main() {
+    SetConsoleOutputCP(65001);
     // loadingScreen();
     // pause();
     menuUtama();
