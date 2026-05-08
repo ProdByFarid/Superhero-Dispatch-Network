@@ -159,16 +159,32 @@ string titleG = R"(
 string titleH = R"(
 ===========================================
                                           
-      🧑‍💻 PENGELOLAAN DISPATCHER 🧑‍💻         
+      🧑‍💻 PENGELOLAAN DISPATCHER 🧑‍💻       
                                           
 ===========================================
                                          
-   [1]. ➕ Tambah Dispatcher            
-   [2]. 📄 Lihat Data Dispatcher             
-   [3]. ✏️  Update Data Dispatcher            
-   [4]. 🗑️  Pecat Dispatcher            
-   [0]. 🔙 Kembali Ke Menu Admin             
+   [1]. ➕ Tambah Akun Dispatcher         
+   [2]. 🔃 Lihat Data Dispatcher      
+   [3]. ✏️  Update Data Dispatcher         
+   [4]. 🗑️  Pecat Dispatcher               
+   [0]. 🔙 Kembali Ke Menu Admin          
                                          
+===========================================
+)";
+
+string titleI = R"(
+===========================================
+                                          
+       🔃 DISPATCHER DATABASE 🔃         
+                                          
+===========================================
+                                          
+   [1]. 📄 Lihat Semua Data Dispatcher    
+   [2]. 🔤 Urutkan Nama (A-Z)             
+   [3]. 🌟 Urutkan Berdasarkan Level      
+   [4]. 🔍 Cari Nama Dispatcher           
+   [0]. 🔙 Kembali                        
+                                          
 ===========================================
 )";
 
@@ -320,26 +336,30 @@ void simpanDatabaseDispatcher(const json& data) {
 }
 
 void daftarDispatcher() {
-    string header(76, '=');
+    string header(95, '=');
     json data = bacaDatabaseDispatcher();
 
     if (data["dispatchers"].empty()) {
         cout << emas << "\n <|     DAFTAR DISPATCHER KOSONG     |>" << putih << endl;
     } else {
         clearScreen();
-        cout << emas << "\n                   <|     DATA DISPATCHER SDN     |>" << putih << endl;
+        cout << emas << "\n                               <| DATA DISPATCHER SDN |>" << putih << endl;
         cout << endl;
         cout << header << endl;
-        cout << "| " << cyan << setw(10) << left << "ID DISP." << putih 
-             << "| " << cyan << setw(18) << left << "USERNAME" << putih 
-             << "| " << biru << setw(18) << left << "PASSWORD" << putih 
-             << "| " << emas << setw(20) << left << "STATUS KARYAWAN" << putih << " |" << endl;
+        cout << "| " << cyan << setw(8) << left << "ID" << putih 
+             << "| " << cyan << setw(15) << left << "USERNAME" << putih 
+             << "| " << biru << setw(6) << left << "LVL" << putih 
+             << "| " << biru << setw(10) << left << "EXP" << putih 
+             << "| " << emas << setw(25) << left << "JABATAN" << putih 
+             << "| " << putih << setw(15) << left << "STATUS" << " |" << endl;
         cout << header << endl;
         for (const auto &disp : data["dispatchers"]) {
-            cout << "| " << setw(10) << left << disp["id"].get<string>()
-                 << "| " << setw(18) << left << disp["username"].get<string>()
-                 << "| " << setw(18) << left << disp["password"].get<string>()
-                 << "| " << setw(20) << left << disp["status"].get<string>() << " |" << endl;
+            cout << "| " << setw(8) << left << disp["id"].get<string>()
+                 << "| " << setw(15) << left << disp["username"].get<string>()
+                 << "| " << setw(6) << left << (disp.contains("level") ? disp["level"].get<int>() : 0)
+                 << "| " << setw(10) << left << (disp.contains("exp") ? disp["exp"].get<int>() : 0)
+                 << "| " << setw(25) << left << (disp.contains("jabatan") ? disp["jabatan"].get<string>() : "-")
+                 << "| " << setw(15) << left << disp["status"].get<string>() << " |" << endl;
         }
         cout << header << endl;
     }
@@ -536,7 +556,7 @@ void searchingHeroes() {
 
 
 // GGG: FUNGSI SUB-MENU LIHAT DATABASE
-void menuLihatDatabaseSuperheroes() {
+void menuLihatDatabase() {
     int pilihan;
     
     do {
@@ -660,7 +680,7 @@ void kelolaSuperhero() {
             pause();
         } 
         else if (pilihan == 2) {
-            menuLihatDatabaseSuperheroes();
+            menuLihatDatabase();
         } 
         else if (pilihan == 3) {
             // UPDATE DATA
@@ -784,9 +804,6 @@ void kelolaSuperhero() {
                 cout << merah << "\n❌ Nama tidak ditemukan!" << putih << endl;
             }
             pause();
-        } else {
-            cout << kuning << "\n⚠️ Error: Pilihan Tidak Valid!" << endl;
-            pause();
         }
 
     } while (pilihan != 0);
@@ -795,6 +812,16 @@ void kelolaSuperhero() {
 // CRUD SUPERHERO //
 
 // TUGAS FITRI: CRUD DISPATCHER
+
+// Fungsi Helper Jabatan diletakkan di sini
+string tentukanJabatan(int level) {
+    if (level == 0) return "Asisten Dispatcher";
+    if (level == 1) return "Junior Dispatcher";
+    if (level == 2) return "Senior Dispatcher";
+    if (level == 3) return "Chief Dispatcher";
+    return "Dispatcher";
+}
+
 void kelolaDispatcher() {
     int pilihan;
     do {
@@ -803,145 +830,190 @@ void kelolaDispatcher() {
         cout << "Masukkan Pilihan: ";
         cin >> pilihan;
 
-        json data; 
+        json data = bacaDatabaseDispatcher();
 
-        if (pilihan == 1) {
+        if (pilihan == 1) { // TAMBAH
             cout << emas << "\n<|  BUAT AKUN DISPATCHER BARU  |>" << putih << endl;
-            
             json newDisp;
             string inputString;
 
-            cout << "\nID Dispatcher: "; 
-            cin >> inputString;
+            cout << "\nID Dispatcher: "; cin >> inputString;
             newDisp["id"] = inputString;
-            
-            cout << "Username: "; 
-            cin.ignore();
-            getline(cin, inputString); 
+            cout << "Username: "; cin.ignore(); getline(cin, inputString);
             newDisp["username"] = inputString;
-            
-            cout << "Password: "; 
-            getline(cin, inputString); 
+            cout << "Password: "; getline(cin, inputString);
             newDisp["password"] = inputString;
-            
-            cout << "Status Karyawan (Misal: Aktif/Cuti/Training): "; 
-            getline(cin, inputString); 
+            cout << "Status (Aktif/Training): "; getline(cin, inputString);
             newDisp["status"] = inputString;
 
-            data = bacaDatabaseDispatcher();
+            newDisp["level"] = 0;
+            newDisp["exp"] = 0;
+            newDisp["jabatan"] = tentukanJabatan(0);
+
             data["dispatchers"].push_back(newDisp);
             simpanDatabaseDispatcher(data);
-            
             cout << hijau << "\n✅ Akun Dispatcher Berhasil Ditambahkan!" << putih << endl;
             pause();
-        } 
-        else if (pilihan == 2) {
-            // LIHAT DATABASE DISPATCHER
-            clearScreen();
-            daftarDispatcher();
-            pause();
-        } 
-        else if (pilihan == 3) {
-            // UPDATE DATA DISPATCHER
+        }
+        else if (pilihan == 2) { // URUTKAN & CARI
+            int subPilihan;
+            bool backToMenu = false;
+            do {
+                clearScreen();
+                cout << cyan << titleI << putih << endl;
+                cout << "Masukkan Pilihan: ";
+                cin >> subPilihan;
+
+                data = bacaDatabaseDispatcher(); 
+
+                if (subPilihan == 1) { // Lihat Semua Data
+                    clearScreen();
+                    daftarDispatcher();
+                    pause();
+                    backToMenu = true;
+                }
+                else if (subPilihan == 2) { // Urut Nama A-Z
+                    int n = data["dispatchers"].size();
+                    for(int i=0; i<n-1; i++) {
+                        for(int j=0; j<n-i-1; j++) {
+                            if(toLowerManual(data["dispatchers"][j]["username"]) > toLowerManual(data["dispatchers"][j+1]["username"])) {
+                                swap(data["dispatchers"][j], data["dispatchers"][j+1]);
+                            }
+                        }
+                    }
+                    simpanDatabaseDispatcher(data);
+                    clearScreen();
+                    daftarDispatcher();
+                    cout << hijau << "\n✅ Data diurutkan berdasarkan Nama (A-Z)!" << putih << endl;
+                    pause(); 
+                    backToMenu = true;
+                }
+                else if (subPilihan == 3) { // Urut Level
+                    int n = data["dispatchers"].size();
+                    for(int i=0; i<n-1; i++) {
+                        for(int j=0; j<n-i-1; j++) {
+                            int lvlA = data["dispatchers"][j].contains("level") ? data["dispatchers"][j]["level"].get<int>() : 0;
+                            int lvlB = data["dispatchers"][j+1].contains("level") ? data["dispatchers"][j+1]["level"].get<int>() : 0;
+                            if(lvlA < lvlB) swap(data["dispatchers"][j], data["dispatchers"][j+1]);
+                        }
+                    }
+                    simpanDatabaseDispatcher(data);
+                    clearScreen();
+                    daftarDispatcher();
+                    cout << hijau << "\n✅ Data diurutkan berdasarkan Level Tertinggi!" << putih << endl;
+                    pause(); 
+                    backToMenu = true;
+                }
+                else if (subPilihan == 4) { // Cari Nama
+                    clearScreen();
+                    daftarDispatcher();
+                    string cari;
+                    cout << "\nMasukkan Nama Dispatcher: "; cin.ignore(); getline(cin, cari);
+                    bool ketemu = false;
+                    for (const auto& disp : data["dispatchers"]) {
+                        if (toLowerManual(disp["username"]).find(toLowerManual(cari)) != string::npos) {
+                            cout << hijau << "\n[Data Ditemukan]" << putih << endl;
+                            cout << "ID      : " << disp["id"].get<string>() << "\nNama    : " << disp["username"].get<string>() << endl;
+                            cout << "Jabatan : " << (disp.contains("jabatan") ? disp["jabatan"].get<string>() : "-") << "\nLevel   : " << (disp.contains("level") ? disp["level"].get<int>() : 0) << endl;
+                            ketemu = true;
+                        }
+                    }
+                    if (!ketemu) cout << merah << "\n❌ Dispatcher tidak ditemukan!" << putih << endl;
+                    pause(); 
+                    backToMenu = true;
+                }
+                else if (subPilihan == 0) {
+                    backToMenu = true;
+                }
+                else {
+                    cout << merah << "\n❌ Pilihan tidak valid!" << putih << endl;
+                    pause();
+                }
+            } while (!backToMenu);
+        }
+        else if (pilihan == 3) { // UPDATE DATA DISPATCHER
             clearScreen();
             daftarDispatcher();
             cout << emas << "\n<|  UPDATE DATA DISPATCHER  |>" << putih << endl;
-            cout << "\nMasukkan Username Dispatcher yang ingin diupdate: ";
-            cin.ignore(); 
-            string userCari;
-            getline(cin, userCari);
+            cout << "\nMasukkan Username Dispatcher yang ingin diubah: ";
+            string userCari; cin.ignore(); getline(cin, userCari);
 
-            data = bacaDatabaseDispatcher();
             bool found = false;
-            
             for (auto &disp : data["dispatchers"]) {
                 if (disp["username"] == userCari) {
                     found = true;
-                    cout << hijau << "\n✅ Ditemukan: " << disp["username"] << putih << endl;
-                    cout << "Apa yang ingin diupdate?" << endl;
-                    cout << "\n[1]. Password" << endl;
-                    cout << "[2]. Status Karyawan" << endl;
-                    cout << "\nMasukkan Pilihan: ";
-                    int updatePilih;
-                    cin >> updatePilih;
+                    cout << hijau << "\n[+] Akun Ditemukan: " << disp["username"] << putih << endl;
+                    cout << "1. Ubah Username\n";
+                    cout << "2. Ubah Password\n";
+                    cout << "3. Ubah Status\n";
+                    cout << "4. Ubah Jabatan Manual\n";
+                    cout << "0. Batal\n";
+                    cout << "Pilihan: ";
+                    int up; cin >> up; cin.ignore();
 
-                    if (updatePilih == 1) {
-                        cout << "Masukkan Password Baru: "; 
-                        cin.ignore(); string temp; getline(cin, temp); 
-                        if(!temp.empty()) disp["password"] = temp;
-                        cout << "Password diperbarui." << endl;
-                    } 
-                    else if (updatePilih == 2) {
-                        cout << "Masukkan Status Baru: "; 
-                        cin.ignore(); string temp; getline(cin, temp); 
-                        if(!temp.empty()) disp["status"] = temp;
-                        cout << "Status karyawan diperbarui." << endl;
+                    string temp;
+                    switch(up) {
+                        case 1:
+                            cout << "Username Baru: "; getline(cin, temp);
+                            if(!temp.empty()) disp["username"] = temp;
+                            break;
+                        case 2:
+                            cout << "Password Baru: "; getline(cin, temp);
+                            if(!temp.empty()) disp["password"] = temp;
+                            break;
+                        case 3:
+                            cout << "Status Baru (Aktif/Cuti/Training): "; getline(cin, temp);
+                            if(!temp.empty()) disp["status"] = temp;
+                            break;
+                        case 4:
+                            cout << "Jabatan Baru: "; getline(cin, temp);
+                            if(!temp.empty()) disp["jabatan"] = temp;
+                            break;
+                        case 0:
+                            cout << "Update dibatalkan.\n";
+                            break;
+                        default:
+                            cout << merah << "Pilihan tidak tersedia.\n" << putih;
                     }
-                    simpanDatabaseDispatcher(data);
+                    
+                    if (up != 0) {
+                        simpanDatabaseDispatcher(data);
+                        cout << hijau << "\n✅ Perubahan berhasil disimpan!" << putih << endl;
+                    }
                     break;
                 }
             }
-            if (!found) {
-                cout << merah << "\n[-] Username tidak ditemukan!" << putih << endl;
-            }
+            if(!found) cout << merah << "❌ Akun dengan username tersebut tidak ditemukan!" << putih << endl;
             pause();
-        } 
-        else if (pilihan == 4) {
-            // DELETE / PECAT DISPATCHER
+        }
+        else if (pilihan == 4) { // PECAT
             clearScreen();
             daftarDispatcher();
-            cout << emas << "\n<|  PECAT DISPATCHER  |>" << putih << endl;
-            cout << "\nMasukkan Username Dispatcher yang akan dihapus: ";
-            cin.ignore(numeric_limits<streamsize>::max(), '\n'); 
-            string userHapus;
-            getline(cin, userHapus);
-
-            data = bacaDatabaseDispatcher();
+            cout << merah << "\n<|  PECAT DISPATCHER  |>" << putih << endl;
+            cout << "\nMasukkan Username Dispatcher: ";
+            string hapus; cin.ignore(); getline(cin, hapus);
+            
             auto it = data["dispatchers"].begin();
             bool found = false;
-            
             while (it != data["dispatchers"].end()) {
-                if ((*it)["username"] == userHapus) {
+                if ((*it)["username"] == hapus) {
                     found = true;
-                    char konfirmasi;
-                    bool validInput = false;
-                    
-                    string prompt = "\n⚠️ Warning: Apakah kamu yakin ingin menghapus akun '" + (*it)["username"].get<string>() + "'? (y/n): ";
-
-                    do {
-                        cout << kuning << prompt << putih;
-                        cout.flush();
-
-                        konfirmasi = getch(); 
-                        konfirmasi = tolower(konfirmasi);
-
-                        if (konfirmasi == 'y' || konfirmasi == 'n') {
-                            validInput = true;
-                            cout << konfirmasi << endl; 
-                            
-                            if (konfirmasi == 'y') {
-                                it = data["dispatchers"].erase(it); 
-                                simpanDatabaseDispatcher(data);
-                                cout << hijau << "\n✅ Akun Dispatcher telah dihapus." << putih << endl;
-                            } else {
-                                cout << merah << "\n❌ Pembatalan penghapusan." << putih << endl;
-                                ++it;
-                            }
-                        } else {
-                            cout << "\r"; 
-                            for(int i=0; i < prompt.length() + 5; i++) cout << " "; 
-                            cout << "\r";
-                        }
-                    } while (!validInput);
+                    char konf;
+                    cout << kuning << "Yakin pecat '" << hapus << "'? (y/n): " << putih;
+                    konf = tolower(getch());
+                    if (konf == 'y') {
+                        data["dispatchers"].erase(it);
+                        simpanDatabaseDispatcher(data);
+                        cout << hijau << "\n✅ Akun telah dihapus." << putih << endl;
+                    } else cout << cyan << "\n❌ Dibatalkan." << putih << endl;
                     break;
-                } else {
-                    ++it;
                 }
+                it++;
             }
-
-            if (!found) {
-                cout << merah << "\n❌ Username tidak ditemukan!" << putih << endl;
-            }
+            if (!found) cout << merah << "\n❌ Username tidak ditemukan!" << putih << endl;
+            pause();
+        } else {
+            cout << kuning << "\n⚠️ Error: Pilihan Tidak Valid!" << endl;
             pause();
         }
     } while (pilihan != 0);
