@@ -1,274 +1,274 @@
 {
-  "heroes": [
-    {
-      "name": "Thundersize",
-      "aliases": "-",
-      "profilType": "Raksasa Badai",
-      "age": "Tidak Diketahui",
-      "height": "-",
-      "birthplace": "Tidak Diketahui",
-      "abilities": "Manipulasi Listrik, Pertumbuhan Ukuran",
-      "description": "Raksasa badai yang semakin besar dengan listrik.",
-      "points": 352,
-      "stats": {
-        "combat": 17,
-        "vigor": 11,
-        "mobility": 15,
-        "charisma": 7,
-        "intellect": 9
-      }
-    },
-    {
-      "name": "Subterfuge",
-      "aliases": "-",
-      "profilType": "Ahli Penyusup",
-      "age": "Tidak Diketahui",
-      "height": "-",
-      "birthplace": "Tidak Diketahui",
-      "abilities": "Manipulasi Pikiran, Stealth",
-      "description": "Ahli penyusup dan manipulasi pikiran.",
-      "points": 350,
-      "stats": {
-        "combat": 9,
-        "vigor": 8,
-        "mobility": 16,
-        "charisma": 10,
-        "intellect": 17
-      }
-    },
-    {
-      "name": "Horsegirl",
-      "aliases": "-",
-      "profilType": "Centaur",
-      "age": "Tidak Diketahui",
-      "height": "-",
-      "birthplace": "Tidak Diketahui",
-      "abilities": "Kecepatan Super, Gelombang Kejut",
-      "description": "Centaur super cepat dengan gelombang kejut.",
-      "points": 346,
-      "stats": {
-        "combat": 10,
-        "vigor": 16,
-        "mobility": 17,
-        "charisma": 8,
-        "intellect": 7
-      }
-    },
-    {
-      "name": "The Illusioneer",
-      "aliases": "-",
-      "profilType": "Pengendali Ilusi",
-      "age": "Tidak Diketahui",
-      "height": "-",
-      "birthplace": "Tidak Diketahui",
-      "abilities": "Ilusi Nyata, Manipulasi Persepsi",
-      "description": "Pengendali ilusi yang terasa nyata.",
-      "points": 343,
-      "stats": {
-        "combat": 7,
-        "vigor": 8,
-        "mobility": 10,
-        "charisma": 17,
-        "intellect": 16
-      }
-    },
-    {
-      "name": "Winter",
-      "aliases": "-",
-      "profilType": "Penguasa Musim Dingin",
-      "age": "Tidak Diketahui",
-      "height": "-",
-      "birthplace": "Tidak Diketahui",
-      "abilities": "Manipulasi Es, Zirah Es",
-      "description": "Penguasa musim dingin dengan zirah es.",
-      "points": 326,
-      "stats": {
-        "combat": 16,
-        "vigor": 17,
-        "mobility": 9,
-        "charisma": 7,
-        "intellect": 10
-      }
-    },
-    {
-      "name": "Durian",
-      "aliases": "-",
-      "profilType": "Hero Berduri",
-      "age": "Tidak Diketahui",
-      "height": "-",
-      "birthplace": "Tidak Diketahui",
-      "abilities": "Serangan Area Beracun, Duri Tajam",
-      "description": "Hero berduri dengan serangan area beracun.",
-      "points": 311,
-      "stats": {
-        "combat": 17,
-        "vigor": 16,
-        "mobility": 8,
-        "charisma": 6,
-        "intellect": 9
-      }
-    },
-    {
-      "name": "Big Chungus",
-      "aliases": "-",
-      "profilType": "Makhluk Absurd",
-      "age": "Tidak Diketahui",
-      "height": "-",
-      "birthplace": "Tidak Diketahui",
-      "abilities": "Kekebalan Absolut, Massa Besar",
-      "description": "Makhluk absurd dengan kekebalan absolut.",
-      "points": 309,
-      "stats": {
-        "combat": 10,
-        "vigor": 17,
-        "mobility": 6,
-        "charisma": 16,
-        "intellect": 8
-      }
-    },
-    {
-      "name": "Flambae",
-      "aliases": "Control Fire And Flame",
-      "profilType": "Fire & Flame",
-      "age": "36",
-      "height": "193,04\"",
-      "birthplace": "Herat, Afghanistan",
-      "abilities": "Pyrokinesis, Flame Invulnerability, Pyro-Propulsion",
-      "description": "Petarung api dengan kekuatan fisik tinggi. Masalah Amarah, Riwayat Pembakaran yang tidak Mengejutkan",
-      "points": 300,
-      "stats": {
-        "combat": 4,
-        "vigor": 2,
-        "mobility": 3,
-        "charisma": 1,
-        "intellect": 4
-      }
-    },
-    {
-      "name": "Malevola",
-      "aliases": "Devil From Down Under",
-      "profilType": "Sorceress & Half-Demon",
-      "age": "Sorceress & Half-Demon",
-      "height": "198,12\"",
-      "birthplace": "Tidak Diketahui",
-      "abilities": "Demon Physiology, Portal Creation, Wound Transferal",
-      "description": "Berpenampilan entitas iblis. Memiliki ekor prehensil, Atheist",
-      "points": 295,
-      "stats": {
-        "combat": 3,
-        "vigor": 2,
-        "mobility": 2,
-        "charisma": 3,
-        "intellect": 2
-      }
-    },
-    {
-      "name": "Punch Up",
-      "aliases": "Smallest Strongman",
-      "profilType": "Brawler & Fighter",
-      "age": "43",
-      "height": "99,06\"",
-      "birthplace": "Galway, Ireland",
-      "abilities": "Picnokinesis, Superhuman Strength and Durability, Pain Immunity",
-      "description": "Memiliki kekuatan sepuluh pria dan setengah tinggi badan pria",
-      "points": 298,
-      "stats": {
-        "combat": 3,
-        "vigor": 4,
-        "mobility": 1,
-        "charisma": 3,
-        "intellect": 1
-      }
-    },
-    {
-      "name": "Golem",
-      "aliases": "The Sentient Construct",
-      "profilType": "Defender & Versatile",
-      "age": "20",
-      "height": "213,36\"",
-      "birthplace": "Tidak Diketahui",
-      "abilities": "Morphological Being, Earth Mimicry, Regenerative Healing",
-      "description": "Massa besar tanah liat dan lumpur, menikmati puisi dan bola basket",
-      "points": 305,
-      "stats": {
-        "combat": 3,
-        "vigor": 4,
-        "mobility": 1,
-        "charisma": 3,
-        "intellect": 1
-      }
-    },
-    {
-      "name": "Prism",
-      "aliases": "Trick Of The Light",
-      "profilType": "Pop Star & Illusionist",
-      "age": "26",
-      "height": "162,56\"",
-      "birthplace": "Flint, MI",
-      "abilities": "Morphological Being, Earth Mimicry, Regenerative Healing",
-      "description": "1.3 Followers, Pop Star, Sangat Dramatis, Terus-menerus meminta untuk kembali ke trailernya",
-      "points": 290,
-      "stats": {
-        "combat": 4,
-        "vigor": 1,
-        "mobility": 1,
-        "charisma": 4,
-        "intellect": 2
-      }
-    },
-    {
-      "name": "Coupe",
-      "aliases": "Merciless Mercenary",
-      "profilType": "Shadow & Assassin",
-      "age": "Tidak Diketahui",
-      "height": "167,64\"",
-      "birthplace": "Tidak Diketahui",
-      "abilities": "Umbrakinetic Weaponry, Umbrakinetic Flight, Superhuman Accuracy",
-      "description": "Misterius, Mematikan dan Tidak bisa didekati",
-      "points": 280,
-      "stats": {
-        "combat": 4,
-        "vigor": 1,
-        "mobility": 3,
-        "charisma": 1,
-        "intellect": 3
-      }
-    },
-    {
-      "name": "Sonar",
-      "aliases": "Batboy Conman",
-      "profilType": "Intellectual & Hybrid",
-      "age": "32",
-      "height": "182,88\"",
-      "birthplace": "San Francisco, CA",
-      "abilities": "Megabat Physiology, Flight, Echolocation, Superhuman Strength",
-      "description": "Dapat berubah menjadi kelelawar raksasa dan sangat cerdas",
-      "points": 300,
-      "stats": {
-        "combat": 2,
-        "vigor": 1,
-        "mobility": 2,
-        "charisma": 3,
-        "intellect": 4
-      }
-    },
-    {
-      "name": "Invisigal",
-      "aliases": "AKA Invisib*tch",
-      "profilType": "Loner & Thief",
-      "age": "27",
-      "height": "167,64\"",
-      "birthplace": "Los Angeles, CA",
-      "abilities": "Invisibility, Hand-to-Hand Combat",
-      "description": "Remaja perempuan yang bisa menghilang sesuka hati ketika menahan nafas, Penderita Asma, Kasar",
-      "points": 285,
-      "stats": {
-        "combat": 3,
-        "vigor": 2,
-        "mobility": 3,
-        "charisma": 1,
-        "intellect": 2
-      }
-    }
-  ]
+    "heroes": [
+        {
+            "abilities": "Kekebalan Absolut, Massa Besar",
+            "age": "Tidak Diketahui",
+            "aliases": "-",
+            "birthplace": "Tidak Diketahui",
+            "description": "Makhluk absurd dengan kekebalan absolut.",
+            "height": "-",
+            "name": "Big Chungus",
+            "points": 309,
+            "profilType": "Makhluk Absurd",
+            "stats": {
+                "charisma": 16,
+                "combat": 10,
+                "intellect": 8,
+                "mobility": 6,
+                "vigor": 17
+            }
+        },
+        {
+            "abilities": "Umbrakinetic Weaponry, Umbrakinetic Flight, Superhuman Accuracy",
+            "age": "Tidak Diketahui",
+            "aliases": "Merciless Mercenary",
+            "birthplace": "Tidak Diketahui",
+            "description": "Misterius, Mematikan dan Tidak bisa didekati",
+            "height": "167,64",
+            "name": "Coupe",
+            "points": 280,
+            "profilType": "Shadow & Assassin",
+            "stats": {
+                "charisma": 1,
+                "combat": 4,
+                "intellect": 3,
+                "mobility": 3,
+                "vigor": 1
+            }
+        },
+        {
+            "abilities": "Serangan Area Beracun, Duri Tajam",
+            "age": "Tidak Diketahui",
+            "aliases": "-",
+            "birthplace": "Tidak Diketahui",
+            "description": "Hero berduri dengan serangan area beracun.",
+            "height": "-",
+            "name": "Durian",
+            "points": 311,
+            "profilType": "Hero Berduri",
+            "stats": {
+                "charisma": 6,
+                "combat": 17,
+                "intellect": 9,
+                "mobility": 8,
+                "vigor": 16
+            }
+        },
+        {
+            "abilities": "Pyrokinesis, Flame Invulnerability, Pyro-Propulsion",
+            "age": "36",
+            "aliases": "Control Fire And Flame",
+            "birthplace": "Herat, Afghanistan",
+            "description": "Petarung api dengan kekuatan fisik tinggi. Masalah Amarah, Riwayat Pembakaran yang tidak Mengejutkan",
+            "height": "193,04",
+            "name": "Flambae",
+            "points": 300,
+            "profilType": "Fire & Flame",
+            "stats": {
+                "charisma": 1,
+                "combat": 4,
+                "intellect": 4,
+                "mobility": 3,
+                "vigor": 2
+            }
+        },
+        {
+            "abilities": "Morphological Being, Earth Mimicry, Regenerative Healing",
+            "age": "20",
+            "aliases": "The Sentient Construct",
+            "birthplace": "Tidak Diketahui",
+            "description": "Massa besar tanah liat dan lumpur, menikmati puisi dan bola basket",
+            "height": "213,36",
+            "name": "Golem",
+            "points": 305,
+            "profilType": "Defender & Versatile",
+            "stats": {
+                "charisma": 3,
+                "combat": 3,
+                "intellect": 1,
+                "mobility": 1,
+                "vigor": 4
+            }
+        },
+        {
+            "abilities": "Kecepatan Super, Gelombang Kejut",
+            "age": "Tidak Diketahui",
+            "aliases": "-",
+            "birthplace": "Tidak Diketahui",
+            "description": "Centaur super cepat dengan gelombang kejut.",
+            "height": "-",
+            "name": "Horsegirl",
+            "points": 346,
+            "profilType": "Centaur",
+            "stats": {
+                "charisma": 8,
+                "combat": 10,
+                "intellect": 7,
+                "mobility": 17,
+                "vigor": 16
+            }
+        },
+        {
+            "abilities": "Invisibility, Hand-to-Hand Combat",
+            "age": "27",
+            "aliases": "AKA Invisib*tch",
+            "birthplace": "Los Angeles, CA",
+            "description": "Remaja perempuan yang bisa menghilang sesuka hati ketika menahan nafas, Penderita Asma, Kasar",
+            "height": "167,64",
+            "name": "Invisigal",
+            "points": 285,
+            "profilType": "Loner & Thief",
+            "stats": {
+                "charisma": 1,
+                "combat": 3,
+                "intellect": 2,
+                "mobility": 3,
+                "vigor": 2
+            }
+        },
+        {
+            "abilities": "Demon Physiology, Portal Creation, Wound Transferal",
+            "age": "Sorceress & Half-Demon",
+            "aliases": "Devil From Down Under",
+            "birthplace": "Tidak Diketahui",
+            "description": "Berpenampilan entitas iblis. Memiliki ekor prehensil, Atheist",
+            "height": "198,12",
+            "name": "Malevola",
+            "points": 295,
+            "profilType": "Sorceress & Half-Demon",
+            "stats": {
+                "charisma": 3,
+                "combat": 3,
+                "intellect": 2,
+                "mobility": 2,
+                "vigor": 2
+            }
+        },
+        {
+            "abilities": "Morphological Being, Earth Mimicry, Regenerative Healing",
+            "age": "26",
+            "aliases": "Trick Of The Light",
+            "birthplace": "Flint, MI",
+            "description": "1.3 Followers, Pop Star, Sangat Dramatis, Terus-menerus meminta untuk kembali ke trailernya",
+            "height": "162,56",
+            "name": "Prism",
+            "points": 290,
+            "profilType": "Pop Star & Illusionist",
+            "stats": {
+                "charisma": 4,
+                "combat": 4,
+                "intellect": 2,
+                "mobility": 1,
+                "vigor": 1
+            }
+        },
+        {
+            "abilities": "Picnokinesis, Superhuman Strength and Durability, Pain Immunity",
+            "age": "43",
+            "aliases": "Smallest Strongman",
+            "birthplace": "Galway, Ireland",
+            "description": "Memiliki kekuatan sepuluh pria dan setengah tinggi badan pria",
+            "height": "99,06",
+            "name": "Punch Up",
+            "points": 298,
+            "profilType": "Brawler & Fighter",
+            "stats": {
+                "charisma": 3,
+                "combat": 3,
+                "intellect": 1,
+                "mobility": 1,
+                "vigor": 4
+            }
+        },
+        {
+            "abilities": "Megabat Physiology, Flight, Echolocation, Superhuman Strength",
+            "age": "32",
+            "aliases": "Batboy Conman",
+            "birthplace": "San Francisco, CA",
+            "description": "Dapat berubah menjadi kelelawar raksasa dan sangat cerdas",
+            "height": "182,88",
+            "name": "Sonar",
+            "points": 300,
+            "profilType": "Intellectual & Hybrid",
+            "stats": {
+                "charisma": 3,
+                "combat": 2,
+                "intellect": 4,
+                "mobility": 2,
+                "vigor": 1
+            }
+        },
+        {
+            "abilities": "Manipulasi Pikiran, Stealth",
+            "age": "Tidak Diketahui",
+            "aliases": "-",
+            "birthplace": "Tidak Diketahui",
+            "description": "Ahli penyusup dan manipulasi pikiran.",
+            "height": "-",
+            "name": "Subterfuge",
+            "points": 350,
+            "profilType": "Ahli Penyusup",
+            "stats": {
+                "charisma": 10,
+                "combat": 9,
+                "intellect": 17,
+                "mobility": 16,
+                "vigor": 8
+            }
+        },
+        {
+            "abilities": "Ilusi Nyata, Manipulasi Persepsi",
+            "age": "Tidak Diketahui",
+            "aliases": "-",
+            "birthplace": "Tidak Diketahui",
+            "description": "Pengendali ilusi yang terasa nyata.",
+            "height": "-",
+            "name": "The Illusioneer",
+            "points": 343,
+            "profilType": "Pengendali Ilusi",
+            "stats": {
+                "charisma": 17,
+                "combat": 7,
+                "intellect": 16,
+                "mobility": 10,
+                "vigor": 8
+            }
+        },
+        {
+            "abilities": "Manipulasi Listrik, Pertumbuhan Ukuran",
+            "age": "Tidak Diketahui",
+            "aliases": "-",
+            "birthplace": "Tidak Diketahui",
+            "description": "Raksasa badai yang semakin besar dengan listrik.",
+            "height": "-",
+            "name": "Thundersize",
+            "points": 352,
+            "profilType": "Raksasa Badai",
+            "stats": {
+                "charisma": 7,
+                "combat": 17,
+                "intellect": 9,
+                "mobility": 15,
+                "vigor": 11
+            }
+        },
+        {
+            "abilities": "Manipulasi Es, Zirah Es",
+            "age": "Tidak Diketahui",
+            "aliases": "-",
+            "birthplace": "Tidak Diketahui",
+            "description": "Penguasa musim dingin dengan zirah es.",
+            "height": "-",
+            "name": "Winter",
+            "points": 326,
+            "profilType": "Penguasa Musim Dingin",
+            "stats": {
+                "charisma": 7,
+                "combat": 16,
+                "intellect": 10,
+                "mobility": 9,
+                "vigor": 17
+            }
+        }
+    ]
 }
