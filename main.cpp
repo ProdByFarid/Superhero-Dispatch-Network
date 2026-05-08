@@ -202,21 +202,14 @@ void loadingBar() {
 
 // LOGIN
 
+json bacaDatabaseDispatcher();
+
 string prosesLogin() {
     int percobaan = 0;
     string inputUser, inputPass;
 
-    Akun daftarAkun[] = {
-        {237218, "manager", "123", "manager"},
-        {5318008, "user", "123", "dispatcher"}
-    };
-
-    int jumlahAkun = sizeof(daftarAkun) / sizeof(daftarAkun[0]);
-
-    if (jumlahAkun == 0) {
-        cout << "Belum ada akun yang terdaftar!\n";
-        return "no_account";
-    }
+    // Data manager tetap hardcoded sebagai akses utama
+    Akun akunManager = {237218, "manager", "123", "manager"};
 
     while (percobaan < 3) {
         clearScreen();
@@ -226,15 +219,21 @@ string prosesLogin() {
         cout << "Password: ";
         cin >> inputPass;
 
-        bool ditemukan = false;
+        // 1. Cek Akun Manager
+        if (inputUser == akunManager.username && inputPass == akunManager.password) {
+            cout << hijau << "\n[+] Login Berhasil. ";
+            return akunManager.role;
+        }
 
-        for (int i = 0; i < jumlahAkun; i++) {
-            if (daftarAkun[i].username == inputUser &&
-                daftarAkun[i].password == inputPass) {
-
-                cout << hijau << "\n[+] Login Berhasil. ";
-
-                return daftarAkun[i].role; 
+        // 2. Cek Akun Dispatcher dari dispatcher.json
+        json dataDisp = bacaDatabaseDispatcher();
+        
+        if (!dataDisp["dispatchers"].empty()) {
+            for (const auto& disp : dataDisp["dispatchers"]) {
+                if (disp["username"] == inputUser && disp["password"] == inputPass) {
+                    cout << hijau << "\n[+] Login Berhasil. ";
+                    return "dispatcher"; 
+                }
             }
         }
 
@@ -272,6 +271,56 @@ void simpanDatabase(const json& data) {
         file.close();
     } else {
         cout << merah << "\nGagal menyimpan database!" << putih << endl;
+    }
+}
+
+// GGG: HELPER DATABASE DISPATCHER (TUGAS FITRI)
+json bacaDatabaseDispatcher() {
+    ifstream file("dispatcher.json");
+    if (!file.is_open()) {
+        json j;
+        j["dispatchers"] = json::array();
+        return j;
+    }
+    json data;
+    file >> data;
+    file.close();
+    return data;
+}
+
+void simpanDatabaseDispatcher(const json& data) {
+    ofstream file("dispatcher.json");
+    if (file.is_open()) {
+        file << setw(4) << data << endl; 
+        file.close();
+    } else {
+        cout << merah << "\nGagal menyimpan database dispatcher!" << putih << endl;
+    }
+}
+
+void daftarDispatcher() {
+    string header(76, '=');
+    json data = bacaDatabaseDispatcher();
+
+    if (data["dispatchers"].empty()) {
+        cout << emas << "\n <|     DAFTAR DISPATCHER KOSONG     |>" << putih << endl;
+    } else {
+        clearScreen();
+        cout << emas << "\n                   <|     DATA DISPATCHER SDN     |>" << putih << endl;
+        cout << endl;
+        cout << header << endl;
+        cout << "| " << cyan << setw(10) << left << "ID DISP." << putih 
+             << "| " << cyan << setw(18) << left << "USERNAME" << putih 
+             << "| " << biru << setw(18) << left << "PASSWORD" << putih 
+             << "| " << emas << setw(20) << left << "STATUS KARYAWAN" << putih << " |" << endl;
+        cout << header << endl;
+        for (const auto &disp : data["dispatchers"]) {
+            cout << "| " << setw(10) << left << disp["id"].get<string>()
+                 << "| " << setw(18) << left << disp["username"].get<string>()
+                 << "| " << setw(18) << left << disp["password"].get<string>()
+                 << "| " << setw(20) << left << disp["status"].get<string>() << " |" << endl;
+        }
+        cout << header << endl;
     }
 }
 
@@ -722,9 +771,174 @@ void kelolaSuperhero() {
 
 // CRUD SUPERHERO //
 
+// TUGAS FITRI: CRUD DISPATCHER
+void kelolaDispatcher() {
+    int pilihan;
+    do {
+        clearScreen();
+        cout << emas << R"(
+===========================================
+|                                         |
+|          PENGELOLAAN DISPATCHER         |
+|                                         |
+===========================================
+|                                         |
+|  [1]. Tambah Akun Dispatcher            |
+|  [2]. Lihat Data Dispatcher             |
+|  [3]. Update Data Dispatcher            |
+|  [4]. Pecat/Hapus Dispatcher            |
+|  [0]. Kembali Ke Menu Admin             |
+|                                         |
+===========================================
+)" << putih << endl;
+        cout << "Masukkan Pilihan: ";
+        cin >> pilihan;
+
+        json data; 
+
+        if (pilihan == 1) {
+            cout << emas << "\n<|  BUAT AKUN DISPATCHER BARU  |>" << putih << endl;
+            
+            json newDisp;
+            string inputString;
+
+            cout << "\nID Dispatcher: "; 
+            cin >> inputString;
+            newDisp["id"] = inputString;
+            
+            cout << "Username: "; 
+            cin.ignore();
+            getline(cin, inputString); 
+            newDisp["username"] = inputString;
+            
+            cout << "Password: "; 
+            getline(cin, inputString); 
+            newDisp["password"] = inputString;
+            
+            cout << "Status Karyawan (Misal: Aktif/Cuti/Training): "; 
+            getline(cin, inputString); 
+            newDisp["status"] = inputString;
+
+            data = bacaDatabaseDispatcher();
+            data["dispatchers"].push_back(newDisp);
+            simpanDatabaseDispatcher(data);
+            
+            cout << hijau << "\n[+] Akun Dispatcher berhasil ditambahkan ke dispatcher.json!" << putih << endl;
+            pause();
+        } 
+        else if (pilihan == 2) {
+            // LIHAT DATABASE DISPATCHER
+            clearScreen();
+            daftarDispatcher();
+            pause();
+        } 
+        else if (pilihan == 3) {
+            // UPDATE DATA DISPATCHER
+            clearScreen();
+            daftarDispatcher();
+            cout << emas << "\n<|  UPDATE DATA DISPATCHER  |>" << putih << endl;
+            cout << "\nMasukkan Username Dispatcher yang ingin diupdate: ";
+            cin.ignore(); 
+            string userCari;
+            getline(cin, userCari);
+
+            data = bacaDatabaseDispatcher();
+            bool found = false;
+            
+            for (auto &disp : data["dispatchers"]) {
+                if (disp["username"] == userCari) {
+                    found = true;
+                    cout << hijau << "\n[+] Ditemukan: " << disp["username"] << putih << endl;
+                    cout << "Apa yang ingin diupdate?" << endl;
+                    cout << "\n[1]. Password" << endl;
+                    cout << "[2]. Status Karyawan" << endl;
+                    cout << "\nMasukkan Pilihan: ";
+                    int updatePilih;
+                    cin >> updatePilih;
+
+                    if (updatePilih == 1) {
+                        cout << "Masukkan Password Baru: "; 
+                        cin.ignore(); string temp; getline(cin, temp); 
+                        if(!temp.empty()) disp["password"] = temp;
+                        cout << "Password diperbarui." << endl;
+                    } 
+                    else if (updatePilih == 2) {
+                        cout << "Masukkan Status Baru: "; 
+                        cin.ignore(); string temp; getline(cin, temp); 
+                        if(!temp.empty()) disp["status"] = temp;
+                        cout << "Status karyawan diperbarui." << endl;
+                    }
+                    simpanDatabaseDispatcher(data);
+                    break;
+                }
+            }
+            if (!found) {
+                cout << merah << "\n[-] Username tidak ditemukan!" << putih << endl;
+            }
+            pause();
+        } 
+        else if (pilihan == 4) {
+            // DELETE / PECAT DISPATCHER
+            clearScreen();
+            daftarDispatcher();
+            cout << emas << "\n<|  PECAT DISPATCHER  |>" << putih << endl;
+            cout << "\nMasukkan Username Dispatcher yang akan dihapus: ";
+            cin.ignore(numeric_limits<streamsize>::max(), '\n'); 
+            string userHapus;
+            getline(cin, userHapus);
+
+            data = bacaDatabaseDispatcher();
+            auto it = data["dispatchers"].begin();
+            bool found = false;
+            
+            while (it != data["dispatchers"].end()) {
+                if ((*it)["username"] == userHapus) {
+                    found = true;
+                    char konfirmasi;
+                    bool validInput = false;
+                    
+                    string prompt = "\n[!] Warning: Apakah kamu yakin ingin menghapus akun '" + (*it)["username"].get<string>() + "'? (y/n): ";
+
+                    do {
+                        cout << merah << prompt << putih;
+                        cout.flush();
+
+                        konfirmasi = getch(); 
+                        konfirmasi = tolower(konfirmasi);
+
+                        if (konfirmasi == 'y' || konfirmasi == 'n') {
+                            validInput = true;
+                            cout << konfirmasi << endl; 
+                            
+                            if (konfirmasi == 'y') {
+                                it = data["dispatchers"].erase(it); 
+                                simpanDatabaseDispatcher(data);
+                                cout << hijau << "\n[+] Akun Dispatcher telah dihapus." << putih << endl;
+                            } else {
+                                cout << cyan << "\n[-] Pembatalan penghapusan." << putih << endl;
+                                ++it;
+                            }
+                        } else {
+                            cout << "\r"; 
+                            for(int i=0; i < prompt.length() + 5; i++) cout << " "; 
+                            cout << "\r";
+                        }
+                    } while (!validInput);
+                    break;
+                } else {
+                    ++it;
+                }
+            }
+
+            if (!found) {
+                cout << merah << "\n[-] Username tidak ditemukan!" << putih << endl;
+            }
+            pause();
+        }
+    } while (pilihan != 0);
+}
+
 // ADMIN
-
-
 void menuAdmin() {
     int pilihan;
 
@@ -738,29 +952,7 @@ void menuAdmin() {
             kelolaSuperhero();
         }
         else if (pilihan == 2) {
-            cout << emas << titleD << cyan << endl;
-            cout << "Fitur masih dalam pengembangan...\n";
-            /*
-            TUGAS FITRI
-
-            Buat fungsi pengelolan Dispatcher, Dari Tambah, Update, dan Delete
-            Kurang Lebih kaya pengelolaan Superhero di pilhan satu di Line 738
-            tapi bedanya:
-
-            - Di Create: Kamu bukan sekedar menambahkan tapi membuatkan akun untuk dispatcher
-                        yang harus ditambahkan adalah:
-                        - Username
-                        - Password 
-                        - ID Dispatcher
-                        - Status Karyawan
-
-                        contoh gambar nya yang ku kirim di wa
-
-                        Setelah buat akun nya, datanya dimasukkan ke Database, yang mana kamu harus buat file json lagi
-                        kaya "superhero.json"
-            
-            */
-            pause();
+            kelolaDispatcher(); // Memanggil fungsi CRUD Dispatcher
         }
         else if (pilihan == 0) {
             cout << "Anda akan keluar dari menu ini...\n";
@@ -772,7 +964,6 @@ void menuAdmin() {
         }
 
     } while (pilihan != 0);
-
 }
 
 // ADMIN

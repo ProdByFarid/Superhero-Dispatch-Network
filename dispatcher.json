@@ -1,0 +1,10 @@
+{
+    "dispatchers": [
+        {
+            "id": "001",
+            "password": "000",
+            "status": "Aktif",
+            "username": "ketua_disp"
+        }
+    ]
+}
