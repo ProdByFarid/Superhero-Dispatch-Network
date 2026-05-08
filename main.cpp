@@ -99,7 +99,7 @@ string titleC = R"(
 string titleD = R"(
 =============================================
 |                                           |
-|                DISPATCHER                 |
+|              HEY DISPATCHER!              |
 |        Mau Memulai Shift Hari Ini?        |
 |                                           |
 =============================================
@@ -740,6 +740,26 @@ void menuAdmin() {
         else if (pilihan == 2) {
             cout << emas << titleD << cyan << endl;
             cout << "Fitur masih dalam pengembangan...\n";
+            /*
+            TUGAS FITRI
+
+            Buat fungsi pengelolan Dispatcher, Dari Tambah, Update, dan Delete
+            Kurang Lebih kaya pengelolaan Superhero di pilhan satu di Line 738
+            tapi bedanya:
+
+            - Di Create: Kamu bukan sekedar menambahkan tapi membuatkan akun untuk dispatcher
+                        yang harus ditambahkan adalah:
+                        - Username
+                        - Password 
+                        - ID Dispatcher
+                        - Status Karyawan
+
+                        contoh gambar nya yang ku kirim di wa
+
+                        Setelah buat akun nya, datanya dimasukkan ke Database, yang mana kamu harus buat file json lagi
+                        kaya "superhero.json"
+            
+            */
             pause();
         }
         else if (pilihan == 0) {
@@ -785,6 +805,47 @@ void menuUtama() {
             }
             else if (role == "dispatcher") {
                 cout << "Selamat Datang, Dispatcher!" << endl;
+
+                /*
+                
+                TUGAS ADIT 
+
+                Buat Menu Dispatcher dan misi-misi pake Struct
+
+                di menu dispatcher (Setelah Login), akan ada pertanyaan dulu 
+                pertanyaan nya ada di titleD, lalu ada dua pilihan:
+
+                - Pilihan Satu: Hell Yeah (Ya)
+                - Pilihan Kedua: Nah, Im good
+
+                selain itu, akan muncul output [!] Error: Pilihan Tidak Valid
+
+                kalau dispathcer memilih pilihan pertama, maka dia akan ke menu shift
+                shift nya ini ada 4 atau lebih nanti btw :)
+
+                Di menu shift:
+
+                - Daftar hero sudah ditampilkan dari nama, stats dan output misinya
+                - Pilihan 1, tambah hero
+                - Pilihan 2, update stats
+                _ Pilihan 3, kirim hero
+                - Pilihan 4 hapus hero dari list
+                - gada pilihan keluar, masa kerja mau keluar njir
+
+                Misinya ada 8 biji, dan selesai 
+
+                di pilihan 1, Dispatcher bisa tambah superhero kalau superhero bukan dari program phoenix
+                di pilihan 2, Dispatcher bisa upgrade stats apabila superhero mencapai level up
+                di pilihan 3, Dispatcher bisa mengirim 1 atau 2 hero untuk menyelesaikan misi
+                                di misi nya ini ada judul misi, nama pemanggil, lokasi, persyaratan
+                                didalam struct cuma ada judul misi, nama pemanggil, lokasi
+                                persyaratan itu dipisah agar bisa highlight kebutuhan statsnya
+                - Pilihan 4 hapus hero dari list, bukan berarti hapus hero dari database tapi menghapus hero yang sudah ada di dalam list
+                
+                setelah selesai shift pertama, dispatcher akan diarahkan ke menu istirahat, akan ada timer yang hitung mundur 15 detik
+                habis 15 detik, dispatcher akan kembali ke menu utama. kalau dia login lagi, maka dia lanjut ke shift kedua
+                */
+
                 pause();
             }
             else {
