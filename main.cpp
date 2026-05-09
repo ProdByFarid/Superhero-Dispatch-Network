@@ -28,6 +28,197 @@ using json = nlohmann::json;
 #define emas    "\033[38;5;220m"
 #define kuning  "\033[33m" 
 
+string toLowerManual(string s) {
+    string result = s;
+    for (int i = 0; i < result.length(); i++) {
+        result[i] = tolower(result[i]);
+    }
+    return result;
+}
+
+void pause() {
+    cout << putih << "\n[Tekan enter untuk melanjutkan...]" << endl;
+    getch();
+}
+
+bool isEmptyInput(const string& input) {
+    return input.empty() || input.find_first_not_of(' ') == string::npos;
+}
+
+bool hasSpecialChars(const string& input) {
+    for (char c : input) {
+        if (!isalnum(c) && c != ' ' && c != '_' && c != '-' && c != '.' && c != ',') 
+            return true;
+    }
+    return false;
+}
+
+bool validateNumberRange(int value, int minVal, int maxVal) {
+    return value >= minVal && value <= maxVal;
+}
+
+bool validateNotNegative(int value) {
+    return value >= 0;
+}
+
+bool isHeroNameExists(const json& data, const string& name) {
+    for (const auto& hero : data["heroes"]) {
+        if (toLowerManual(hero["name"].get<string>()) == toLowerManual(name)) 
+            return true;
+    }
+    return false;
+}
+
+bool isDispatcherExists(const json& data, const string& username) {
+    for (const auto& disp : data["dispatchers"]) {
+        if (toLowerManual(disp["username"].get<string>()) == toLowerManual(username)) 
+            return true;
+    }
+    return false;
+}
+
+void showError(const string& message) {
+    cout << merah << "\n❌ ERROR: " << message << putih << endl;
+}
+
+void validateStringNotEmpty(const string& input, const string& fieldName) {
+    if (isEmptyInput(input)) {
+        throw invalid_argument(fieldName + " tidak boleh kosong!");
+    }
+}
+
+void validateStatInput(int value, const string& statName) {
+    if (!validateNotNegative(value)) {
+        throw invalid_argument(statName + " tidak boleh negatif!");
+    }
+    if (value > 30) {
+        throw invalid_argument(statName + " tidak boleh lebih dari 30!");
+    }
+}
+
+void validatePointsInput(int value) {
+    if (!validateNotNegative(value)) {
+        throw invalid_argument("Points tidak boleh negatif!");
+    }
+}
+
+// ✅ MODIFIKASI: Tambahan validasi spasi
+void validateMenuChoice(const string& input) {
+    if (isEmptyInput(input)) {
+        throw invalid_argument("Input tidak boleh kosong!");
+    }
+    
+    // ✅ Cek apakah ada spasi di input
+    for (char c : input) {
+        if (isspace(c)) {
+            throw invalid_argument("Input tidak boleh mengandung spasi!");
+        }
+    }
+    
+    // Cek apakah semua karakter adalah angka
+    for (char c : input) {
+        if (!isdigit(c)) {
+            throw invalid_argument("Input hanya boleh angka!");
+        }
+    }
+}
+
+void validateHeroNameUnique(const json& data, const string& name) {
+    if (isHeroNameExists(data, name)) {
+        throw invalid_argument("Superhero dengan nama '" + name + "' sudah ada!");
+    }
+}
+
+void validateDispatcherUnique(const json& data, const string& username) {
+    if (isDispatcherExists(data, username)) {
+        throw invalid_argument("Dispatcher dengan username '" + username + "' sudah ada!");
+    }
+}
+
+void validateGenericInput(const string& input, const string& fieldName, bool allowSpecialChars = false) {
+    validateStringNotEmpty(input, fieldName);
+    if (!allowSpecialChars && hasSpecialChars(input)) {
+        throw invalid_argument(fieldName + " tidak boleh mengandung karakter spesial!");
+    }
+}
+
+string getValidatedLine(const string& prompt, const string& fieldName, bool allowEmpty = false, bool allowSpecial = false) {
+    string input;
+    while (true) {
+        cout << prompt;
+        getline(cin, input);
+        
+        if (allowEmpty && isEmptyInput(input)) {
+            return "";
+        }
+        
+        try {
+            validateGenericInput(input, fieldName, allowSpecial);
+            return input;
+        } catch (const exception& e) {
+            showError(e.what());
+            pause();
+            cout << kuning << "Silakan coba lagi..." << putih << endl;
+        }
+    }
+}
+
+int getValidatedInt(const string& prompt, int minVal, int maxVal, const string& fieldName) {
+    string input;
+    while (true) {
+        cout << prompt;
+        if (!(cin >> input)) {
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            showError("Input harus berupa angka!");
+            pause();
+            cout << kuning << "Silakan coba lagi..." << putih << endl;
+            continue;
+        }
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        
+        try {
+            int value = stoi(input);
+            if (!validateNumberRange(value, minVal, maxVal)) {
+                throw invalid_argument(fieldName + " harus antara " + to_string(minVal) + " - " + to_string(maxVal) + "!");
+            }
+            return value;
+        } catch (const exception& e) {
+            showError(e.what());
+            pause();
+            cout << kuning << "Silakan coba lagi..." << putih << endl;
+        }
+    }
+}
+
+int getValidatedIntNoLimit(const string& prompt, const string& fieldName, bool allowNegative = false) {
+    string input;
+    while (true) {
+        cout << prompt;
+        if (!(cin >> input)) {
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            showError("Input harus berupa angka!");
+            pause();
+            cout << kuning << "Silakan coba lagi..." << putih << endl;
+            continue;
+        }
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        
+        try {
+            int value = stoi(input);
+            if (!allowNegative && !validateNotNegative(value)) {
+                throw invalid_argument(fieldName + " tidak boleh negatif!");
+            }
+            return value;
+        } catch (const exception& e) {
+            showError(e.what());
+            pause();
+            cout << kuning << "Silakan coba lagi..." << putih << endl;
+        }
+    }
+}
+
 struct Akun {
     int id;
     string username;
@@ -94,14 +285,13 @@ string title = R"(
 string titleA = R"(
 ==============================================
                                                 
-             🏢 WELCOME TO SDN 🏢               
-        Silahkan Pilih Role Untuk Login       
+            🏢 WELCOME TO SDN 🏢               
+        Silahkan Pilih 1 Untuk Login       
                                                 
 ==============================================
                                             
-   [1]. 👑 Head Of SDN               
-   [2]. 📞 Dispatcher             
-   [0]. 🔙 Keluar                              
+   [1]. 🔒 Login                          
+   [0]. 🔙 Logout                              
                                             
 ==============================================
 )";
@@ -187,7 +377,7 @@ string titleG = R"(
 string titleH = R"(
 ===========================================
                                           
-      🧑‍ PENGELOLAAN DISPATCHER 🧑‍💻       
+      🧑‍ PENGELOLAAN DISPATCHER 🧑       
                                           
 ===========================================
                                          
@@ -229,10 +419,21 @@ string titleJ = R"(
 ===========================================
 )";
 
-void pause() {
-    cout << putih << "\n[Tekan enter untuk melanjutkan...]" << endl;
-    getch();
-}
+string titleK = R"(
+===========================================
+                                          
+         ⚙️  UPDATE DATA AKUN ⚙️         
+                                          
+===========================================
+                                          
+   [1]. 📝 Ubah Username              
+   [2]. 🔒 Ubah Password      
+   [3]. 🟢 Ubah Status      
+   [4]. 🧑 Ubah Jabatan        
+   [0]. 🔙 Kembali                        
+                                          
+===========================================
+)";
 
 void clearScreen() {
     #ifdef _WIN32
@@ -240,22 +441,6 @@ void clearScreen() {
     #else
         system("clear");
     #endif
-}
-
-template<typename T>
-T getInputSafe(const string& prompt) {
-    T value;
-    while (true) {
-        cout << prompt;
-        if (cin >> value) {
-            cin.ignore(numeric_limits<streamsize>::max(), '\n');
-            return value;
-        } else {
-            cin.clear();
-            cin.ignore(numeric_limits<streamsize>::max(), '\n');
-            throw invalid_argument("⚠️  Error: Input harus berupa angka!");
-        }
-    }
 }
 
 void loadingScreen() {
@@ -272,11 +457,14 @@ void loadingScreen() {
 void loadingBar() {
     int bar = 15;
     cout << "\n⌛ Hero Mobilisasi..." << endl;
+
+    system("chcp 65001 > nul");
+    setlocale(LC_ALL, "en_US.UTF-8");
     for (int i = 0; i <= bar; i++) {
         cout << "\r[";
         for (int j = 0; j < bar; ++j) {
-            if (j < i) cout << (char)219; 
-            else cout << (char)176; 
+            if (j < i) cout << "█"; 
+            else cout << "░";
         }
         cout << "] " << (i * 100 / bar) << "%";
         cout.flush();
@@ -309,12 +497,12 @@ void menuIstirahat() {
     cout << hijau << "\n\nIstirahat selesai!\n";
     pause();
 }
+
 vector<ShiftHero> heroShift;
 vector<ActiveMission> daftarMisi;
 
 int currentShift = 1;
 bool shiftSelesai = false;
-
 
 json bacaDatabaseDispatcher();
 
@@ -326,11 +514,11 @@ string prosesLogin() {
     while (percobaan < 3) {
         clearScreen();
         cout << emas << titleB << putih << endl;
-        cout << "Username: "; cin >> inputUser;
-        cout << "Password: "; cin >> inputPass;
+        inputUser = getValidatedLine("Username: ", "Username", false, false);
+        inputPass = getValidatedLine("Password: ", "Password", false, true);
 
         if (inputUser == akunManager.username && inputPass == akunManager.password) {
-            cout << hijau << "\n✅ Login Berhasil. ";
+            cout << hijau << "\n✅ Login Berhasil. Selamat Datang, Head Of SDN!";
             return akunManager.role;
         } 
 
@@ -339,7 +527,7 @@ string prosesLogin() {
             if (!dataDisp["dispatchers"].empty()) {
                 for (const auto& disp : dataDisp["dispatchers"]) {
                     if (disp["username"] == inputUser && disp["password"] == inputPass) {
-                        cout << hijau << "\n✅ Login Berhasil. ";
+                        cout << hijau << "\n✅ Login Berhasil. Selamat Datang, Dispatcher!";
                         return "dispatcher"; 
                     }
                 }
@@ -439,14 +627,6 @@ void daftarDispatcher() {
     }
 }
 
-string toLowerManual(string s) {
-    string result = s;
-    for (int i = 0; i < result.length(); i++) {
-        result[i] = tolower(result[i]);
-    }
-    return result;
-}
-
 void daftarSuperhero() {
     string header(68, '=');
     json data = bacaDatabase();
@@ -476,18 +656,23 @@ void daftarSuperhero() {
 }
 
 void sortingHeroes() {
+    string pilihanStr;
     int pilihanSort;
+    
     do {
         clearScreen();
         cout << cyan << titleG << putih << endl;
         cout << "\nMasukkan Pilihan: ";
+        getline(cin, pilihanStr);
         
-        if (!(cin >> pilihanSort)) {
-            cin.clear();
-            cin.ignore(numeric_limits<streamsize>::max(), '\n');
-            cout << kuning << "\n⚠️ Error: Masukkan angka!" << putih << endl;
+        try {
+            validateMenuChoice(pilihanStr);
+            pilihanSort = stoi(pilihanStr);
+        } catch (const exception& e) {
+            showError(e.what());
             pilihanSort = -1;
             pause();
+            continue;
         }
 
         if (pilihanSort >= 0) {
@@ -557,7 +742,7 @@ void sortingHeroes() {
                     break;
                 } 
                 else {
-                    cout << kuning << "\n⚠️  Error: Pilihan Tidak Valid!" << putih << endl;
+                    showError("Pilihan Tidak Valid!");
                     pause();
                 }
             } catch (const exception& e) {
@@ -575,8 +760,14 @@ void searchingHeroes() {
         string cari;
         cout << emas << "\n<|     CARI DATA SUPERHERO     |>" << putih << endl;
         cout << "\nMasukkan Nama Superhero: ";
-        cin.ignore(); 
         getline(cin, cari);
+        
+        if (isEmptyInput(cari)) {
+            showError("Pencarian tidak boleh kosong!");
+            pause();
+            return;
+        }
+        
         bool ditemukan = false;
         string cariLower = toLowerManual(cari); 
         
@@ -627,18 +818,23 @@ void searchingHeroes() {
 }
 
 void menuLihatDatabase() {
+    string pilihanStr;
     int pilihan;
+    
     do {
         clearScreen();
         cout << emas << titleF << putih << endl;
         cout << "\nMasukkan Pilihan: ";
+        getline(cin, pilihanStr);
         
-        if (!(cin >> pilihan)) {
-            cin.clear();
-            cin.ignore(numeric_limits<streamsize>::max(), '\n');
-            cout << kuning << "\n⚠️ Error: Masukkan angka!" << putih << endl;
+        try {
+            validateMenuChoice(pilihanStr);
+            pilihan = stoi(pilihanStr);
+        } catch (const exception& e) {
+            showError(e.what());
             pilihan = -1;
             pause();
+            continue;
         }
 
         if (pilihan >= 0) {
@@ -656,7 +852,7 @@ void menuLihatDatabase() {
                     pause();
                     break;
                 } else {
-                    cout << kuning << "\n⚠️ Error: Pilihan Tidak Valid!" << endl;
+                    showError("Pilihan Tidak Valid!");
                     pause();
                 }
             } catch (const exception& e) {
@@ -719,20 +915,24 @@ void initMission() {
     });
 }
 
-
 void kelolaSuperhero() {
+    string pilihanStr;
     int pilihan;
+    
     do {
         clearScreen();
         cout << cyan << titleE << putih << endl;
         cout << "Masukkan Pilihan: ";
+        getline(cin, pilihanStr);
         
-        if (!(cin >> pilihan)) {
-            cin.clear();
-            cin.ignore(numeric_limits<streamsize>::max(), '\n');
-            cout << kuning << "\n⚠️ Error: Masukkan angka!" << endl;
+        try {
+            validateMenuChoice(pilihanStr);
+            pilihan = stoi(pilihanStr);
+        } catch (const exception& e) {
+            showError(e.what());
             pilihan = -1;
             pause();
+            continue;
         }
 
         if (pilihan >= 0) {
@@ -742,34 +942,31 @@ void kelolaSuperhero() {
                 if (pilihan == 1) {
                     cout << emas << "\n<|  TAMBAH SUPERHERO BARU  |>" << putih << endl;
                     json newHero;
-                    string inputString;
-                    float inputNum;
 
-                    cout << "\nNama: "; 
-                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
-                    getline(cin, inputString);
-                    newHero["name"] = inputString;
+                    string nama = getValidatedLine("\nNama: ", "Nama Superhero", false, false);
+                    data = bacaDatabase();
+                    validateHeroNameUnique(data, nama);
+                    newHero["name"] = nama;
                     
-                    cout << "Alias: "; getline(cin, inputString); newHero["aliases"] = inputString;
-                    cout << "Tipe Profile: "; getline(cin, inputString); newHero["profileType"] = inputString;
-                    cout << "Umur: "; getline(cin, inputString); newHero["age"] = inputString;
-                    cout << "Tinggi (cm): "; getline(cin, inputString); newHero["height"] = inputString;
+                    newHero["aliases"] = getValidatedLine("Alias: ", "Alias", true, true);
+                    newHero["profileType"] = getValidatedLine("Tipe Profile: ", "Tipe Profile", true, true);
+                    newHero["age"] = getValidatedLine("Umur: ", "Umur", true, true);
+                    newHero["height"] = getValidatedLine("Tinggi (cm): ", "Tinggi", true, true);
+                    newHero["abilities"] = getValidatedLine("Kemampuan: ", "Kemampuan", true, true);
+                    newHero["birthplace"] = getValidatedLine("Tempat Lahir: ", "Tempat Lahir", true, true);
+                    newHero["description"] = getValidatedLine("Deskripsi: ", "Deskripsi", true, true);
 
-                    cout << "Kemampuan: "; getline(cin, inputString); newHero["abilities"] = inputString;
-                    cout << "Tempat Lahir: "; getline(cin, inputString); newHero["birthplace"] = inputString;
-                    cout << "Deskripsi: "; getline(cin, inputString); newHero["description"] = inputString;
-
-                    cout << "Points: "; 
-                    if (!(cin >> inputNum)) throw invalid_argument("Input poin harus angka!");
-                    newHero["points"] = inputNum;
+                    int points = getValidatedIntNoLimit("Points: ", "Points", false);
+                    validatePointsInput(points);
+                    newHero["points"] = points;
 
                     cout << emas << "\n<|  TAMBAHKAN STATISTIK  |>" << putih << endl;
                     json stats;
-                    cout << "\nCombat: "; if (!(cin >> inputNum)) throw invalid_argument("Input statistik harus angka!"); stats["combat"] = inputNum;
-                    cout << "Vigor: "; if (!(cin >> inputNum)) throw invalid_argument("Input statistik harus angka!"); stats["vigor"] = inputNum;
-                    cout << "Mobility: "; if (!(cin >> inputNum)) throw invalid_argument("Input statistik harus angka!"); stats["mobility"] = inputNum;
-                    cout << "Charisma: "; if (!(cin >> inputNum)) throw invalid_argument("Input statistik harus angka!"); stats["charisma"] = inputNum;
-                    cout << "Intellect: "; if (!(cin >> inputNum)) throw invalid_argument("Input statistik harus angka!"); stats["intellect"] = inputNum;
+                    stats["combat"]   = getValidatedInt("\nCombat: ", 0, 30, "Combat");
+                    stats["vigor"]    = getValidatedInt("Vigor: ", 0, 30, "Vigor");
+                    stats["mobility"] = getValidatedInt("Mobility: ", 0, 30, "Mobility");
+                    stats["charisma"] = getValidatedInt("Charisma: ", 0, 30, "Charisma");
+                    stats["intellect"]= getValidatedInt("Intellect: ", 0, 30, "Intellect");
 
                     newHero["stats"] = stats;
                     
@@ -777,7 +974,7 @@ void kelolaSuperhero() {
                     data["heroes"].push_back(newHero);
                     simpanDatabase(data);
                     
-                    cout << hijau << "\nSuperhero berhasil ditambahkan!" << putih << endl;
+                    cout << hijau << "\n✅ Superhero berhasil ditambahkan!" << putih << endl;
                     pause();
                 } 
                 else if (pilihan == 2) {
@@ -788,9 +985,14 @@ void kelolaSuperhero() {
                     daftarSuperhero();
                     cout << emas << "\n<|  UPDATE DATA SUPERHERO  |>" << putih << endl;
                     cout << "\nMasukkan Nama Superhero yang ingin diupdate: ";
-                    cin.ignore(); 
                     string namaCari;
                     getline(cin, namaCari);
+
+                    if (isEmptyInput(namaCari)) {
+                        showError("Pencarian tidak boleh kosong!");
+                        pause();
+                        continue;
+                    }
 
                     data = bacaDatabase();
                     bool found = false;
@@ -802,48 +1004,86 @@ void kelolaSuperhero() {
                             cout << "Apa yang ingin diupdate?" << endl;
                             cout << "\n[1]. Biografi" << endl;
                             cout << "[2]. Statistik" << endl;
+                            
+                            string updateStr;
                             cout << "\nMasukkan Pilihan: ";
+                            getline(cin, updateStr);
+                            
                             int updatePilih;
-                            if (!(cin >> updatePilih)) throw invalid_argument("Input harus angka!");
+                            try {
+                                validateMenuChoice(updateStr);
+                                updatePilih = stoi(updateStr);
+                            } catch (const exception& e) {
+                                showError(e.what());
+                                pause();
+                                break;
+                            }
 
                             if (updatePilih == 1) {
                                 cout << "Edit Nama (Enter untuk skip): "; 
-                                cin.ignore(); string temp; getline(cin, temp); 
-                                if(!temp.empty()) hero["name"] = temp;
+                                string temp; 
+                                getline(cin, temp); 
+                                if(!temp.empty()) {
+                                    try {
+                                        validateGenericInput(temp, "Nama", false);
+                                        if (temp != hero["name"]) {
+                                            validateHeroNameUnique(data, temp);
+                                        }
+                                        hero["name"] = temp;
+                                    } catch (const exception& e) {
+                                        showError(e.what());
+                                        pause();
+                                        break;
+                                    }
+                                }
 
-                                cout << "Edit Tagline: "; getline(cin, temp); 
+                                cout << "Edit Tagline (Enter untuk skip): "; 
+                                getline(cin, temp); 
                                 if(!temp.empty()) hero["tagline"] = temp;
                                 
-                                cout << "Edit Deskripsi: "; getline(cin, temp); 
+                                cout << "Edit Deskripsi (Enter untuk skip): "; 
+                                getline(cin, temp); 
                                 if(!temp.empty()) hero["description"] = temp;
                                 
-                                cout << "Biografi diperbarui." << endl;
+                                cout << hijau << "\n✅ Biografi diperbarui." << putih << endl;
                             } 
                             else if (updatePilih == 2) {
-                                cout << "Edit Combat: "; if (!(cin >> hero["stats"]["combat"])) throw invalid_argument("Input harus angka!");
-                                cout << "Edit Vigor: "; if (!(cin >> hero["stats"]["vigor"])) throw invalid_argument("Input harus angka!");
-                                cout << "Edit Mobility: "; if (!(cin >> hero["stats"]["mobility"])) throw invalid_argument("Input harus angka!");
-                                cout << "Edit Charisma: "; if (!(cin >> hero["stats"]["charisma"])) throw invalid_argument("Input harus angka!");
-                                cout << "Edit Intellect: "; if (!(cin >> hero["stats"]["intellect"])) throw invalid_argument("Input harus angka!");
+                                hero["stats"]["combat"] = getValidatedInt("Edit Combat: ", 0, 30, "Combat");
+                                hero["stats"]["vigor"] = getValidatedInt("Edit Vigor: ", 0, 30, "Vigor");
+                                hero["stats"]["mobility"] = getValidatedInt("Edit Mobility: ", 0, 30, "Mobility");
+                                hero["stats"]["charisma"] = getValidatedInt("Edit Charisma: ", 0, 30, "Charisma");
+                                hero["stats"]["intellect"] = getValidatedInt("Edit Intellect: ", 0, 30, "Intellect");
                                 
-                                int total = hero["stats"]["combat"].get<int>() + hero["stats"]["vigor"].get<int>() + hero["stats"]["mobility"].get<int>() + hero["stats"]["charisma"].get<int>() + hero["stats"]["intellect"].get<int>();
+                                int total = hero["stats"]["combat"].get<int>() + 
+                                           hero["stats"]["vigor"].get<int>() + 
+                                           hero["stats"]["mobility"].get<int>() + 
+                                           hero["stats"]["charisma"].get<int>() + 
+                                           hero["stats"]["intellect"].get<int>();
                                 hero["points"] = total;
-                                cout << "Statistik diperbarui." << endl;
+                                cout << hijau << "\n✅ Statistik diperbarui." << putih << endl;
                             }
                             simpanDatabase(data);
                             break;
                         }
                     }
-                    if (!found) throw out_of_range("\n❌ Nama tidak ditemukan!");
+                    if (!found) {
+                        showError("Nama tidak ditemukan!");
+                        pause();
+                    }
                     pause();
                 } else if (pilihan == 4) {
                     clearScreen();
                     daftarSuperhero();
                     cout << emas << "\n<|  PECAT SUPERHERO  |>" << putih << endl;
                     cout << "\nMasukkan Nama Superhero: ";
-                    cin.ignore(numeric_limits<streamsize>::max(), '\n'); 
                     string namaHapus;
                     getline(cin, namaHapus);
+
+                    if (isEmptyInput(namaHapus)) {
+                        showError("Nama tidak boleh kosong!");
+                        pause();
+                        continue;
+                    }
 
                     data = bacaDatabase();
                     auto it = data["heroes"].begin();
@@ -884,7 +1124,10 @@ void kelolaSuperhero() {
                             ++it;
                         }
                     }
-                    if (!found) throw out_of_range("\n❌ Nama tidak ditemukan!");
+                    if (!found) {
+                        showError("Nama tidak ditemukan!");
+                        pause();
+                    }
                     pause();
                 }
             } catch (const exception& e) {
@@ -906,16 +1149,20 @@ string tentukanJabatan(int level) {
 void sortingDispatcher() {
     clearScreen();
     json data = bacaDatabaseDispatcher();
+    string pilihanStr;
     int pilihan;
 
     do {
         cout << cyan << titleJ << putih << endl;
         cout << "\nMasukkan Pilihan: ";
+        getline(cin, pilihanStr);
         
-        if (!(cin >> pilihan)) {
-            cin.clear();
-            cin.ignore(numeric_limits<streamsize>::max(), '\n');
-            cout << kuning << "\n⚠️ Error: Masukkan angka!" << putih << endl;
+        try {
+            validateMenuChoice(pilihanStr);
+            pilihan = stoi(pilihanStr);
+        } catch (const exception& e) {
+            showError(e.what());
+            pause();
             pilihan = -1;
             pause();
             continue;
@@ -956,24 +1203,31 @@ void sortingDispatcher() {
             pause(); 
             break; 
         } else {
-            cout << kuning << "\n⚠️ Error: Pilihan Tidak Valid!" << putih << endl;
+            showError("Pilihan Tidak Valid!");
             pause();
         }
     } while (pilihan != 0);
 }
 
 void kelolaDispatcher() {
+    string pilihanStr;
     int pilihan;
+    
     do {
         clearScreen();
         cout << emas << titleH << putih << endl;
         cout << "Masukkan Pilihan: ";
+        getline(cin, pilihanStr);
         
-        if (!(cin >> pilihan)) {
-            cin.clear(); cin.ignore(numeric_limits<streamsize>::max(), '\n');
-            cout << kuning << "\n⚠️ Error: Masukkan angka!" << endl; 
+        try {
+            validateMenuChoice(pilihanStr);
+            pilihan = stoi(pilihanStr);
+        } catch (const exception& e) {
+            showError(e.what());
+            pause();
             pilihan = -1;
             pause();
+            continue;
         }
 
         if (pilihan >= 0) {
@@ -982,40 +1236,74 @@ void kelolaDispatcher() {
                 if (pilihan == 1) { 
                     cout << emas << "\n<|  BUAT AKUN DISPATCHER BARU  |>" << putih << endl;
                     json newDisp;
-                    string inputString;
-                    cout << "\nID Dispatcher: "; cin >> inputString; newDisp["id"] = inputString;
-                    cout << "Username: "; cin.ignore(); getline(cin, inputString); newDisp["username"] = inputString;
-                    cout << "Password: "; getline(cin, inputString); newDisp["password"] = inputString;
-                    cout << "Status (Aktif/Training): "; getline(cin, inputString); newDisp["status"] = inputString;
-                    newDisp["level"] = 0; newDisp["exp"] = 0; newDisp["jabatan"] = tentukanJabatan(0);
+                    
+                    string id = getValidatedLine("\nID Dispatcher: ", "ID", false, true);
+                    newDisp["id"] = id;
+                    
+                    string username = getValidatedLine("Username: ", "Username", false, false);
+                    validateDispatcherUnique(data, username);
+                    newDisp["username"] = username;
+                    
+                    string password = getValidatedLine("Password: ", "Password", false, true);
+                    newDisp["password"] = password;
+                    
+                    string status = getValidatedLine("Status (Aktif/Training): ", "Status", false, true);
+                    newDisp["status"] = status;
+                    
+                    newDisp["level"] = 0; 
+                    newDisp["exp"] = 0; 
+                    newDisp["jabatan"] = tentukanJabatan(0);
+                    
                     data["dispatchers"].push_back(newDisp);
                     simpanDatabaseDispatcher(data);
                     cout << hijau << "\n✅ Akun Dispatcher Berhasil Ditambahkan!" << putih << endl;
                     pause();
                 }
                 else if (pilihan == 2) { 
+                    string subPilihanStr;
                     int subPilihan;
                     bool backToMenu = false;
+                    
                     do {
                         clearScreen();
                         cout << cyan << titleI << putih << endl;
                         cout << "Masukkan Pilihan: ";
-                        if (!(cin >> subPilihan)) { 
-                            cin.clear(); cin.ignore(numeric_limits<streamsize>::max(), '\n'); 
-                            cout << kuning << "⚠️ Error: Masukkan angka!"; 
+                        getline(cin, subPilihanStr);
+                        
+                        try {
+                            validateMenuChoice(subPilihanStr);
+                            subPilihan = stoi(subPilihanStr);
+                        } catch (const exception& e) {
+                            showError(e.what());
+                            pause();
                             subPilihan = -1;
                             pause(); 
                             continue; 
                         }
 
                         data = bacaDatabaseDispatcher(); 
-                        if (subPilihan == 1) { clearScreen(); daftarDispatcher(); pause(); backToMenu = true; }
+                        if (subPilihan == 1) { 
+                            clearScreen(); 
+                            daftarDispatcher(); 
+                            pause(); 
+                            backToMenu = true; 
+                        }
                         else if (subPilihan == 2) { 
                             sortingDispatcher();
                         }
                         else if (subPilihan == 3) { 
-                            clearScreen(); daftarDispatcher();
-                            string cari; cout << "\nMasukkan Nama Dispatcher: "; cin.ignore(); getline(cin, cari);
+                            clearScreen(); 
+                            daftarDispatcher();
+                            string cari; 
+                            cout << "\nMasukkan Nama Dispatcher: "; 
+                            getline(cin, cari);
+                            
+                            if (isEmptyInput(cari)) {
+                                showError("Pencarian tidak boleh kosong!");
+                                pause();
+                                continue;
+                            }
+                            
                             bool ketemu = false;
                             for (const auto& disp : data["dispatchers"]) {
                                 if (toLowerManual(disp["username"]).find(toLowerManual(cari)) != string::npos) {
@@ -1025,51 +1313,121 @@ void kelolaDispatcher() {
                                     ketemu = true;
                                 }
                             }
-                            if (!ketemu) cout << kuning << "\n⚠️ Error: Dispatcher tidak ditemukan!" << putih << endl;
+                            if (!ketemu) {
+                                showError("Dispatcher tidak ditemukan!");
+                                pause();
+                            }
                             pause(); 
                             backToMenu = true;
                         } 
                         else if (subPilihan == 0) {
                             backToMenu = true;
-                            cout << putih << "🔙 Anda akan keluar dari menu ini" << endl;
+                            cout << putih << "\n🔙 Anda akan keluar dari menu ini" << endl;
                             pause();
                         } else { 
-                            cout << kuning << "\n⚠️ Error: Pilihan tidak valid!" << putih << endl; 
-                            pause(); 
+                            showError("Pilihan tidak valid!"); 
+                            pause();
                         }
                     } while (!backToMenu);
                 }
                 else if (pilihan == 3) { 
-                    clearScreen(); daftarDispatcher();
+                    clearScreen(); 
+                    daftarDispatcher();
                     cout << emas << "\n<|  UPDATE DATA DISPATCHER  |>" << putih << endl;
                     cout << "\nMasukkan Username Dispatcher yang ingin diubah: ";
-                    string userCari; cin.ignore(); getline(cin, userCari);
+                    string userCari; 
+                    getline(cin, userCari);
+                    
+                    if (isEmptyInput(userCari)) {
+                        showError("Username tidak boleh kosong!");
+                        pause();
+                        continue;
+                    }
+                    
                     bool found = false;
                     for (auto &disp : data["dispatchers"]) {
                         if (disp["username"] == userCari) {
                             found = true;
-                            cout << hijau << "\n[+] Akun Ditemukan: " << disp["username"] << putih << endl;
-                            cout << "1. Ubah Username\n2. Ubah Password\n3. Ubah Status\n4. Ubah Jabatan Manual\n0. Batal\nPilihan: ";
-                            int up; cin >> up; cin.ignore();
-                            string temp;
-                            switch(up) {
-                                case 1: cout << "Username Baru: "; getline(cin, temp); if(!temp.empty()) disp["username"] = temp; break;
-                                case 2: cout << "Password Baru: "; getline(cin, temp); if(!temp.empty()) disp["password"] = temp; break;
-                                case 3: cout << "Status Baru: "; getline(cin, temp); if(!temp.empty()) disp["status"] = temp; break;
-                                case 4: cout << "Jabatan Baru: "; getline(cin, temp); if(!temp.empty()) disp["jabatan"] = temp; break;
-                            }
-                            if (up != 0) { simpanDatabaseDispatcher(data); cout << hijau << "\n✅ Perubahan berhasil disimpan!" << putih << endl; }
-                            break;
+                            cout << hijau << "\n✅ Akun Ditemukan: " << disp["username"] << putih << endl;
+                            pause();
+                            
+                            string upStr;
+                            int up; 
+                            do {
+                                clearScreen();
+                                cout << titleK << putih << endl;
+                                cout << "\nMasukkan Pilihan: ";
+                                getline(cin, upStr);
+                                
+                                try {
+                                    validateMenuChoice(upStr);
+                                    up = stoi(upStr);
+                                } catch (const exception& e) {
+                                    showError(e.what());
+                                    pause();
+                                    up = -1;
+                                    pause();
+                                    continue;
+                                }
+                                
+                                cin.ignore();
+                                string temp;
+                                switch(up) {
+                                    case 1: 
+                                        temp = getValidatedLine("Username Baru: ", "Username", true, false);
+                                        if(!temp.empty()) {
+                                            validateDispatcherUnique(data, temp);
+                                            disp["username"] = temp;
+                                        }
+                                        break; 
+                                    case 2: 
+                                        temp = getValidatedLine("Password Baru: ", "Password", true, true);
+                                        if(!temp.empty()) disp["password"] = temp; 
+                                        break; 
+                                    case 3: 
+                                        temp = getValidatedLine("Status Baru: ", "Status", true, true);
+                                        if(!temp.empty()) disp["status"] = temp; 
+                                        break;
+                                    case 4: 
+                                        temp = getValidatedLine("Jabatan Baru: ", "Jabatan", true, true);
+                                        if(!temp.empty()) disp["jabatan"] = temp; 
+                                        break;
+                                    case 0:
+                                        break;
+                                    default:
+                                        showError("Pilihan tidak valid!");
+                                        pause();
+                                        continue;
+                                }
+                                if (up != 0) { 
+                                    simpanDatabaseDispatcher(data); 
+                                    cout << hijau << "\n✅ Perubahan berhasil disimpan!" << putih << endl;
+                                    pause();
+                                }
+                                break;
+                            } while (up != 0);
                         }
                     }
-                    if(!found) throw out_of_range("❌ Akun dengan username tersebut tidak ditemukan!");
+                    if(!found) {
+                        showError("Akun dengan username tersebut tidak ditemukan!");
+                        pause();
+                    }
                     pause();
                 }
                 else if (pilihan == 4) { 
-                    clearScreen(); daftarDispatcher();
+                    clearScreen(); 
+                    daftarDispatcher();
                     cout << kuning << "\n<|  PECAT DISPATCHER  |>" << putih << endl;
                     cout << "\nMasukkan Username Dispatcher: ";
-                    string hapus; cin.ignore(); getline(cin, hapus);
+                    string hapus; 
+                    getline(cin, hapus);
+                    
+                    if (isEmptyInput(hapus)) {
+                        showError("Username tidak boleh kosong!");
+                        pause();
+                        continue;
+                    }
+                    
                     auto it = data["dispatchers"].begin();
                     bool found = false;
                     while (it != data["dispatchers"].end()) {
@@ -1078,16 +1436,26 @@ void kelolaDispatcher() {
                             char konf;
                             cout << kuning << "Yakin pecat '" << hapus << "'? (y/n): " << putih;
                             konf = tolower(getch());
-                            if (konf == 'y') { data["dispatchers"].erase(it); simpanDatabaseDispatcher(data); cout << hijau << "\n✅ Akun telah dihapus." << putih << endl; } 
-                            else cout << cyan << "\n❌ Dibatalkan." << putih << endl;
+                            if (konf == 'y') { 
+                                data["dispatchers"].erase(it); 
+                                simpanDatabaseDispatcher(data); 
+                                cout << hijau << "\n✅ Akun telah dihapus." << putih << endl; 
+                            } 
+                            else {
+                                cout << cyan << "\n❌ Dibatalkan." << putih << endl;
+                            }
                             break;
                         }
                         it++;
                     }
-                    if (!found) throw out_of_range("\n❌ Username tidak ditemukan!");
+                    if (!found) {
+                        showError("Username tidak ditemukan!");
+                        pause();
+                    }
                     pause();
                 } else {
-                    throw invalid_argument("\n⚠️ Error: Pilihan Tidak Valid!");
+                    showError("Pilihan Tidak Valid!");
+                    pause();
                 }
             } catch (const exception& e) {
                 cerr << kuning << "\n[ERROR] " << e.what() << putih << endl;
@@ -1098,18 +1466,24 @@ void kelolaDispatcher() {
 }
 
 void menuAdmin() {
+    string pilihanStr;
     int pilihan;
+    
     do {
         clearScreen();
         cout << emas << titleC << putih << endl;
         cout << "Masukkan Pilihan: ";
+        getline(cin, pilihanStr);
         
-        if (!(cin >> pilihan)) { 
-            cin.clear(); cin.ignore(numeric_limits<streamsize>::max(), '\n'); 
-            cout << kuning << "\n⚠️  Error: Masukkan angka!"; 
+        try {
+            validateMenuChoice(pilihanStr);
+            pilihan = stoi(pilihanStr);
+        } catch (const exception& e) {
+            showError(e.what());
+            pause();
             pilihan = -1;
-            cout << endl;
-            pause(); 
+            pause();
+            continue;
         }
 
         if (pilihan >= 0) {
@@ -1121,7 +1495,10 @@ void menuAdmin() {
                     pause(); 
                     break; 
                 }
-                else throw invalid_argument("\n⚠️  Error: Pilihan tidak valid!");
+                else {
+                    showError("Pilihan tidak valid!");
+                    pause();
+                }
             } catch (const exception& e) {
                 cerr << kuning << e.what() << putih << endl; 
                 pause();
@@ -1158,8 +1535,13 @@ void tambahHeroShift() {
     cout << "\nMasukkan nama hero: ";
 
     string nama;
-    cin.ignore();
     getline(cin, nama);
+
+    if (isEmptyInput(nama)) {
+        showError("Nama hero tidak boleh kosong!");
+        pause();
+        return;
+    }
 
     for (auto &hero : data["heroes"]) {
 
@@ -1187,24 +1569,40 @@ void tambahHeroShift() {
     pause();
 }
 
-
 void updateStatsHero() {
 
     tampilHeroShift();
 
-    int pilih;
-
-    cout << "\nPilih hero: ";
-    cin >> pilih;
-
-    pilih--;
-
-    if (pilih < 0 || pilih >= heroShift.size()) {
-        cout << merah << "\nHero tidak valid!\n";
+    if (heroShift.empty()) {
+        showError("Tidak ada hero dalam shift!");
         pause();
         return;
     }
 
+    string pilihStr;
+    int pilih;
+
+    cout << "\nPilih hero: ";
+    getline(cin, pilihStr);
+
+    try {
+        validateMenuChoice(pilihStr);
+        pilih = stoi(pilihStr);
+    } catch (const exception& e) {
+        showError(e.what());
+        pause();
+        return;
+    }
+
+    pilih--;
+
+    if (pilih < 0 || pilih >= heroShift.size()) {
+        showError("Hero tidak valid!");
+        pause();
+        return;
+    }
+
+    string statPilihanStr;
     int statPilihan;
 
     clearScreen();
@@ -1220,37 +1618,72 @@ void updateStatsHero() {
     cout << "\n[5] Intellect";
 
     cout << "\n\nPilih stats yang ingin diupdate: ";
-    cin >> statPilihan;
+    getline(cin, statPilihanStr);
+
+    try {
+        validateMenuChoice(statPilihanStr);
+        statPilihan = stoi(statPilihanStr);
+    } catch (const exception& e) {
+        showError(e.what());
+        pause();
+        return;
+    }
 
     switch (statPilihan) {
 
         case 1:
-            heroShift[pilih].combat += 1;
-            cout << hijau << "\nCombat berhasil ditingkatkan +1!\n";
+            if (heroShift[pilih].combat >= 30) {
+                showError("Combat sudah mencapai batas maksimal (30)!");
+                pause();
+            } else {
+                heroShift[pilih].combat += 1;
+                cout << hijau << "\nCombat berhasil ditingkatkan +1!\n";
+            }
             break;
 
         case 2:
-            heroShift[pilih].vigor += 1;
-            cout << hijau << "\nVigor berhasil ditingkatkan +1!\n";
+            if (heroShift[pilih].vigor >= 30) {
+                showError("Vigor sudah mencapai batas maksimal (30)!");
+                pause();
+            } else {
+                heroShift[pilih].vigor += 1;
+                cout << hijau << "\nVigor berhasil ditingkatkan +1!\n";
+            }
             break;
 
         case 3:
-            heroShift[pilih].mobility += 1;
-            cout << hijau << "\nMobility berhasil ditingkatkan +1!\n";
+            if (heroShift[pilih].mobility >= 30) {
+                showError("Mobility sudah mencapai batas maksimal (30)!");
+                pause();
+            } else {
+                heroShift[pilih].mobility += 1;
+                cout << hijau << "\nMobility berhasil ditingkatkan +1!\n";
+            }
             break;
 
         case 4:
-            heroShift[pilih].charisma += 1;
-            cout << hijau << "\nCharisma berhasil ditingkatkan +1!\n";
+            if (heroShift[pilih].charisma >= 30) {
+                showError("Charisma sudah mencapai batas maksimal (30)!");
+                pause();
+            } else {
+                heroShift[pilih].charisma += 1;
+                cout << hijau << "\nCharisma berhasil ditingkatkan +1!\n";
+            }
             break;
 
         case 5:
-            heroShift[pilih].intellect += 1;
-            cout << hijau << "\nIntellect berhasil ditingkatkan +1!\n";
+            if (heroShift[pilih].intellect >= 30) {
+                showError("Intellect sudah mencapai batas maksimal (30)!");
+                pause();
+            } else {
+                heroShift[pilih].intellect += 1;
+                cout << hijau << "\nIntellect berhasil ditingkatkan +1!\n";
+            }
             break;
 
         default:
-            cout << merah << "\nPilihan stats tidak valid!\n";
+            showError("Pilihan stats tidak valid!");
+            pause();
             break;
     }
 
@@ -1271,37 +1704,62 @@ void kirimHero() {
              << endl;
     }
 
+    string pilihMisiStr;
     int pilihMisi;
 
     cout << "\nPilih misi: ";
-    cin >> pilihMisi;
+    getline(cin, pilihMisiStr);
+
+    try {
+        validateMenuChoice(pilihMisiStr);
+        pilihMisi = stoi(pilihMisiStr);
+    } catch (const exception& e) {
+        showError(e.what());
+        pause();
+        return;
+    }
 
     pilihMisi--;
 
     if (pilihMisi < 0 || pilihMisi >= daftarMisi.size()) {
-        cout << merah << "\nMisi tidak valid!\n";
+        showError("Misi tidak valid!");
         pause();
         return;
     }
 
     tampilHeroShift();
 
+    if (heroShift.empty()) {
+        showError("Tidak ada hero dalam shift!");
+        pause();
+        return;
+    }
+
+    string heroStr;
     int hero;
 
     cout << "\nPilih hero: ";
-    cin >> hero;
+    getline(cin, heroStr);
+
+    try {
+        validateMenuChoice(heroStr);
+        hero = stoi(heroStr);
+    } catch (const exception& e) {
+        showError(e.what());
+        pause();
+        return;
+    }
 
     hero--;
 
     if (hero < 0 || hero >= heroShift.size()) {
-        cout << merah << "\nHero tidak valid!\n";
+        showError("Hero tidak valid!");
         pause();
         return;
     }
 
     loadingBar();
 
-    // RANDOM PERSENTASE
     int persentase = rand() % 101;
 
     cout << cyan << "\n=== HASIL MISI ===\n" << putih;
@@ -1312,45 +1770,51 @@ void kirimHero() {
 
     bool berhasil;
 
-    // >= 70 otomatis berhasil
     if (persentase >= 70) {
-
         berhasil = true;
-
     } else {
-
-        // 0-69 random berhasil/gagal
         berhasil = rand() % 2;
     }
 
     if (berhasil) {
-
         cout << hijau << "\n✅ MISI BERHASIL!\n";
-
         daftarMisi[pilihMisi].selesai = true;
-
     } else {
-
         cout << merah << "\n❌ MISI GAGAL!\n";
     }
 
     pause();
 }
 
-
 void hapusHeroShift() {
 
     tampilHeroShift();
 
+    if (heroShift.empty()) {
+        showError("Tidak ada hero dalam shift!");
+        pause();
+        return;
+    }
+
+    string pilihStr;
     int pilih;
 
     cout << "\nPilih hero yang dihapus: ";
-    cin >> pilih;
+    getline(cin, pilihStr);
+
+    try {
+        validateMenuChoice(pilihStr);
+        pilih = stoi(pilihStr);
+    } catch (const exception& e) {
+        showError(e.what());
+        pause();
+        return;
+    }
 
     pilih--;
 
     if (pilih < 0 || pilih >= heroShift.size()) {
-        cout << merah << "\nHero tidak valid!\n";
+        showError("Hero tidak valid!");
         pause();
         return;
     }
@@ -1362,10 +1826,11 @@ void hapusHeroShift() {
     pause();
 }
 
-void menuShiftDispatcher() {
+void menuDispatcher() {
 
     initMission();
 
+    string pilihStr;
     int pilih;
 
     do {
@@ -1384,7 +1849,17 @@ void menuShiftDispatcher() {
         cout << "\n[6] Selesaikan Shift";
 
         cout << "\n\nPilihan: ";
-        cin >> pilih;
+        getline(cin, pilihStr);
+
+        try {
+            validateMenuChoice(pilihStr);
+            pilih = stoi(pilihStr);
+        } catch (const exception& e) {
+            showError(e.what());
+            pilih = -1;
+            pause();
+            continue;
+        }
 
         switch (pilih) {
 
@@ -1408,64 +1883,70 @@ void menuShiftDispatcher() {
             case 5:
                 hapusHeroShift();
                 break;
-                case 6:
-
-    cout << hijau << "\nShift selesai!\n";
-
-    currentShift++;
-
-    heroShift.clear();
-
-    pause();
-
-    menuIstirahat();
-
-    return;
+                
+            case 6:
+                cout << hijau << "\nShift selesai!\n";
+                currentShift++;
+                heroShift.clear();
+                pause();
+                menuIstirahat();
+                return;
 
             default:
-                cout << merah << "\nPilihan tidak valid!\n";
+                showError("Pilihan tidak valid!");
                 pause();
         }
 
     } while (true);
 }
 
-
 void menuUtama() {
+    string pilihanStr;
     int pilihan;
+    
     do {
         clearScreen();
         cout << titleA << putih << endl;
         cout << "Masukkan Pilihan: ";
+        getline(cin, pilihanStr);
         
-        if (!(cin >> pilihan)) { 
-            cin.clear(); cin.ignore(numeric_limits<streamsize>::max(), '\n'); 
-            cout << kuning << "\n⚠️  Error: Masukkan angka!"; 
+        try {
+            validateMenuChoice(pilihanStr);
+            pilihan = stoi(pilihanStr);
+        } catch (const exception& e) {
+            showError(e.what());
+            pause();
             pilihan = -1;
-            cout << endl;
-            pause(); 
+            continue;
         }
 
         if (pilihan >= 0) {
             try {
-                if (pilihan == 1 || pilihan == 2) {
+                if (pilihan == 1) {
                     string role = prosesLogin();
                     if (role == "manager") {
-                        cout << "Selamat Datang, Head Of SDN!" << endl; 
+                        cout << endl;
                         pause(); 
                         menuAdmin();
                     }
                     else if (role == "dispatcher") {
-                        cout << "Selamat Datang, Dispatcher!" << endl; 
-                        menuShiftDispatcher();
+                        cout << endl;
+                        pause();
+                        menuDispatcher();
+                    }
+                    else if (role == "invalid") {
+                        showError("Login gagal! Silakan coba lagi.");
                         pause();
                     }
                 }
                 else if (pilihan == 0) {
-                    cout << "\nTerimakasih Telah Menggunakan Program Ini" << endl; 
+                    cout << emas << "\nTerimakasih Telah Menggunakan Program Ini" << endl; 
                     pause();
                 }
-                else throw invalid_argument("\n⚠️  Error: Pilihan Tidak Valid!");
+                else {
+                    showError("Pilihan Tidak Valid!");
+                    pause();
+                }
             } catch (const exception& e) {
                 cerr << kuning << e.what() << putih << endl; 
                 pause();
@@ -1479,8 +1960,6 @@ int main() {
     srand(time(0));
 
     try {
-        loadingScreen();
-        pause();
         menuUtama();
     } catch (const exception& e) {
         cerr << "\n[FATAL SYSTEM CRASH] " << e.what() << endl;
