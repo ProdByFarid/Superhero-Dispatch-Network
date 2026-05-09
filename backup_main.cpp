@@ -10,9 +10,13 @@
 #include <vector>
 #include <ctime>
 #include <algorithm> 
+<<<<<<< HEAD
+#include <cctype>  
+=======
 #include <cctype>    
 #include <limits>
 #include <stdexcept>
+>>>>>>> 4231b72fbcf3efcdbebd93749b24fb2e4cd484bc
 #include "json.hpp"
 
 using namespace std;
@@ -285,6 +289,7 @@ void loadingBar() {
     cout << endl << "\nSelesai!" << endl;
 }
 
+<<<<<<< HEAD
 void menuIstirahat() {
 
     clearScreen();
@@ -314,8 +319,12 @@ vector<ActiveMission> daftarMisi;
 
 int currentShift = 1;
 bool shiftSelesai = false;
+// UTILITAS 
 
+// LOGIN
 
+=======
+>>>>>>> 4231b72fbcf3efcdbebd93749b24fb2e4cd484bc
 json bacaDatabaseDispatcher();
 
 string prosesLogin() {
@@ -667,6 +676,7 @@ void menuLihatDatabase() {
     } while (pilihan != 0);
 }
 
+<<<<<<< HEAD
 void initMission() {
     daftarMisi.clear();
 
@@ -718,8 +728,11 @@ void initMission() {
         false
     });
 }
+// ADMIN
 
-
+// GGG: IMPLEMENTASI LENGKAP KELOLA SUPERHERO
+=======
+>>>>>>> 4231b72fbcf3efcdbebd93749b24fb2e4cd484bc
 void kelolaSuperhero() {
     int pilihan;
     do {
@@ -1130,6 +1143,9 @@ void menuAdmin() {
     } while (pilihan != 0);
 }
 
+<<<<<<< HEAD
+// ADMIN
+
 void tampilHeroShift() {
     clearScreen();
 
@@ -1279,6 +1295,7 @@ void kirimHero() {
     pilihMisi--;
 
     if (pilihMisi < 0 || pilihMisi >= daftarMisi.size()) {
+
         cout << merah << "\nMisi tidak valid!\n";
         pause();
         return;
@@ -1294,6 +1311,7 @@ void kirimHero() {
     hero--;
 
     if (hero < 0 || hero >= heroShift.size()) {
+
         cout << merah << "\nHero tidak valid!\n";
         pause();
         return;
@@ -1301,25 +1319,22 @@ void kirimHero() {
 
     loadingBar();
 
-    // RANDOM PERSENTASE
     int persentase = rand() % 101;
 
     cout << cyan << "\n=== HASIL MISI ===\n" << putih;
 
-    cout << "\nHero          : " << heroShift[hero].name;
-    cout << "\nMisi          : " << daftarMisi[pilihMisi].info.judul;
-    cout << "\nKeberhasilan  : " << persentase << "%" << endl;
+    cout << "\nHero         : " << heroShift[hero].name;
+    cout << "\nMisi         : " << daftarMisi[pilihMisi].info.judul;
+    cout << "\nKeberhasilan : " << persentase << "%" << endl;
 
     bool berhasil;
 
-    // >= 70 otomatis berhasil
     if (persentase >= 70) {
 
         berhasil = true;
 
     } else {
 
-        // 0-69 random berhasil/gagal
         berhasil = rand() % 2;
     }
 
@@ -1336,7 +1351,6 @@ void kirimHero() {
 
     pause();
 }
-
 
 void hapusHeroShift() {
 
@@ -1431,6 +1445,11 @@ void menuShiftDispatcher() {
 }
 
 
+
+// MENU UTAMA
+
+=======
+>>>>>>> 4231b72fbcf3efcdbebd93749b24fb2e4cd484bc
 void menuUtama() {
     int pilihan;
     do {
@@ -1446,6 +1465,62 @@ void menuUtama() {
             pause(); 
         }
 
+<<<<<<< HEAD
+        if (pilihan == 1 || pilihan == 2) {
+
+            string role = prosesLogin();
+
+            if (role == "manager") {
+
+                cout << "Selamat Datang, Head Of SDN!" << endl;
+                pause();
+                menuAdmin();
+
+            }
+            else if (role == "dispatcher") {
+
+                cout << "Selamat Datang, Dispatcher!" << endl;
+                pause();
+
+                int pilih;
+
+                do {
+
+                    clearScreen();
+
+                    cout << cyan << titleD << putih << endl;
+
+                    cout << "\n[1]. Hell Yeah";
+                    cout << "\n[2]. Nah, Im Good";
+
+                    cout << "\n\nPilihan: ";
+                    cin >> pilih;
+
+                    if (pilih == 1) {
+
+                        menuShiftDispatcher();
+
+                    }
+                    else if (pilih == 2) {
+
+                        cout << "\nDispatcher meninggalkan ruang kerja...\n";
+                        pause();
+                        break;
+
+                    }
+                    else {
+
+                        cout << merah << "\n[!] Error: Pilihan Tidak Valid\n";
+                        pause();
+                    }
+
+                } while (pilih != 2);
+
+            }
+            else {
+
+                cout << merah << "\n[-] Login gagal. Kembali ke Menu Utama..." << endl;
+=======
         if (pilihan >= 0) {
             try {
                 if (pilihan == 1 || pilihan == 2) {
@@ -1457,7 +1532,6 @@ void menuUtama() {
                     }
                     else if (role == "dispatcher") {
                         cout << "Selamat Datang, Dispatcher!" << endl; 
-                        menuShiftDispatcher();
                         pause();
                     }
                 }
@@ -1468,16 +1542,35 @@ void menuUtama() {
                 else throw invalid_argument("\n⚠️  Error: Pilihan Tidak Valid!");
             } catch (const exception& e) {
                 cerr << kuning << e.what() << putih << endl; 
+>>>>>>> 4231b72fbcf3efcdbebd93749b24fb2e4cd484bc
                 pause();
+
             }
+
         }
+<<<<<<< HEAD
+        else if (pilihan == 0) {
+
+            cout << "\nTerimakasih Telah Menggunakan Program Ini" << endl;
+            pause();
+
+        }
+        else {
+
+            cout << kuning << "\n⚠️ Error: Pilihan Tidak Valid!" << putih << endl;
+            pause();
+
+        }
+
+=======
+>>>>>>> 4231b72fbcf3efcdbebd93749b24fb2e4cd484bc
     } while (pilihan != 0);
 }
 
 int main() {
-    SetConsoleOutputCP(65001);
-    srand(time(0));
 
+    srand(time(0));
+    SetConsoleOutputCP(65001);
     try {
         loadingScreen();
         pause();
