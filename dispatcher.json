@@ -2,9 +2,18 @@
     "dispatchers": [
         {
             "id": "001",
-            "password": "000",
+            "password": "123",
             "status": "Full-Time",
-            "username": "ketua"
+            "username": "dispatcher"
+        },
+        {
+            "exp": 0,
+            "id": "aaa",
+            "jabatan": "Asisten Dispatcher",
+            "level": 0,
+            "password": "",
+            "status": "",
+            "username": ""
         }
     ]
 }
