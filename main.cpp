@@ -243,6 +243,7 @@ struct ShiftHero {
     int charisma;
     int intellect;
     bool dariPhoenix;
+    int totalPointsEarned;
 };
 
 struct ActiveMission {
@@ -1523,6 +1524,7 @@ void tambahHeroShift() {
             h.charisma = hero["stats"]["charisma"];
             h.intellect = hero["stats"]["intellect"];
             h.dariPhoenix = false;
+            h.totalPointsEarned = 0;
 
             heroShift.push_back(h);
 
@@ -1577,11 +1579,16 @@ void updateStatsHero() {
     cout << cyan << "\n=== UPDATE STATS HERO ===\n" << putih;
 
     cout << "\nHero : " << heroShift[pilih].name << endl;
+    Sleep(200);  
 
     cout << "\n[1] Combat";
+    Sleep(100);
     cout << "\n[2] Vigor";
+    Sleep(100);
     cout << "\n[3] Mobility";
+    Sleep(100);
     cout << "\n[4] Charisma";
+    Sleep(100);
     cout << "\n[5] Intellect";
 
     cout << "\n\nPilih stats yang ingin diupdate: ";
@@ -1605,6 +1612,7 @@ void updateStatsHero() {
             } else {
                 heroShift[pilih].combat += 1;
                 cout << hijau << "\nCombat berhasil ditingkatkan +1!\n";
+                Sleep(300);  
             }
             break;
 
@@ -1615,6 +1623,7 @@ void updateStatsHero() {
             } else {
                 heroShift[pilih].vigor += 1;
                 cout << hijau << "\nVigor berhasil ditingkatkan +1!\n";
+                Sleep(300);  
             }
             break;
 
@@ -1625,6 +1634,7 @@ void updateStatsHero() {
             } else {
                 heroShift[pilih].mobility += 1;
                 cout << hijau << "\nMobility berhasil ditingkatkan +1!\n";
+                Sleep(300);  
             }
             break;
 
@@ -1635,6 +1645,7 @@ void updateStatsHero() {
             } else {
                 heroShift[pilih].charisma += 1;
                 cout << hijau << "\nCharisma berhasil ditingkatkan +1!\n";
+                Sleep(300);  
             }
             break;
 
@@ -1645,6 +1656,7 @@ void updateStatsHero() {
             } else {
                 heroShift[pilih].intellect += 1;
                 cout << hijau << "\nIntellect berhasil ditingkatkan +1!\n";
+                Sleep(300);  
             }
             break;
 
@@ -1655,24 +1667,79 @@ void updateStatsHero() {
     }
 }
 
-void kirimHero() {
+struct HasilMisi {
+    bool berhasil;
+    int persentase;
+    int points;
+};
 
+int hitungTotalStats(const ShiftHero& hero) {
+    return hero.combat + hero.vigor + hero.mobility + 
+           hero.charisma + hero.intellect;
+}
+
+int hitungTotalStats2Hero(const ShiftHero& hero1, const ShiftHero& hero2) {
+    return (hero1.combat + hero1.vigor + hero1.mobility + 
+            hero1.charisma + hero1.intellect) +
+           (hero2.combat + hero2.vigor + hero2.mobility + 
+            hero2.charisma + hero2.intellect);
+}
+
+int hitungRequirementStats(const Requirement& req) {
+    return req.combat + req.vigor + req.mobility + 
+           req.charisma + req.intellect;
+}
+
+int hitungPersentaseKeberhasilan(int statsHero, int requirementStats) {
+    if (requirementStats == 0) return 100;
+    
+    double persentase = (double)statsHero / requirementStats * 100;
+    
+    if (persentase > 100) persentase = 100;
+    if (persentase < 0) persentase = 0;
+    
+    return (int)persentase;
+}
+
+HasilMisi tentukanHasilMisi(int persentase) {
+    HasilMisi hasil;
+    hasil.persentase = persentase;
+    
+    if (persentase > 70) {
+        hasil.berhasil = true;
+        hasil.points = 50;
+    } else {
+        int random = rand() % 70; 
+        
+        if (random > 30) {
+            hasil.berhasil = true;
+            hasil.points = 30;
+        } else {
+            hasil.berhasil = false;
+            hasil.points = 0;
+        }
+    }
+    
+    return hasil;
+}
+
+void kirimHero() {
     clearScreen();
 
-    cout << cyan << "\n=== DAFTAR MISI ===\n";
+    cout << cyan << "\n=== DAFTAR MISI ===\n" << putih;
 
     for (int i = 0; i < daftarMisi.size(); i++) {
-
         cout << "\n[" << i + 1 << "] "
              << daftarMisi[i].info.judul
-             << " | " << daftarMisi[i].info.lokasi
-             << endl;
+             << " | Lokasi: " << daftarMisi[i].info.lokasi
+             << " | Pelanggan: " << daftarMisi[i].info.caller << endl;
+        Sleep(200);  
     }
 
     string pilihMisiStr;
     int pilihMisi;
 
-    cout << "\nPilih misi: ";
+    cout << "\nPilih misi (0 untuk batal): ";
     getline(cin, pilihMisiStr);
 
     try {
@@ -1680,6 +1747,12 @@ void kirimHero() {
         pilihMisi = stoi(pilihMisiStr);
     } catch (const exception& e) {
         showError(e.what());
+        pause();
+        return;
+    }
+
+    if (pilihMisi == 0) {
+        cout << kuning << "\nPembatalan dispatch." << putih << endl;
         pause();
         return;
     }
@@ -1692,6 +1765,9 @@ void kirimHero() {
         return;
     }
 
+    clearScreen();
+    cout << cyan << "\n=== DAFTAR HERO DALAM SHIFT ===\n" << putih;
+
     tampilHeroShift();
 
     if (heroShift.empty()) {
@@ -1700,52 +1776,140 @@ void kirimHero() {
         return;
     }
 
-    string heroStr;
-    int hero;
+    string heroStr1;
+    int hero1Idx;
 
-    cout << "\nPilih hero: ";
-    getline(cin, heroStr);
+    cout << "\nPilih hero pertama (WAJIB): ";
+    getline(cin, heroStr1);
 
     try {
-        validateMenuChoice(heroStr);
-        hero = stoi(heroStr);
+        validateMenuChoice(heroStr1);
+        hero1Idx = stoi(heroStr1);
     } catch (const exception& e) {
         showError(e.what());
         pause();
         return;
     }
 
-    hero--;
+    hero1Idx--;
 
-    if (hero < 0 || hero >= heroShift.size()) {
-        showError("Hero tidak valid!");
+    if (hero1Idx < 0 || hero1Idx >= heroShift.size()) {
+        showError("Hero pertama tidak valid!");
         pause();
         return;
     }
 
-    loadingBar();
+    cout << "\nPilih hero kedua (tekan ENTER untuk skip): ";
+    string heroStr2;
+    getline(cin, heroStr2);
 
-    int persentase = rand() % 101;
+    int hero2Idx = -1;
+    bool gunakan2Hero = false;
 
-    cout << cyan << "\n=== HASIL MISI ===\n" << putih;
+    if (!isEmptyInput(heroStr2)) {
+        try {
+            validateMenuChoice(heroStr2);
+            hero2Idx = stoi(heroStr2);
+        } catch (const exception& e) {
+            showError(e.what());
+            pause();
+            return;
+        }
 
-    cout << "\nHero          : " << heroShift[hero].name;
-    cout << "\nMisi          : " << daftarMisi[pilihMisi].info.judul;
-    cout << "\nKeberhasilan  : " << persentase << "%" << endl;
+        hero2Idx--;
 
-    bool berhasil;
+        if (hero2Idx < 0 || hero2Idx >= heroShift.size()) {
+            showError("Hero kedua tidak valid!");
+            pause();
+            return;
+        }
 
-    if (persentase >= 70) {
-        berhasil = true;
-    } else {
-        berhasil = rand() % 2;
+        if (hero2Idx == hero1Idx) {
+            showError("Hero yang dipilih tidak boleh sama!");
+            pause();
+            return;
+        }
+
+        gunakan2Hero = true;
     }
 
-    if (berhasil) {
-        cout << hijau << "\n✅ MISI BERHASIL!\n";
-        daftarMisi[pilihMisi].selesai = true;
+    clearScreen();
+    loadingBar();
+
+    int totalStatsHero;
+    
+    if (gunakan2Hero) {
+        totalStatsHero = hitungTotalStats2Hero(heroShift[hero1Idx], 
+                                               heroShift[hero2Idx]);
     } else {
-        cout << merah << "\n❌ MISI GAGAL!\n";
+        totalStatsHero = hitungTotalStats(heroShift[hero1Idx]);
+    }
+
+    int totalStatsRequirement = hitungRequirementStats(daftarMisi[pilihMisi].req);
+    int persentase = hitungPersentaseKeberhasilan(totalStatsHero, 
+                                                   totalStatsRequirement);
+
+    HasilMisi hasil = tentukanHasilMisi(persentase);
+
+    clearScreen();
+    cout << cyan << "\n=== HASIL DISPATCH MISI ===\n" << putih;
+
+    Sleep(500);
+    cout << "\nHero Ditugaskan:\n";
+    cout << "  • " << heroShift[hero1Idx].name << endl;
+    Sleep(300);
+    
+    if (gunakan2Hero) {
+        cout << "  • " << heroShift[hero2Idx].name << endl;
+        Sleep(300);
+    }
+
+    cout << "\nMisi: " << daftarMisi[pilihMisi].info.judul << endl;
+    Sleep(300);
+    cout << "Lokasi: " << daftarMisi[pilihMisi].info.lokasi << endl;
+    Sleep(300);
+
+    cout << "\n" << emas << "--- Analisis Statistik ---" << putih << endl;
+    Sleep(300);
+    cout << "Total Stats Hero: " << totalStatsHero << endl;
+    Sleep(300);
+    cout << "Requirement Stats: " << totalStatsRequirement << endl;
+    Sleep(300);
+    cout << "Persentase Keberhasilan: " << persentase << "%" << endl;
+    Sleep(300);
+
+    cout << "\n" << (hasil.berhasil ? hijau : merah);
+    if (hasil.berhasil) {
+        cout << "✅ MISI BERHASIL!\n";
+    } else {
+        cout << "❌ MISI GAGAL!\n";
+    }
+    cout << putih;
+
+    Sleep(500);
+    cout << "\nReward Points: +" << hasil.points << " points";
+    if (gunakan2Hero) {
+        cout << " (per hero)";
+    }
+    cout << endl;
+
+    Sleep(500);
+    heroShift[hero1Idx].totalPointsEarned += hasil.points;
+    
+    if (gunakan2Hero) {
+        heroShift[hero2Idx].totalPointsEarned += hasil.points;
+    }
+
+    if (hasil.berhasil) {
+        daftarMisi.erase(daftarMisi.begin() + pilihMisi);
+        cout << hijau << "\n[+] Misi dihapus dari daftar." << putih << endl;
+        Sleep(300);
+
+        if (daftarMisi.empty()) {
+            cout << hijau << "\n✅ Semua misi telah diselesaikan!" << putih << endl;
+            cout << "Shift akan berakhir setelah menu ini ditutup.\n";
+            Sleep(500);
+        }
     }
 }
 
@@ -1804,14 +1968,39 @@ void menuDispatcher() {
         cout << "\n=== SHIFT DISPATCHER #" << currentShift << " ===\n";
         cout << putih;
 
-        cout << "\n[1] Lihat Hero Shift";
-        cout << "\n[2] Tambah Hero";
-        cout << "\n[3] Update Stats Hero";
-        cout << "\n[4] Kirim Hero";
-        cout << "\n[5] Hapus Hero";
-        cout << "\n[6] Selesaikan Shift";
+        cout << "\n" << emas << "<| HERO DALAM SHIFT |>" << putih << "\n";
+        
+        if (heroShift.empty()) {
+            cout << merah << "  (Belum ada hero)\n" << putih;
+        } else {
+            for (int i = 0; i < heroShift.size(); i++) {
+                cout << "  [" << i + 1 << "] " << heroShift[i].name 
+                     << " | Points: " << heroShift[i].totalPointsEarned << "\n";
+                Sleep(150);
+            }
+        }
 
-        cout << "\n\nPilihan: ";
+        cout << "\n" << emas << "<| DAFTAR MISI AKTIF |>" << putih << "\n";
+        
+        if (daftarMisi.empty()) {
+            cout << hijau << "  (Tidak ada misi - Shift akan selesai)\n" << putih;
+        } else {
+            for (int i = 0; i < daftarMisi.size(); i++) {
+                cout << "  [" << i + 1 << "] " 
+                     << daftarMisi[i].info.judul 
+                     << " | " << daftarMisi[i].info.lokasi << "\n";
+                Sleep(150);
+            }
+        }
+
+        cout << "\n" << kuning << "=== MENU OPTIONS ===" << putih << "\n";
+        cout << "[1] Tambah Hero\n";
+        cout << "[2] Update Stats Hero\n";
+        cout << "[3] Kirim Hero ke Misi\n";
+        cout << "[4] Hapus Hero dari Shift\n";
+        cout << "[0] Keluar\n";
+
+        cout << "\nPilihan: ";
         getline(cin, pilihStr);
 
         try {
@@ -1827,32 +2016,46 @@ void menuDispatcher() {
         switch (pilih) {
 
             case 1:
-                tampilHeroShift();
-                pause();
-                break;
-
-            case 2:
                 tambahHeroShift();
                 break;
 
-            case 3:
+            case 2:
                 updateStatsHero();
                 break;
 
-            case 4:
+            case 3:
                 kirimHero();
+                
+                if (daftarMisi.empty()) {
+                    cout << hijau << "\n✅ Semua misi telah diselesaikan!" << putih << endl;
+                    cout << "Shift berakhir secara otomatis.\n";
+                    
+                    cout << cyan << "\n<| RINGKASAN SHIFT |>\n" << putih;
+                    int totalPoints = 0;
+                    for (const auto& hero : heroShift) {
+                        cout << hero.name << " : " << hero.totalPointsEarned << " points\n";
+                        totalPoints += hero.totalPointsEarned;
+                    }
+                    cout << "\nTotal Points Shift: " << totalPoints << "\n";
+                    
+                    currentShift++;
+                    heroShift.clear();
+                    pause();
+                    menuIstirahat();
+                    return;
+                }
                 break;
 
-            case 5:
+            case 4:
                 hapusHeroShift();
                 break;
-                
-            case 6:
-                cout << hijau << "\nShift selesai!\n";
+
+            case 0:
+                cout << kuning << "\nMengakhiri shift...\n" << putih;
+                cout << "Catatan: Shift yang belum selesai akan dihapus.\n";
                 currentShift++;
                 heroShift.clear();
                 pause();
-                menuIstirahat();
                 return;
 
             default:
