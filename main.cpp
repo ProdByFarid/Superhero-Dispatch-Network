@@ -28,6 +28,8 @@ using json = nlohmann::json;
 #define emas    "\033[38;5;220m"
 #define kuning  "\033[33m" 
 
+// ==================== UTILITIES ====================
+
 string toLowerManual(string s) {
     string result = s;
     for (int i = 0; i < result.length(); i++) {
@@ -36,9 +38,23 @@ string toLowerManual(string s) {
     return result;
 }
 
-void pause() {
-    cout << putih << "\n[Tekan enter untuk melanjutkan...]" << endl;
+void pause(const string& msg = "\n[Tekan enter untuk melanjutkan...]") {
+    cout << putih << msg << endl;
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
     getch();
+}
+
+void clearScreen() {
+    #ifdef _WIN32
+        system("cls");
+    #else
+        system("clear");
+    #endif
+}
+
+void flushInput() {
+    cin.clear();
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
 }
 
 bool isEmptyInput(const string& input) {
@@ -78,44 +94,186 @@ bool isDispatcherExists(const json& data, const string& username) {
 }
 
 void showError(const string& message) {
-    cout << merah << "\n❌ ERROR: " << message << putih << endl;
+    cout << merah << "\n❌ Error: " << message << putih << endl;
 }
 
-void validateStringNotEmpty(const string& input, const string& fieldName) {
-    if (isEmptyInput(input)) {
-        throw invalid_argument(fieldName + " tidak boleh kosong!");
+// ==================== VALIDATION FUNCTIONS ====================
+
+// ✅ SEMUA FIELD STRING: tidak boleh kosong, re-prompt jika kosong
+string getValidatedLine(const string& prompt, const string& fieldName, 
+                        bool allowDefaultDash = false, bool allowEmpty = false) {
+    string input;
+    while (true) {
+        cout << putih << prompt;
+        getline(cin, input);
+        
+        if (cin.fail()) flushInput();
+        
+        if (isEmptyInput(input)) {
+            if (allowEmpty) {
+                return "";
+            } else if (allowDefaultDash) {
+                cout << kuning << "\n⚠️ " << fieldName << " kosong, diisi dengan '-'." << putih << endl;
+                return "-";
+            } else {
+                cout << merah << "\n❌ " << fieldName << " tidak boleh kosong! Silakan input ulang." << putih << endl;
+                continue;
+            }
+        }
+        return input;
     }
 }
 
-void validateStatInput(int value, const string& statName) {
-    if (!validateNotNegative(value)) {
-        throw invalid_argument(statName + " tidak boleh negatif!");
+// ✅ Validasi khusus untuk Nama Superhero & Username: minimal 3 karakter
+string getValidatedName(const string& prompt, const string& fieldName) {
+    string input;
+    while (true) {
+        cout << putih << prompt;
+        getline(cin, input);
+        
+        if (cin.fail()) flushInput();
+        
+        if (isEmptyInput(input)) {
+            cout << merah << "\n❌ " << fieldName << " tidak boleh kosong! Silakan input ulang." << putih << endl;
+            continue;
+        }
+        
+        if (input.length() < 3) {
+            cout << merah << "\n❌ " << fieldName << " minimal 3 karakter! Silakan input ulang." << putih << endl;
+            continue;
+        }
+        
+        return input;
     }
-    if (value > 30) {
-        throw invalid_argument(statName + " tidak boleh lebih dari 30!");
+}
+
+int getValidatedInt(const string& prompt, int minVal, int maxVal, const string& fieldName) {
+    string input;
+    while (true) {
+        cout << putih << prompt;
+        getline(cin, input);
+        
+        if (isEmptyInput(input)) {
+            cout << merah << "\n❌ " << fieldName << " tidak boleh kosong!" << putih << endl;
+            continue;
+        }
+        
+        try {
+            size_t idx = 0;
+            int value = stoi(input, &idx);
+            
+            if (idx != input.length()) {
+                throw invalid_argument("non-numeric suffix");
+            }
+            
+            if (value < 0) {
+                cout << merah << "\n❌ " << fieldName << " tidak boleh negatif!" << putih << endl;
+                continue;
+            }
+            
+            if (value > maxVal) {
+                cout << merah << "\n❌ " << fieldName << " tidak boleh lebih dari " << maxVal << "!" << putih << endl;
+                continue;
+            }
+            
+            if (value < minVal) {
+                cout << merah << "\n❌ " << fieldName << " tidak boleh kurang dari " << minVal << "!" << putih << endl;
+                continue;
+            }
+            
+            return value;
+            
+        } catch (const invalid_argument&) {
+            cout << merah << "\n❌ " << fieldName << " harus berupa angka!" << putih;
+        } catch (const out_of_range&) {
+            cout << merah << "\n❌ " << fieldName << " terlalu besar!" << putih;
+        }
+        flushInput();
+    }
+}
+
+// ✅ Validasi int TANPA batas atas (untuk points)
+int getValidatedIntNoLimit(const string& prompt, const string& fieldName, bool allowNegative = false) {
+    string input;
+    while (true) {
+        cout << putih << prompt;
+        getline(cin, input);
+        
+        if (isEmptyInput(input)) {
+            cout << merah << "\n❌ " << fieldName << " tidak boleh kosong!" << putih << endl;
+            continue;
+        }
+        
+        try {
+            size_t idx = 0;
+            int value = stoi(input, &idx);
+            if (idx != input.length()) {
+                throw invalid_argument("non-numeric suffix");
+            }
+            if (!allowNegative && value < 0) {
+                cout << merah << "\n❌ " << fieldName << " tidak boleh negatif!" << putih << endl;
+                continue;
+            }
+            return value;
+        } catch (const invalid_argument&) {
+            cout << merah << "\n❌ " << fieldName << " harus berupa angka!" << putih << endl;
+        } catch (const out_of_range&) {
+            cout << merah << "\n❌ " << fieldName << " terlalu besar!" << putih << endl;
+        }
+        flushInput();
     }
 }
 
 void validatePointsInput(int value) {
-    if (!validateNotNegative(value)) {
-        throw invalid_argument("Points tidak boleh negatif!");
+    if (value < 0) {
+        cout << merah << "\n❌ Points tidak boleh negatif!" << putih << endl;
+        pause();
     }
 }
 
-// ✅ MODIFIKASI: Tambahan validasi spasi
+// ✅ Wrapper: validasi nama superhero (unik + minimal 3 karakter)
+string getUniqueHeroName(const json& data, const string& prompt) {
+    string nama;
+    while (true) {
+        // ✅ Gunakan getValidatedName untuk minimal 3 karakter
+        nama = getValidatedName(prompt, "Nama Superhero");
+        if (isHeroNameExists(data, nama)) {
+            cout << merah << "\n❌ Nama Superhero Sudah Terdaftar!" << putih << endl;
+            pause();
+            clearScreen();
+            cout << emas << "\n<|  TAMBAH SUPERHERO BARU  |>" << putih << endl;
+            continue;
+        }
+        return nama;
+    }
+}
+
+// ✅ Wrapper: validasi username dispatcher (unik + minimal 3 karakter)
+string getUniqueDispatcherUsername(const json& data, const string& prompt) {
+    string username;
+    while (true) {
+        // ✅ Gunakan getValidatedName untuk minimal 3 karakter
+        username = getValidatedName(prompt, "Username");
+        if (isDispatcherExists(data, username)) {
+            cout << merah << "\n❌ Username Dispatcher Sudah Terdaftar!" << putih << endl;
+            pause();
+            clearScreen();
+            cout << emas << "\n<|  BUAT AKUN DISPATCHER BARU  |>" << putih << endl;
+            continue;
+        }
+        return username;
+    }
+}
+
 void validateMenuChoice(const string& input) {
     if (isEmptyInput(input)) {
         throw invalid_argument("Input tidak boleh kosong!");
     }
-    
-    // ✅ Cek apakah ada spasi di input
     for (char c : input) {
         if (isspace(c)) {
             throw invalid_argument("Input tidak boleh mengandung spasi!");
         }
     }
-    
-    // Cek apakah semua karakter adalah angka
     for (char c : input) {
         if (!isdigit(c)) {
             throw invalid_argument("Input hanya boleh angka!");
@@ -136,83 +294,15 @@ void validateDispatcherUnique(const json& data, const string& username) {
 }
 
 void validateGenericInput(const string& input, const string& fieldName, bool allowSpecialChars = false) {
-    validateStringNotEmpty(input, fieldName);
+    if (isEmptyInput(input)) {
+        throw invalid_argument(fieldName + " tidak boleh kosong!");
+    }
     if (!allowSpecialChars && hasSpecialChars(input)) {
         throw invalid_argument(fieldName + " tidak boleh mengandung karakter spesial!");
     }
 }
 
-string getValidatedLine(const string& prompt, const string& fieldName, bool allowEmpty = false, bool allowSpecial = false) {
-    string input;
-    while (true) {
-        cout << prompt;
-        getline(cin, input);
-        
-        if (allowEmpty && isEmptyInput(input)) {
-            return "";
-        }
-        
-        try {
-            validateGenericInput(input, fieldName, allowSpecial);
-            return input;
-        } catch (const exception& e) {
-            showError(e.what());
-            pause();
-        }
-    }
-}
-
-int getValidatedInt(const string& prompt, int minVal, int maxVal, const string& fieldName) {
-    string input;
-    while (true) {
-        cout << prompt;
-        if (!(cin >> input)) {
-            cin.clear();
-            cin.ignore(numeric_limits<streamsize>::max(), '\n');
-            showError("Input harus berupa angka!");
-            pause();
-            continue;
-        }
-        cin.ignore(numeric_limits<streamsize>::max(), '\n');
-        
-        try {
-            int value = stoi(input);
-            if (!validateNumberRange(value, minVal, maxVal)) {
-                throw invalid_argument(fieldName + " harus antara " + to_string(minVal) + " - " + to_string(maxVal) + "!");
-            }
-            return value;
-        } catch (const exception& e) {
-            showError(e.what());
-            pause();
-        }
-    }
-}
-
-int getValidatedIntNoLimit(const string& prompt, const string& fieldName, bool allowNegative = false) {
-    string input;
-    while (true) {
-        cout << prompt;
-        if (!(cin >> input)) {
-            cin.clear();
-            cin.ignore(numeric_limits<streamsize>::max(), '\n');
-            showError("Input harus berupa angka!");
-            pause();
-            continue;
-        }
-        cin.ignore(numeric_limits<streamsize>::max(), '\n');
-        
-        try {
-            int value = stoi(input);
-            if (!allowNegative && !validateNotNegative(value)) {
-                throw invalid_argument(fieldName + " tidak boleh negatif!");
-            }
-            return value;
-        } catch (const exception& e) {
-            showError(e.what());
-            pause();
-        }
-    }
-}
+// ==================== STRUCTS ====================
 
 struct Akun {
     int id;
@@ -252,6 +342,9 @@ struct ActiveMission {
     bool selesai;
 };
 
+// ==================== GLOBAL VARIABLES ====================
+
+// ✅ TITLE ASCII ART: SPACING DIPERTAHANKAN 100% SESUAI ASLI
 string title = R"(
 
 
@@ -280,171 +373,155 @@ string title = R"(
 
 string titleA = R"(
 ==============================================
-                                                
+
             🏢 WELCOME TO SDN 🏢               
         Silahkan Pilih 1 Untuk Login       
-                                                
 ==============================================
-                                            
+
    [1]. 🔒 Login                          
    [0]. 🔙 Logout                              
-                                            
+
 ==============================================
 )";
 
 string titleB = R"(
 ==============================================
-                                            
+
             🔒 SIGN IN TO SDN 🔒              
      Gunakan Username Dan Password Anda       
-                                            
+
 ==============================================
 )";
 
 string titleC = R"(
 =============================================
-                                            
+
             👑 HEAD OF SDN 👑                
     Silahkan Pilih Yang Ingin Dikelola     
-                                            
+
 =============================================
-                                            
+
    [1]. ⚙️  Kelola Data Superhero               
    [2]. 📞 Kelola Data Dispatcher              
    [0]. 🔙 Keluar                              
-                                            
+
 =============================================
 )";
 
 string titleD = R"(
 =============================================
-                                            
+
            📞 HEY DISPATCHER! 📞              
         Mau Memulai Shift Hari Ini?        
-                                            
+
 =============================================
 )";
 
 string titleE = R"(
 ===========================================
-                                          
+
         🦸 PENGELOLAAN SUPERHERO 🦸          
-                                          
+
 ===========================================
-                                          
    [1]. ➕ Tambah Superhero                  
    [2]. 📄 Lihat Database                    
    [3]. ✏️  Update Data Superhero             
    [4]. 🗑️  Pecat Superhero                   
    [0]. 🔙 Kembali Ke Menu Admin             
-                                          
 ===========================================
 )";
 
 string titleF = R"(
 ===========================================
-                                          
-         🛢️  SUPERHERO DATABASE 🛢️            
-                                          
+
+         🛢️  SUPERHERO DATABASE 🛢️        
+
 ===========================================
-                                         
    [1]. 📄 Lihat Semua Data                  
-   [2]. 🔃 Urutkan Nama Superhero                     
-   [3]. 🔃 Urutkan Poin Superhero                    
+   [2]. 🔃 Urutkan Nama Superhero            
+   [3]. 🔃 Urutkan Poin Superhero            
    [4]. 🔍 Cari Superhero                    
    [0]. 🔙 Kembali ke Database               
-                                         
 ===========================================
 )";
 
 string titleG = R"(
 ===========================================
-                                          
-          🔃 SORTING DATABASE 🔃            
-                                          
+
+          🔃 SORTING DATABASE 🔃   
+
 ===========================================
-                                          
    [1]. 🔤 Urutkan Berdasarkan Nama          
    [2]. 🌟 Urutkan Berdasarkan Poin          
    [0]. 🔙 Keluar                            
-                                      
 ===========================================
 )";
 
 string titleH = R"(
 ===========================================
-                                          
-      🧑‍ PENGELOLAAN DISPATCHER 🧑       
-                                          
+
+      🧑‍ PENGELOLAAN DISPATCHER 🧑 
+
 ===========================================
-                                         
    [1]. ➕ Tambah Akun Dispatcher         
    [2]. 🔃 Lihat Data Dispatcher      
    [3]. ✏️  Update Data Dispatcher         
    [4]. 🗑️  Pecat Dispatcher               
    [0]. 🔙 Kembali Ke Menu Admin          
-                                         
 ===========================================
 )";
 
 string titleI = R"(
 ===========================================
-                                          
-       🛢️  DISPATCHER DATABASE 🛢️         
-                                          
+
+       🛢️  DISPATCHER DATABASE 🛢️     
+
 ===========================================
-                                        
    [1]. 📄 Lihat Semua Data Dispatcher        
    [2]. 🔃 Urutkan Data             
    [3]. 🔍 Cari Nama Dispatcher           
    [0]. 🔙 Kembali                        
-                                          
 ===========================================
 )";
 
 string titleJ = R"(
 ===========================================
-                                          
+
           🔃 SORTING DATABASE 🔃         
-                                          
+
 ===========================================
-                                          
    [1]. 🔤 Urutkan Nama              
    [2]. 🌟 Urutkan Berdasarkan Level         
    [0]. 🔙 Kembali                        
-                                          
 ===========================================
 )";
 
 string titleK = R"(
 ===========================================
-                                          
+
          ⚙️  UPDATE DATA AKUN ⚙️         
-                                          
+
 ===========================================
-                                          
    [1]. 📝 Ubah Username              
    [2]. 🔒 Ubah Password      
    [3]. 🟢 Ubah Status      
    [4]. 🧑 Ubah Jabatan        
    [0]. 🔙 Kembali                        
-                                          
 ===========================================
 )";
 
-void clearScreen() {
-    #ifdef _WIN32
-        system("cls");
-    #else
-        system("clear");
-    #endif
-}
+vector<ShiftHero> heroShift;
+vector<ActiveMission> daftarMisi;
+int currentShift = 1;
+bool shiftSelesai = false;
+
+// ==================== SYSTEM FUNCTIONS ====================
 
 void loadingScreen() {
     clearScreen();
-    cout << cyan << "\nSuperhero Dispathing Network [Versi 10.7.100829.1]" << endl;
+    cout << cyan << "\nSuperhero Dispatching Network [Versi 10.7.100829.1]" << endl;
     Sleep(500);
-    cout << "[C] SDN. Semua hak dilindung undang-undang" << endl;
+    cout << "[C] SDN. Semua hak dilindungi undang-undang" << endl;
     Sleep(500);
     cout << "C:/Branches/Torrance>" << putih << endl;
     Sleep(1500);
@@ -454,7 +531,6 @@ void loadingScreen() {
 void loadingBar() {
     int bar = 15;
     cout << "\n⌛ Hero Mobilisasi..." << endl;
-
     system("chcp 65001 > nul");
     setlocale(LC_ALL, "en_US.UTF-8");
     for (int i = 0; i <= bar; i++) {
@@ -471,82 +547,22 @@ void loadingBar() {
 }
 
 void menuIstirahat() {
-
     clearScreen();
-
-    cout << cyan;
-    cout << "\n====================================";
+    cout << cyan << "\n====================================";
     cout << "\n         MENU ISTIRAHAT";
     cout << "\n====================================\n";
-    cout << putih;
-
-    cout << "\nDispatcher sedang beristirahat...\n";
+    cout << putih << "\nDispatcher sedang beristirahat...\n";
     cout << "Kembali ke menu utama dalam:\n\n";
-
     for (int i = 15; i >= 0; i--) {
-
         cout << "\r" << emas << i << " detik   " << putih;
         cout.flush();
-
         Sleep(1000);
     }
-
     cout << hijau << "\n\nIstirahat selesai!\n";
     pause();
 }
 
-vector<ShiftHero> heroShift;
-vector<ActiveMission> daftarMisi;
-
-int currentShift = 1;
-bool shiftSelesai = false;
-
-json bacaDatabaseDispatcher();
-
-string prosesLogin() {
-    int percobaan = 0;
-    string inputUser, inputPass;
-    Akun akunManager = {237218, "blazer", "123", "manager"};
-
-    while (percobaan < 3) {
-        clearScreen();
-        cout << emas << titleB << putih << endl;
-        inputUser = getValidatedLine("Username: ", "Username", false, false);
-        inputPass = getValidatedLine("Password: ", "Password", false, true);
-
-        if (inputUser == akunManager.username && inputPass == akunManager.password) {
-            cout << hijau << "\n✅ Login Berhasil. Selamat Datang, Head Of SDN!";
-            return akunManager.role;
-        } 
-
-        try {
-            json dataDisp = bacaDatabaseDispatcher();
-            if (!dataDisp["dispatchers"].empty()) {
-                for (const auto& disp : dataDisp["dispatchers"]) {
-                    if (disp["username"] == inputUser && disp["password"] == inputPass) {
-                        cout << hijau << "\n✅ Login Berhasil. Selamat Datang, Dispatcher!";
-                        return "dispatcher"; 
-                    }
-                }
-            }
-        } catch (const exception& e) {
-            cerr << kuning << "⚠️ Warning: Gagal membaca database dispatcher: " << e.what() << putih << endl;
-            pause();
-        }
-
-        percobaan++;
-        cout << merah << "\n❌ Username atau Password Salah!\n";
-        cout << kuning << "⚠️  Warning: Jumlah percobaan: " << percobaan << endl;
-
-        if (percobaan == 3) {
-            cout << merah << "\n❌ Login Gagal! Akses Ditolak." << endl; 
-        }
-        pause();
-        
-    }
-    
-    return "invalid";
-}
+// ==================== DATABASE FUNCTIONS ====================
 
 json bacaDatabase() {
     ifstream file("superhero.json");
@@ -595,10 +611,11 @@ void simpanDatabaseDispatcher(const json& data) {
     }
 }
 
+// ==================== DISPLAY FUNCTIONS ====================
+
 void daftarDispatcher() {
     string header(95, '=');
     json data = bacaDatabaseDispatcher();
-
     if (data["dispatchers"].empty()) {
         cout << emas << "\n <|     DAFTAR DISPATCHER KOSONG     |>" << putih << endl;
     } else {
@@ -628,9 +645,8 @@ void daftarDispatcher() {
 void daftarSuperhero() {
     string header(68, '=');
     json data = bacaDatabase();
-
     if (data["heroes"].empty()) {
-        cout << emas << "\n <|     DAFTAR SUPERHEROES KOSONG     |>" << endl;
+        cout << emas << "\n <|     DAFTAR SUPERHEROES KOSONG     |>" << putih << endl;
     } else {
         clearScreen();
         cout << emas << "\n                <|     BILLBOARD SUPERHEROES     |>" << putih << endl;
@@ -646,14 +662,13 @@ void daftarSuperhero() {
             cout << "| " << setw(3) << left << no
             << "| " << setw(20) << left << hero["name"].get<string>()
             << "| " << setw(30) << left << (hero.contains("aliases") ? hero["aliases"].get<string>() : "-")
-            << "| " << setw(5) << left << hero["points"].get<int>() << " |" <<endl;
+            << "| " << setw(5) << left << hero["points"].get<int>() << " |" << endl;
             no++;
         }
         cout << header << endl;
     }
 }
 
-// ✅ FUNGSI PENCARIAN SUPERHERO YANG DIPERBAIKI
 void searchingHeroes() {
     try {
         json data = bacaDatabase();
@@ -668,8 +683,6 @@ void searchingHeroes() {
             pause();
             return;
         }
-
-        // ✅ VALIDASI: Minimal 3 karakter untuk pencarian
         if (cari.length() < 3) {
             showError("Minimal 3 karakter untuk pencarian!");
             pause();
@@ -678,14 +691,10 @@ void searchingHeroes() {
         
         bool ditemukan = false;
         string cariLower = toLowerManual(cari); 
-        
-        // ✅ KUMPULKAN SEMUA HASIL YANG COCOK (Prefix Match)
         vector<json> hasilPencarian;
         for (const auto &hero : data["heroes"]) {
             string namaHero = hero["name"].get<string>();
             string namaLower = toLowerManual(namaHero); 
-            
-            // ✅ PREFIX MATCH: Hanya cocokkan jika kata kunci ada di AWAL nama
             if (namaLower.find(cariLower) == 0) {
                 hasilPencarian.push_back(hero);
             }
@@ -693,8 +702,7 @@ void searchingHeroes() {
 
         if (!hasilPencarian.empty()) {
             clearScreen();
-            cout << cyan << "\n<|     HASIL PENCARIAN (" << hasilPencarian.size() << " DITEMUKAN)     |>" << endl;
-            
+            cout << cyan << "\n<|     HASIL PENCARIAN (" << hasilPencarian.size() << " DITEMUKAN)     |>" << putih << endl;
             for (const auto& hero : hasilPencarian) {
                 cout << putih << "\n" << hero["name"].get<string>() 
                      << " | " << (hero.contains("aliases") ? hero["aliases"].get<string>() : "-") << endl;
@@ -707,22 +715,22 @@ void searchingHeroes() {
         
         if (!ditemukan) {
             clearScreen();
-            cout << cyan << "\n<|     HASIL PENCARIAN DATA     |>" << endl;
+            cout << cyan << "\n<|     HASIL PENCARIAN DATA     |>" << putih << endl;
             cout << merah << "\n❌ Superhero tidak ditemukan!" << putih << endl;
             cout << kuning << "\n💡 Tip: Cek ejaan atau gunakan awalan nama yang berbeda." << putih << endl;
         }
         pause();
-        
     } catch (const exception& e) {
-        cerr << kuning << "\n[ERROR] Gagal mencari data: " << e.what() << putih << endl;
+        cerr << kuning << "\n[ERROR] Gagal mencari  " << e.what() << putih << endl;
         pause();
     }
 }
 
+// ==================== MENU FUNCTIONS ====================
+
 void menuLihatDatabase() {
     string pilihanStr;
     int pilihan;
-    
     do {
         clearScreen();
         cout << emas << titleF << putih << endl;
@@ -752,19 +760,16 @@ void menuLihatDatabase() {
                         function<void(int, int)> sortHelper;
                         function<void(int, int, int)> mergeHelper;
                         mergeHelper = [&](int left, int mid, int right) {
-                            int n1 = mid - left + 1;
-                            int n2 = right - mid;
+                            int n1 = mid - left + 1, n2 = right - mid;
                             vector<json> L(n1), R(n2);
                             for (int i = 0; i < n1; i++) L[i] = arr[left + i];
                             for (int j = 0; j < n2; j++) R[j] = arr[mid + 1 + j];
                             int i = 0, j = 0, k = left;
                             while (i < n1 && j < n2) {
-                                string nameL = L[i]["name"].get<string>();
-                                string nameR = R[j]["name"].get<string>();
+                                string nameL = L[i]["name"].get<string>(), nameR = R[j]["name"].get<string>();
                                 transform(nameL.begin(), nameL.end(), nameL.begin(), ::tolower);
                                 transform(nameR.begin(), nameR.end(), nameR.begin(), ::tolower);
-                                if (nameL <= nameR) { arr[k++] = L[i++]; } 
-                                else { arr[k++] = R[j++]; }
+                                if (nameL <= nameR) { arr[k++] = L[i++]; } else { arr[k++] = R[j++]; }
                             }
                             while (i < n1) arr[k++] = L[i++];
                             while (j < n2) arr[k++] = R[j++];
@@ -804,8 +809,8 @@ void menuLihatDatabase() {
                 } else if (pilihan == 4) {
                     searchingHeroes();
                     pause();
-                }else if (pilihan == 0) {
-                    cout << kuning << "\n🔙 Anda Akan Kembali ke Menu Pengelolaan Superhero!" << endl;
+                } else if (pilihan == 0) {
+                    cout << kuning << "\n🔙 Anda Akan Kembali ke Menu Pengelolaan Superhero!" << putih << endl;
                     pause();
                     break;
                 } else {
@@ -820,58 +825,7 @@ void menuLihatDatabase() {
     } while (pilihan != 0);
 }
 
-void initMission() {
-    daftarMisi.clear();
-
-    daftarMisi.push_back({
-        {"Penyanderaan Bank", "Kapolsek Metro", "Jakarta"},
-        {70, 50, 40, 30, 20},
-        false
-    });
-
-    daftarMisi.push_back({
-        {"Invasi Monster", "Warga", "Bandung"},
-        {80, 60, 50, 20, 30},
-        false
-    });
-
-    daftarMisi.push_back({
-        {"Bom Kota", "Pemerintah", "Surabaya"},
-        {60, 40, 70, 50, 60},
-        false
-    });
-
-    daftarMisi.push_back({
-        {"Pencurian Teknologi", "Laboratorium", "Batam"},
-        {40, 30, 50, 60, 90},
-        false
-    });
-
-    daftarMisi.push_back({
-        {"Serangan Udara", "Militer", "Papua"},
-        {85, 70, 80, 40, 30},
-        false
-    });
-
-    daftarMisi.push_back({
-        {"Mutan Mengamuk", "Rumah Sakit", "Bekasi"},
-        {75, 65, 50, 30, 20},
-        false
-    });
-
-    daftarMisi.push_back({
-        {"Peretasan Nasional", "Kominfo", "Jakarta"},
-        {20, 20, 20, 40, 95},
-        false
-    });
-
-    daftarMisi.push_back({
-        {"Meteor Jatuh", "NASA Indonesia", "Kalimantan"},
-        {90, 90, 60, 40, 50},
-        false
-    });
-}
-
+// ✅ FUNGSI UTAMA: KELOLA SUPERHERO (SEMUA FIELD STRING WAJIB DIISI + NAMA MINIMAL 3 KARAKTER)
 void kelolaSuperhero() {
     string pilihanStr;
     int pilihan;
@@ -897,22 +851,24 @@ void kelolaSuperhero() {
                 json data; 
 
                 if (pilihan == 1) {
+                    // === TAMBAH SUPERHERO BARU ===
                     clearScreen();
                     cout << emas << "\n<|  TAMBAH SUPERHERO BARU  |>" << putih << endl;
                     json newHero;
 
-                    string nama = getValidatedLine("\nNama: ", "Nama Superhero", false, false);
                     data = bacaDatabase();
-                    validateHeroNameUnique(data, nama);
+                    // ✅ Nama superhero: minimal 3 karakter + unik
+                    string nama = getUniqueHeroName(data, "\nNama: ");
                     newHero["name"] = nama;
                     
-                    newHero["aliases"] = getValidatedLine("Alias: ", "Alias", true, true);
-                    newHero["profileType"] = getValidatedLine("Tipe Profile: ", "Tipe Profile", true, true);
-                    newHero["age"] = getValidatedLine("Umur: ", "Umur", true, true);
-                    newHero["height"] = getValidatedLine("Tinggi (cm): ", "Tinggi", true, true);
-                    newHero["abilities"] = getValidatedLine("Kemampuan: ", "Kemampuan", true, true);
-                    newHero["birthplace"] = getValidatedLine("Tempat Lahir: ", "Tempat Lahir", true, true);
-                    newHero["description"] = getValidatedLine("Deskripsi: ", "Deskripsi", true, true);
+                    // ✅ SEMUA FIELD STRING: allowDefaultDash = false → TIDAK BOLEH KOSONG!
+                    newHero["aliases"]     = getValidatedLine("Alias: ", "Alias", false, false);
+                    newHero["profileType"] = getValidatedLine("Tipe Profile: ", "Tipe Profile", false, false);
+                    newHero["age"]         = getValidatedLine("Umur: ", "Umur", false, false);
+                    newHero["height"]      = getValidatedLine("Tinggi (cm): ", "Tinggi", false, false);
+                    newHero["abilities"]   = getValidatedLine("Kemampuan: ", "Kemampuan", false, false);
+                    newHero["birthplace"]  = getValidatedLine("Tempat Lahir: ", "Tempat Lahir", false, false);
+                    newHero["description"] = getValidatedLine("Deskripsi: ", "Deskripsi", false, false);
 
                     int points = getValidatedIntNoLimit("Points: ", "Points", false);
                     validatePointsInput(points);
@@ -925,13 +881,12 @@ void kelolaSuperhero() {
                     stats["mobility"] = getValidatedInt("Mobility: ", 0, 30, "Mobility");
                     stats["charisma"] = getValidatedInt("Charisma: ", 0, 30, "Charisma");
                     stats["intellect"]= getValidatedInt("Intellect: ", 0, 30, "Intellect");
-
                     newHero["stats"] = stats;
-                    
-                    data = bacaDatabase();
+
+                    data = bacaDatabase(); 
                     data["heroes"].push_back(newHero);
                     simpanDatabase(data);
-                    
+
                     cout << hijau << "\n✅ Superhero berhasil ditambahkan!" << putih << endl;
                     pause();
                 } 
@@ -939,6 +894,7 @@ void kelolaSuperhero() {
                     menuLihatDatabase();
                 } 
                 else if (pilihan == 3) {
+                    // UPDATE DATA SUPERHERO
                     clearScreen();
                     daftarSuperhero();
                     cout << emas << "\n<|  UPDATE DATA SUPERHERO  |>" << putih << endl;
@@ -982,6 +938,12 @@ void kelolaSuperhero() {
                                 string temp; 
                                 getline(cin, temp); 
                                 if(!temp.empty()) {
+                                    // ✅ Validasi minimal 3 karakter untuk nama baru
+                                    if (temp.length() < 3) {
+                                        showError("Nama minimal 3 karakter!");
+                                        pause();
+                                        break;
+                                    }
                                     try {
                                         validateGenericInput(temp, "Nama", false);
                                         if (temp != hero["name"]) {
@@ -994,15 +956,12 @@ void kelolaSuperhero() {
                                         break;
                                     }
                                 }
-
                                 cout << "Edit Tagline (Enter untuk skip): "; 
                                 getline(cin, temp); 
                                 if(!temp.empty()) hero["tagline"] = temp;
-                                
                                 cout << "Edit Deskripsi (Enter untuk skip): "; 
                                 getline(cin, temp); 
                                 if(!temp.empty()) hero["description"] = temp;
-                                
                                 cout << hijau << "\n✅ Biografi diperbarui." << putih << endl;
                             } 
                             else if (updatePilih == 2) {
@@ -1030,64 +989,108 @@ void kelolaSuperhero() {
                     }
                     pause();
                 } else if (pilihan == 4) {
+                    // ✅✅✅ HAPUS SUPERHERO - LOOP SAMPAI BERHASIL ATAU BATAL EKSPLESIT ✅✅✅
                     clearScreen();
-                    daftarSuperhero();
-                    cout << emas << "\n<|  PECAT SUPERHERO  |>" << putih << endl;
-                    cout << "\nMasukkan Nama Superhero: ";
-                    string namaHapus;
-                    getline(cin, namaHapus);
-
-                    if (isEmptyInput(namaHapus)) {
-                        showError("Nama tidak boleh kosong!");
-                        pause();
-                        continue;
-                    }
-
-                    data = bacaDatabase();
-                    auto it = data["heroes"].begin();
-                    bool found = false;
                     
-                    while (it != data["heroes"].end()) {
-                        if ((*it)["name"] == namaHapus) {
-                            found = true;
-                            char konfirmasi;
-                            bool validInput = false;
-                            string prompt = "\n⚠️  Warning: Apakah kamu yakin ingin memecat '" + (*it)["name"].get<string>() + "'? (y/n): ";
-
-                            do {
-                                cout << kuning << prompt << putih;
-                                cout.flush();
-                                konfirmasi = getch(); 
-                                konfirmasi = tolower(konfirmasi);
-
-                                if (konfirmasi == 'y' || konfirmasi == 'n') {
-                                    validInput = true;
-                                    cout << konfirmasi << endl; 
-                                    if (konfirmasi == 'y') {
-                                        it = data["heroes"].erase(it); 
-                                        simpanDatabase(data);
-                                        cout << hijau << "\n✅ Superhero telah dipecat/dihapus." << putih << endl;
-                                        pause();
-                                    } else {
-                                        cout << merah << "\n❌ Pembatalan penghapusan." << putih << endl;
-                                        pause();
-                                        ++it;
-                                    }
-                                } else {
-                                    cout << "\r"; 
-                                    for(int i=0; i < prompt.length() + 5; i++) cout << " "; 
-                                    cout << "\r";
-                                }
-                            } while (!validInput);
-                            break;
-                        } else {
-                            ++it;
+                    // 🔁 LOOP: Tetap di menu pecat sampai berhasil hapus ATAU user pilih 0 untuk batal
+                    while (true) {
+                        daftarSuperhero(); // Tampilkan daftar dengan nomor [1], [2], [3], ...
+                        cout << emas << "\n<|  PECAT SUPERHERO  |>" << putih << endl;
+                        cout << kuning << "💡 Input '0' untuk batal dan kembali ke menu sebelumnya." << putih << endl;
+                        
+                        // ✅ Cek jika database kosong
+                        data = bacaDatabase();
+                        if (data["heroes"].empty()) {
+                            cout << kuning << "\n⚠️  Tidak ada superhero untuk dipecat!" << putih << endl;
+                            pause();
+                            break; // Keluar dari loop karena tidak ada data
                         }
-                    }
-                    if (!found) {
-                        showError("Nama tidak ditemukan!");
-                        pause();
-                    }
+                        
+                        cout << "\nMasukkan nomor superhero yang ingin dipecat (0 untuk batal): ";
+                        string inputNomor;
+                        getline(cin, inputNomor);
+                        
+                        // ✅ Validasi 1: Tidak boleh kosong
+                        if (isEmptyInput(inputNomor)) {
+                            showError("Input tidak boleh kosong!");
+                            continue; // 🔁 Re-prompt, TETAP di menu pecat
+                        }
+                        
+                        // ✅ Cek jika user ingin batal (input "0")
+                        if (inputNomor == "0") {
+                            cout << kuning << "\n🔙 Pembatalan. Kembali ke menu sebelumnya." << putih << endl;
+                            pause();
+                            break; // ✅ Keluar dari loop delete, kembali ke menu utama kelolaSuperhero
+                        }
+                        
+                        // ✅ Validasi 2: Harus berupa angka (bukan string/huruf)
+                        int pilihanHapus;
+                        try {
+                            size_t idx = 0;
+                            pilihanHapus = stoi(inputNomor, &idx);
+                            // Pastikan seluruh input adalah angka (tidak ada karakter sisa seperti "12abc")
+                            if (idx != inputNomor.length()) {
+                                throw invalid_argument("non-numeric suffix");
+                            }
+                        } catch (const invalid_argument&) {
+                            showError("Input harus berupa angka, bukan string!");
+                            continue; // 🔁 Re-prompt, TETAP di menu pecat
+                        } catch (const out_of_range&) {
+                            showError("Nomor terlalu besar!");
+                            continue; // 🔁 Re-prompt, TETAP di menu pecat
+                        }
+                        
+                        // ✅ Validasi 3: Konversi ke 0-based index dan cek range
+                        int indexArray = pilihanHapus - 1; // User input 1-based, array 0-based
+                        if (indexArray < 0 || indexArray >= (int)data["heroes"].size()) {
+                            showError("Nomor tidak valid! Pilih antara 1 - " + to_string(data["heroes"].size()));
+                            continue; // 🔁 Re-prompt, TETAP di menu pecat
+                        }
+                        
+                        // ✅ Tampilkan konfirmasi sebelum hapus
+                        string namaHero = data["heroes"][indexArray]["name"].get<string>();
+                        char konfirmasi;
+                        bool validInput = false;
+                        string prompt = "\n⚠️  Warning: Apakah kamu yakin ingin memecat '" + namaHero + "'? (y/n): ";
+
+                        do {
+                            cout << kuning << prompt << putih;
+                            cout.flush();
+                            konfirmasi = getch(); 
+                            konfirmasi = tolower(konfirmasi);
+
+                            if (konfirmasi == 'y' || konfirmasi == 'n') {
+                                validInput = true;
+                                cout << konfirmasi << endl; 
+                                if (konfirmasi == 'y') {
+                                    // ✅ Eksekusi penghapusan
+                                    data["heroes"].erase(data["heroes"].begin() + indexArray);
+                                    simpanDatabase(data);
+                                    cout << hijau << "\n✅ Superhero '" << namaHero << "' telah dipecat/dihapus." << putih << endl;
+                                    pause();
+                                    // ✅✅✅ BERHASIL HAPUS → KELUAR DARI LOOP DELETE ✅✅✅
+                                    break; 
+                                } else {
+                                    cout << merah << "\n❌ Pembatalan penghapusan." << putih << endl;
+                                    pause();
+                                    // ❌ User batal konfirmasi → 🔁 LANJUT LOOP (re-prompt pilih nomor lagi)
+                                }
+                            } else {
+                                // Clear line untuk re-prompt konfirmasi
+                                cout << "\r"; 
+                                for(int i=0; i < (int)prompt.length() + 5; i++) cout << " "; 
+                                cout << "\r";
+                            }
+                        } while (!validInput);
+                        
+                        // Jika sudah berhasil hapus (break dari inner do-while dengan konfirmasi 'y'), keluar dari outer while
+                        // Jika user batal konfirmasi, loop akan lanjut ke atas (re-prompt pilih nomor)
+                    } // 🔁 END OF DELETE LOOP
+                    
+                } else if (pilihan == 0 ) {
+                    cout << "\n🔙 Anda akan keluar dari menu ini\n"; 
+                    pause(); 
+                    break;
                 } else {
                     showError("Pilihan Tidak Valid!");
                     pause();
@@ -1099,6 +1102,8 @@ void kelolaSuperhero() {
         }
     } while (pilihan != 0);
 }
+
+// ==================== DISPATCHER FUNCTIONS ====================
 
 string tentukanJabatan(int level) {
     if (level == 0) return "Asisten Dispatcher";
@@ -1197,17 +1202,17 @@ void kelolaDispatcher() {
                     cout << emas << "\n<|  BUAT AKUN DISPATCHER BARU  |>" << putih << endl;
                     json newDisp;
                     
-                    string id = getValidatedLine("\nID Dispatcher: ", "ID", false, true);
+                    string id = getValidatedLine("\nID Dispatcher: ", "ID", false, false);
                     newDisp["id"] = id;
                     
-                    string username = getValidatedLine("Username: ", "Username", false, false);
-                    validateDispatcherUnique(data, username);
+                    // ✅ Username: minimal 3 karakter + unik
+                    string username = getUniqueDispatcherUsername(data, "Username: ");
                     newDisp["username"] = username;
                     
-                    string password = getValidatedLine("Password: ", "Password", false, true);
+                    string password = getValidatedLine("Password: ", "Password", false, true); // allow special chars
                     newDisp["password"] = password;
                     
-                    string status = getValidatedLine("Status (Aktif/Training): ", "Status", false, true);
+                    string status = getValidatedLine("Status (Aktif/Training): ", "Status", false, false);
                     newDisp["status"] = status;
                     
                     newDisp["level"] = 0; 
@@ -1251,7 +1256,6 @@ void kelolaDispatcher() {
                             sortingDispatcher();
                         }
                         else if (subPilihan == 3) { 
-                            // ✅ PENCARIAN DISPATCHER YANG DIPERBAIKI
                             clearScreen(); 
                             daftarDispatcher();
                             string cari; 
@@ -1263,8 +1267,6 @@ void kelolaDispatcher() {
                                 pause();
                                 continue;
                             }
-                            
-                            // ✅ VALIDASI: Minimal 3 karakter
                             if (cari.length() < 3) {
                                 showError("Minimal 3 karakter untuk pencarian!");
                                 pause();
@@ -1276,7 +1278,6 @@ void kelolaDispatcher() {
                             
                             for (const auto& disp : data["dispatchers"]) {
                                 string usernameLower = toLowerManual(disp["username"].get<string>());
-                                // ✅ PREFIX MATCH untuk dispatcher
                                 if (usernameLower.find(cariLower) == 0) {
                                     cout << hijau << "\n[Data Ditemukan]" << putih << endl;
                                     cout << "ID      : " << disp["id"].get<string>() << "\nNama    : " << disp["username"].get<string>() << endl;
@@ -1344,22 +1345,28 @@ void kelolaDispatcher() {
                                 string temp;
                                 switch(up) {
                                     case 1: 
-                                        temp = getValidatedLine("Username Baru: ", "Username", true, false);
+                                        temp = getValidatedLine("Username Baru: ", "Username", false, false);
                                         if(!temp.empty()) {
+                                            // ✅ Validasi minimal 3 karakter untuk username baru
+                                            if (temp.length() < 3) {
+                                                showError("Username minimal 3 karakter!");
+                                                pause();
+                                                break;
+                                            }
                                             validateDispatcherUnique(data, temp);
                                             disp["username"] = temp;
                                         }
                                         break; 
                                     case 2: 
-                                        temp = getValidatedLine("Password Baru: ", "Password", true, true);
+                                        temp = getValidatedLine("Password Baru: ", "Password", false, true);
                                         if(!temp.empty()) disp["password"] = temp; 
                                         break; 
                                     case 3: 
-                                        temp = getValidatedLine("Status Baru: ", "Status", true, true);
+                                        temp = getValidatedLine("Status Baru: ", "Status", false, false);
                                         if(!temp.empty()) disp["status"] = temp; 
                                         break;
                                     case 4: 
-                                        temp = getValidatedLine("Jabatan Baru: ", "Jabatan", true, true);
+                                        temp = getValidatedLine("Jabatan Baru: ", "Jabatan", false, false);
                                         if(!temp.empty()) disp["jabatan"] = temp; 
                                         break;
                                     case 0:
@@ -1422,6 +1429,10 @@ void kelolaDispatcher() {
                         pause();
                     }
                     pause();
+                } else if (pilihan == 0) {
+                    cout << "\n🔙 Anda akan keluar dari menu ini"; 
+                    pause(); 
+                    break;
                 } else {
                     showError("Pilihan Tidak Valid!");
                     pause();
@@ -1432,6 +1443,52 @@ void kelolaDispatcher() {
             }
         }
     } while (pilihan != 0);
+}
+
+// ==================== LOGIN & MAIN MENU ====================
+
+string prosesLogin() {
+    int percobaan = 0;
+    string inputUser, inputPass;
+    Akun akunManager = {237218, "blazer", "123", "manager"};
+
+    while (percobaan < 3) {
+        clearScreen();
+        cout << emas << titleB << putih << endl;
+        // ✅ Username & Password tidak boleh kosong
+        inputUser = getValidatedLine("Username: ", "Username", false, false);
+        inputPass = getValidatedLine("Password: ", "Password", false, true);
+
+        if (inputUser == akunManager.username && inputPass == akunManager.password) {
+            cout << hijau << "\n✅ Login Berhasil. Selamat Datang, Head Of SDN!" << putih << endl;
+            return akunManager.role;
+        } 
+
+        try {
+            json dataDisp = bacaDatabaseDispatcher();
+            if (!dataDisp["dispatchers"].empty()) {
+                for (const auto& disp : dataDisp["dispatchers"]) {
+                    if (disp["username"] == inputUser && disp["password"] == inputPass) {
+                        cout << hijau << "\n✅ Login Berhasil. Selamat Datang, Dispatcher!" << putih << endl;
+                        return "dispatcher"; 
+                    }
+                }
+            }
+        } catch (const exception& e) {
+            cerr << kuning << "⚠️ Warning: Gagal membaca database dispatcher: " << e.what() << putih << endl;
+            pause();
+        }
+
+        percobaan++;
+        cout << merah << "\n❌ Username atau Password Salah!\n" << putih << endl;
+        cout << kuning << "⚠️  Warning: Jumlah percobaan: " << percobaan << endl;
+
+        if (percobaan == 3) {
+            cout << merah << "\n❌ Login Gagal! Akses Ditolak." << putih << endl; 
+        }
+        pause();
+    }
+    return "invalid";
 }
 
 void menuAdmin() {
@@ -1475,17 +1532,16 @@ void menuAdmin() {
     } while (pilihan != 0);
 }
 
+// ==================== DISPATCHER SHIFT SYSTEM ====================
+
 void tampilHeroShift() {
     clearScreen();
-
     cout << cyan << "\n=== HERO SHIFT LIST ===\n" << putih;
-
     if (heroShift.empty()) {
-        cout << merah << "\nBelum ada hero dalam shift!\n";
+        cout << merah << "\nBelum ada hero dalam shift!\n" << putih;
         return;
     }
-
-    for (int i = 0; i < heroShift.size(); i++) {
+    for (int i = 0; i < (int)heroShift.size(); i++) {
         cout << "\n[" << i + 1 << "] " << heroShift[i].name << endl;
         cout << "Combat    : " << heroShift[i].combat << endl;
         cout << "Vigor     : " << heroShift[i].vigor << endl;
@@ -1497,11 +1553,8 @@ void tampilHeroShift() {
 
 void tambahHeroShift() {
     json data = bacaDatabase();
-
     daftarSuperhero();
-
     cout << "\nMasukkan nama hero: ";
-
     string nama;
     getline(cin, nama);
 
@@ -1512,11 +1565,8 @@ void tambahHeroShift() {
     }
 
     for (auto &hero : data["heroes"]) {
-
         if (hero["name"] == nama) {
-
             ShiftHero h;
-
             h.name = hero["name"];
             h.combat = hero["stats"]["combat"];
             h.vigor = hero["stats"]["vigor"];
@@ -1525,32 +1575,25 @@ void tambahHeroShift() {
             h.intellect = hero["stats"]["intellect"];
             h.dariPhoenix = false;
             h.totalPointsEarned = 0;
-
             heroShift.push_back(h);
-
-            cout << hijau << "\nHero berhasil ditambahkan!\n";
+            cout << hijau << "\nHero berhasil ditambahkan!\n" << putih;
             pause();
             return;
         }
     }
-
-    cout << merah << "\nHero tidak ditemukan!\n";
+    cout << merah << "\nHero tidak ditemukan!\n" << putih;
     pause();
 }
 
 void updateStatsHero() {
-
     tampilHeroShift();
-
     if (heroShift.empty()) {
         showError("Tidak ada hero dalam shift!");
         pause();
         return;
     }
-
     string pilihStr;
     int pilih;
-
     cout << "\nPilih hero: ";
     getline(cin, pilihStr);
 
@@ -1562,10 +1605,8 @@ void updateStatsHero() {
         pause();
         return;
     }
-
     pilih--;
-
-    if (pilih < 0 || pilih >= heroShift.size()) {
+    if (pilih < 0 || pilih >= (int)heroShift.size()) {
         showError("Hero tidak valid!");
         pause();
         return;
@@ -1573,24 +1614,15 @@ void updateStatsHero() {
 
     string statPilihanStr;
     int statPilihan;
-
     clearScreen();
-
     cout << cyan << "\n=== UPDATE STATS HERO ===\n" << putih;
-
     cout << "\nHero : " << heroShift[pilih].name << endl;
     Sleep(200);  
-
-    cout << "\n[1] Combat";
-    Sleep(100);
-    cout << "\n[2] Vigor";
-    Sleep(100);
-    cout << "\n[3] Mobility";
-    Sleep(100);
-    cout << "\n[4] Charisma";
-    Sleep(100);
+    cout << "\n[1] Combat"; Sleep(100);
+    cout << "\n[2] Vigor"; Sleep(100);
+    cout << "\n[3] Mobility"; Sleep(100);
+    cout << "\n[4] Charisma"; Sleep(100);
     cout << "\n[5] Intellect";
-
     cout << "\n\nPilih stats yang ingin diupdate: ";
     getline(cin, statPilihanStr);
 
@@ -1604,62 +1636,56 @@ void updateStatsHero() {
     }
 
     switch (statPilihan) {
-
         case 1:
             if (heroShift[pilih].combat >= 30) {
                 showError("Combat sudah mencapai batas maksimal (30)!");
                 pause();
             } else {
                 heroShift[pilih].combat += 1;
-                cout << hijau << "\nCombat berhasil ditingkatkan +1!\n";
+                cout << hijau << "\nCombat berhasil ditingkatkan +1!\n" << putih;
                 Sleep(300);  
             }
             break;
-
         case 2:
             if (heroShift[pilih].vigor >= 30) {
                 showError("Vigor sudah mencapai batas maksimal (30)!");
                 pause();
             } else {
                 heroShift[pilih].vigor += 1;
-                cout << hijau << "\nVigor berhasil ditingkatkan +1!\n";
+                cout << hijau << "\nVigor berhasil ditingkatkan +1!\n" << putih;
                 Sleep(300);  
             }
             break;
-
         case 3:
             if (heroShift[pilih].mobility >= 30) {
                 showError("Mobility sudah mencapai batas maksimal (30)!");
                 pause();
             } else {
                 heroShift[pilih].mobility += 1;
-                cout << hijau << "\nMobility berhasil ditingkatkan +1!\n";
+                cout << hijau << "\nMobility berhasil ditingkatkan +1!\n" << putih;
                 Sleep(300);  
             }
             break;
-
         case 4:
             if (heroShift[pilih].charisma >= 30) {
                 showError("Charisma sudah mencapai batas maksimal (30)!");
                 pause();
             } else {
                 heroShift[pilih].charisma += 1;
-                cout << hijau << "\nCharisma berhasil ditingkatkan +1!\n";
+                cout << hijau << "\nCharisma berhasil ditingkatkan +1!\n" << putih;
                 Sleep(300);  
             }
             break;
-
         case 5:
             if (heroShift[pilih].intellect >= 30) {
                 showError("Intellect sudah mencapai batas maksimal (30)!");
                 pause();
             } else {
                 heroShift[pilih].intellect += 1;
-                cout << hijau << "\nIntellect berhasil ditingkatkan +1!\n";
+                cout << hijau << "\nIntellect berhasil ditingkatkan +1!\n" << putih;
                 Sleep(300);  
             }
             break;
-
         default:
             showError("Pilihan stats tidak valid!");
             pause();
@@ -1674,43 +1700,33 @@ struct HasilMisi {
 };
 
 int hitungTotalStats(const ShiftHero& hero) {
-    return hero.combat + hero.vigor + hero.mobility + 
-           hero.charisma + hero.intellect;
+    return hero.combat + hero.vigor + hero.mobility + hero.charisma + hero.intellect;
 }
 
 int hitungTotalStats2Hero(const ShiftHero& hero1, const ShiftHero& hero2) {
-    return (hero1.combat + hero1.vigor + hero1.mobility + 
-            hero1.charisma + hero1.intellect) +
-           (hero2.combat + hero2.vigor + hero2.mobility + 
-            hero2.charisma + hero2.intellect);
+    return hitungTotalStats(hero1) + hitungTotalStats(hero2);
 }
 
 int hitungRequirementStats(const Requirement& req) {
-    return req.combat + req.vigor + req.mobility + 
-           req.charisma + req.intellect;
+    return req.combat + req.vigor + req.mobility + req.charisma + req.intellect;
 }
 
 int hitungPersentaseKeberhasilan(int statsHero, int requirementStats) {
     if (requirementStats == 0) return 100;
-    
     double persentase = (double)statsHero / requirementStats * 100;
-    
     if (persentase > 100) persentase = 100;
     if (persentase < 0) persentase = 0;
-    
     return (int)persentase;
 }
 
 HasilMisi tentukanHasilMisi(int persentase) {
     HasilMisi hasil;
     hasil.persentase = persentase;
-    
     if (persentase > 70) {
         hasil.berhasil = true;
         hasil.points = 50;
     } else {
         int random = rand() % 70; 
-        
         if (random > 30) {
             hasil.berhasil = true;
             hasil.points = 30;
@@ -1719,16 +1735,13 @@ HasilMisi tentukanHasilMisi(int persentase) {
             hasil.points = 0;
         }
     }
-    
     return hasil;
 }
 
 void kirimHero() {
     clearScreen();
-
     cout << cyan << "\n=== DAFTAR MISI ===\n" << putih;
-
-    for (int i = 0; i < daftarMisi.size(); i++) {
+    for (int i = 0; i < (int)daftarMisi.size(); i++) {
         cout << "\n[" << i + 1 << "] "
              << daftarMisi[i].info.judul
              << " | Lokasi: " << daftarMisi[i].info.lokasi
@@ -1738,7 +1751,6 @@ void kirimHero() {
 
     string pilihMisiStr;
     int pilihMisi;
-
     cout << "\nPilih misi (0 untuk batal): ";
     getline(cin, pilihMisiStr);
 
@@ -1756,10 +1768,8 @@ void kirimHero() {
         pause();
         return;
     }
-
     pilihMisi--;
-
-    if (pilihMisi < 0 || pilihMisi >= daftarMisi.size()) {
+    if (pilihMisi < 0 || pilihMisi >= (int)daftarMisi.size()) {
         showError("Misi tidak valid!");
         pause();
         return;
@@ -1767,9 +1777,7 @@ void kirimHero() {
 
     clearScreen();
     cout << cyan << "\n=== DAFTAR HERO DALAM SHIFT ===\n" << putih;
-
     tampilHeroShift();
-
     if (heroShift.empty()) {
         showError("Tidak ada hero dalam shift!");
         pause();
@@ -1778,7 +1786,6 @@ void kirimHero() {
 
     string heroStr1;
     int hero1Idx;
-
     cout << "\nPilih hero pertama (WAJIB): ";
     getline(cin, heroStr1);
 
@@ -1790,10 +1797,8 @@ void kirimHero() {
         pause();
         return;
     }
-
     hero1Idx--;
-
-    if (hero1Idx < 0 || hero1Idx >= heroShift.size()) {
+    if (hero1Idx < 0 || hero1Idx >= (int)heroShift.size()) {
         showError("Hero pertama tidak valid!");
         pause();
         return;
@@ -1805,7 +1810,6 @@ void kirimHero() {
 
     int hero2Idx = -1;
     bool gunakan2Hero = false;
-
     if (!isEmptyInput(heroStr2)) {
         try {
             validateMenuChoice(heroStr2);
@@ -1815,60 +1819,44 @@ void kirimHero() {
             pause();
             return;
         }
-
         hero2Idx--;
-
-        if (hero2Idx < 0 || hero2Idx >= heroShift.size()) {
+        if (hero2Idx < 0 || hero2Idx >= (int)heroShift.size()) {
             showError("Hero kedua tidak valid!");
             pause();
             return;
         }
-
         if (hero2Idx == hero1Idx) {
             showError("Hero yang dipilih tidak boleh sama!");
             pause();
             return;
         }
-
         gunakan2Hero = true;
     }
 
     clearScreen();
     loadingBar();
 
-    int totalStatsHero;
-    
-    if (gunakan2Hero) {
-        totalStatsHero = hitungTotalStats2Hero(heroShift[hero1Idx], 
-                                               heroShift[hero2Idx]);
-    } else {
-        totalStatsHero = hitungTotalStats(heroShift[hero1Idx]);
-    }
-
+    int totalStatsHero = gunakan2Hero ? 
+        hitungTotalStats2Hero(heroShift[hero1Idx], heroShift[hero2Idx]) : 
+        hitungTotalStats(heroShift[hero1Idx]);
     int totalStatsRequirement = hitungRequirementStats(daftarMisi[pilihMisi].req);
-    int persentase = hitungPersentaseKeberhasilan(totalStatsHero, 
-                                                   totalStatsRequirement);
-
+    int persentase = hitungPersentaseKeberhasilan(totalStatsHero, totalStatsRequirement);
     HasilMisi hasil = tentukanHasilMisi(persentase);
 
     clearScreen();
     cout << cyan << "\n=== HASIL DISPATCH MISI ===\n" << putih;
-
     Sleep(500);
     cout << "\nHero Ditugaskan:\n";
     cout << "  • " << heroShift[hero1Idx].name << endl;
     Sleep(300);
-    
     if (gunakan2Hero) {
         cout << "  • " << heroShift[hero2Idx].name << endl;
         Sleep(300);
     }
-
     cout << "\nMisi: " << daftarMisi[pilihMisi].info.judul << endl;
     Sleep(300);
     cout << "Lokasi: " << daftarMisi[pilihMisi].info.lokasi << endl;
     Sleep(300);
-
     cout << "\n" << emas << "--- Analisis Statistik ---" << putih << endl;
     Sleep(300);
     cout << "Total Stats Hero: " << totalStatsHero << endl;
@@ -1877,34 +1865,21 @@ void kirimHero() {
     Sleep(300);
     cout << "Persentase Keberhasilan: " << persentase << "%" << endl;
     Sleep(300);
-
     cout << "\n" << (hasil.berhasil ? hijau : merah);
-    if (hasil.berhasil) {
-        cout << "✅ MISI BERHASIL!\n";
-    } else {
-        cout << "❌ MISI GAGAL!\n";
-    }
-    cout << putih;
-
+    cout << (hasil.berhasil ? "✅ MISI BERHASIL!\n" : "❌ MISI GAGAL!\n") << putih;
     Sleep(500);
     cout << "\nReward Points: +" << hasil.points << " points";
-    if (gunakan2Hero) {
-        cout << " (per hero)";
-    }
+    if (gunakan2Hero) cout << " (per hero)";
     cout << endl;
-
     Sleep(500);
-    heroShift[hero1Idx].totalPointsEarned += hasil.points;
     
-    if (gunakan2Hero) {
-        heroShift[hero2Idx].totalPointsEarned += hasil.points;
-    }
+    heroShift[hero1Idx].totalPointsEarned += hasil.points;
+    if (gunakan2Hero) heroShift[hero2Idx].totalPointsEarned += hasil.points;
 
     if (hasil.berhasil) {
         daftarMisi.erase(daftarMisi.begin() + pilihMisi);
         cout << hijau << "\n[+] Misi dihapus dari daftar." << putih << endl;
         Sleep(300);
-
         if (daftarMisi.empty()) {
             cout << hijau << "\n✅ Semua misi telah diselesaikan!" << putih << endl;
             cout << "Shift akan berakhir setelah menu ini ditutup.\n";
@@ -1914,18 +1889,14 @@ void kirimHero() {
 }
 
 void hapusHeroShift() {
-
     tampilHeroShift();
-
     if (heroShift.empty()) {
         showError("Tidak ada hero dalam shift!");
         pause();
         return;
     }
-
     string pilihStr;
     int pilih;
-
     cout << "\nPilih hero yang dihapus: ";
     getline(cin, pilihStr);
 
@@ -1937,69 +1908,64 @@ void hapusHeroShift() {
         pause();
         return;
     }
-
     pilih--;
-
-    if (pilih < 0 || pilih >= heroShift.size()) {
+    if (pilih < 0 || pilih >= (int)heroShift.size()) {
         showError("Hero tidak valid!");
         pause();
         return;
     }
-
     heroShift.erase(heroShift.begin() + pilih);
-
-    cout << hijau << "\nHero dihapus dari shift!\n";
-
+    cout << hijau << "\nHero dihapus dari shift!\n" << putih;
     pause();
 }
 
+void initMission() {
+    daftarMisi.clear();
+    daftarMisi.push_back({{"Penyanderaan Bank", "Kapolsek Metro", "Jakarta"}, {70, 50, 40, 30, 20}, false});
+    daftarMisi.push_back({{"Invasi Monster", "Warga", "Bandung"}, {80, 60, 50, 20, 30}, false});
+    daftarMisi.push_back({{"Bom Kota", "Pemerintah", "Surabaya"}, {60, 40, 70, 50, 60}, false});
+    daftarMisi.push_back({{"Pencurian Teknologi", "Laboratorium", "Batam"}, {40, 30, 50, 60, 90}, false});
+    daftarMisi.push_back({{"Serangan Udara", "Militer", "Papua"}, {85, 70, 80, 40, 30}, false});
+    daftarMisi.push_back({{"Mutan Mengamuk", "Rumah Sakit", "Bekasi"}, {75, 65, 50, 30, 20}, false});
+    daftarMisi.push_back({{"Peretasan Nasional", "Kominfo", "Jakarta"}, {20, 20, 20, 40, 95}, false});
+    daftarMisi.push_back({{"Meteor Jatuh", "NASA Indonesia", "Kalimantan"}, {90, 90, 60, 40, 50}, false});
+}
+
 void menuDispatcher() {
-
     initMission();
-
     string pilihStr;
     int pilih;
 
     do {
-
         clearScreen();
-
-        cout << cyan;
-        cout << "\n=== SHIFT DISPATCHER #" << currentShift << " ===\n";
-        cout << putih;
-
+        cout << cyan << "\n=== SHIFT DISPATCHER #" << currentShift << " ===\n" << putih;
         cout << "\n" << emas << "<| HERO DALAM SHIFT |>" << putih << "\n";
-        
         if (heroShift.empty()) {
             cout << merah << "  (Belum ada hero)\n" << putih;
         } else {
-            for (int i = 0; i < heroShift.size(); i++) {
+            for (int i = 0; i < (int)heroShift.size(); i++) {
                 cout << "  [" << i + 1 << "] " << heroShift[i].name 
                      << " | Points: " << heroShift[i].totalPointsEarned << "\n";
                 Sleep(150);
             }
         }
-
         cout << "\n" << emas << "<| DAFTAR MISI AKTIF |>" << putih << "\n";
-        
         if (daftarMisi.empty()) {
             cout << hijau << "  (Tidak ada misi - Shift akan selesai)\n" << putih;
         } else {
-            for (int i = 0; i < daftarMisi.size(); i++) {
+            for (int i = 0; i < (int)daftarMisi.size(); i++) {
                 cout << "  [" << i + 1 << "] " 
                      << daftarMisi[i].info.judul 
                      << " | " << daftarMisi[i].info.lokasi << "\n";
                 Sleep(150);
             }
         }
-
         cout << "\n" << kuning << "=== MENU OPTIONS ===" << putih << "\n";
         cout << "[1] Tambah Hero\n";
         cout << "[2] Update Stats Hero\n";
         cout << "[3] Kirim Hero ke Misi\n";
         cout << "[4] Hapus Hero dari Shift\n";
         cout << "[0] Keluar\n";
-
         cout << "\nPilihan: ";
         getline(cin, pilihStr);
 
@@ -2014,22 +1980,13 @@ void menuDispatcher() {
         }
 
         switch (pilih) {
-
-            case 1:
-                tambahHeroShift();
-                break;
-
-            case 2:
-                updateStatsHero();
-                break;
-
+            case 1: tambahHeroShift(); break;
+            case 2: updateStatsHero(); break;
             case 3:
                 kirimHero();
-                
                 if (daftarMisi.empty()) {
                     cout << hijau << "\n✅ Semua misi telah diselesaikan!" << putih << endl;
                     cout << "Shift berakhir secara otomatis.\n";
-                    
                     cout << cyan << "\n<| RINGKASAN SHIFT |>\n" << putih;
                     int totalPoints = 0;
                     for (const auto& hero : heroShift) {
@@ -2037,7 +1994,6 @@ void menuDispatcher() {
                         totalPoints += hero.totalPointsEarned;
                     }
                     cout << "\nTotal Points Shift: " << totalPoints << "\n";
-                    
                     currentShift++;
                     heroShift.clear();
                     pause();
@@ -2045,11 +2001,7 @@ void menuDispatcher() {
                     return;
                 }
                 break;
-
-            case 4:
-                hapusHeroShift();
-                break;
-
+            case 4: hapusHeroShift(); break;
             case 0:
                 cout << kuning << "\nMengakhiri shift...\n" << putih;
                 cout << "Catatan: Shift yang belum selesai akan dihapus.\n";
@@ -2057,12 +2009,10 @@ void menuDispatcher() {
                 heroShift.clear();
                 pause();
                 return;
-
             default:
                 showError("Pilihan tidak valid!");
                 pause();
         }
-
     } while (true);
 }
 
@@ -2106,7 +2056,7 @@ void menuUtama() {
                     }
                 }
                 else if (pilihan == 0) {
-                    cout << emas << "\nTerimakasih Telah Menggunakan Program Ini" << endl; 
+                    cout << emas << "\nTerimakasih Telah Menggunakan Program Ini" << putih << endl; 
                     pause();
                 }
                 else {
@@ -2124,8 +2074,8 @@ void menuUtama() {
 int main() {
     SetConsoleOutputCP(65001);
     srand(time(0));
-
     try {
+        // loadingScreen();  
         menuUtama();
     } catch (const exception& e) {
         cerr << "\n[FATAL SYSTEM CRASH] " << e.what() << endl;
