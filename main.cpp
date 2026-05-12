@@ -28,7 +28,6 @@ using json = nlohmann::json;
 #define emas    "\033[38;5;220m"
 #define kuning  "\033[33m" 
 
-// ==================== UTILITIES ====================
 
 string toLowerManual(string s) {
     string result = s;
@@ -40,7 +39,6 @@ string toLowerManual(string s) {
 
 void pause(const string& msg = "\n[Tekan enter untuk melanjutkan...]") {
     cout << putih << msg << endl;
-    cin.ignore(numeric_limits<streamsize>::max(), '\n');
     getch();
 }
 
@@ -97,9 +95,7 @@ void showError(const string& message) {
     cout << merah << "\n❌ Error: " << message << putih << endl;
 }
 
-// ==================== VALIDATION FUNCTIONS ====================
 
-// ✅ SEMUA FIELD STRING: tidak boleh kosong, re-prompt jika kosong
 string getValidatedLine(const string& prompt, const string& fieldName, 
                         bool allowDefaultDash = false, bool allowEmpty = false) {
     string input;
@@ -124,7 +120,6 @@ string getValidatedLine(const string& prompt, const string& fieldName,
     }
 }
 
-// ✅ Validasi khusus untuk Nama Superhero & Username: minimal 3 karakter
 string getValidatedName(const string& prompt, const string& fieldName) {
     string input;
     while (true) {
@@ -192,7 +187,6 @@ int getValidatedInt(const string& prompt, int minVal, int maxVal, const string& 
     }
 }
 
-// ✅ Validasi int TANPA batas atas (untuk points)
 int getValidatedIntNoLimit(const string& prompt, const string& fieldName, bool allowNegative = false) {
     string input;
     while (true) {
@@ -231,7 +225,6 @@ void validatePointsInput(int value) {
     }
 }
 
-// ✅ Wrapper: validasi nama superhero (unik + minimal 3 karakter)
 string getUniqueHeroName(const json& data, const string& prompt) {
     string nama;
     while (true) {
@@ -248,7 +241,6 @@ string getUniqueHeroName(const json& data, const string& prompt) {
     }
 }
 
-// ✅ Wrapper: validasi username dispatcher (unik + minimal 3 karakter)
 string getUniqueDispatcherUsername(const json& data, const string& prompt) {
     string username;
     while (true) {
@@ -302,8 +294,6 @@ void validateGenericInput(const string& input, const string& fieldName, bool all
     }
 }
 
-// ==================== STRUCTS ====================
-
 struct Akun {
     int id;
     string username;
@@ -342,9 +332,6 @@ struct ActiveMission {
     bool selesai;
 };
 
-// ==================== GLOBAL VARIABLES ====================
-
-// ✅ TITLE ASCII ART: SPACING DIPERTAHANKAN 100% SESUAI ASLI
 string title = R"(
 
 
@@ -376,6 +363,7 @@ string titleA = R"(
 
             🏢 WELCOME TO SDN 🏢               
         Silahkan Pilih 1 Untuk Login       
+
 ==============================================
 
    [1]. 🔒 Login                          
@@ -423,11 +411,13 @@ string titleE = R"(
         🦸 PENGELOLAAN SUPERHERO 🦸          
 
 ===========================================
+
    [1]. ➕ Tambah Superhero                  
    [2]. 📄 Lihat Database                    
    [3]. ✏️  Update Data Superhero             
    [4]. 🗑️  Pecat Superhero                   
    [0]. 🔙 Kembali Ke Menu Admin             
+
 ===========================================
 )";
 
@@ -437,11 +427,13 @@ string titleF = R"(
          🛢️  SUPERHERO DATABASE 🛢️        
 
 ===========================================
+
    [1]. 📄 Lihat Semua Data                  
    [2]. 🔃 Urutkan Nama Superhero            
    [3]. 🔃 Urutkan Poin Superhero            
    [4]. 🔍 Cari Superhero                    
    [0]. 🔙 Kembali ke Database               
+
 ===========================================
 )";
 
@@ -451,9 +443,11 @@ string titleG = R"(
           🔃 SORTING DATABASE 🔃   
 
 ===========================================
+
    [1]. 🔤 Urutkan Berdasarkan Nama          
    [2]. 🌟 Urutkan Berdasarkan Poin          
    [0]. 🔙 Keluar                            
+
 ===========================================
 )";
 
@@ -463,11 +457,13 @@ string titleH = R"(
       🧑‍ PENGELOLAAN DISPATCHER 🧑 
 
 ===========================================
+
    [1]. ➕ Tambah Akun Dispatcher         
    [2]. 🔃 Lihat Data Dispatcher      
    [3]. ✏️  Update Data Dispatcher         
    [4]. 🗑️  Pecat Dispatcher               
    [0]. 🔙 Kembali Ke Menu Admin          
+
 ===========================================
 )";
 
@@ -477,10 +473,12 @@ string titleI = R"(
        🛢️  DISPATCHER DATABASE 🛢️     
 
 ===========================================
+
    [1]. 📄 Lihat Semua Data Dispatcher        
    [2]. 🔃 Urutkan Data             
    [3]. 🔍 Cari Nama Dispatcher           
    [0]. 🔙 Kembali                        
+
 ===========================================
 )";
 
@@ -490,9 +488,11 @@ string titleJ = R"(
           🔃 SORTING DATABASE 🔃         
 
 ===========================================
+
    [1]. 🔤 Urutkan Nama              
    [2]. 🌟 Urutkan Berdasarkan Level         
    [0]. 🔙 Kembali                        
+
 ===========================================
 )";
 
@@ -502,11 +502,13 @@ string titleK = R"(
          ⚙️  UPDATE DATA AKUN ⚙️         
 
 ===========================================
+
    [1]. 📝 Ubah Username              
    [2]. 🔒 Ubah Password      
    [3]. 🟢 Ubah Status      
    [4]. 🧑 Ubah Jabatan        
    [0]. 🔙 Kembali                        
+
 ===========================================
 )";
 
@@ -672,54 +674,79 @@ void daftarSuperhero() {
 void searchingHeroes() {
     try {
         json data = bacaDatabase();
-        daftarSuperhero();
-        string cari;
-        cout << emas << "\n<|     CARI DATA SUPERHERO     |>" << putih << endl;
-        cout << "\nMasukkan Nama Superhero: ";
-        getline(cin, cari);
         
-        if (isEmptyInput(cari)) {
-            showError("Pencarian tidak boleh kosong!");
-            pause();
-            return;
-        }
-        if (cari.length() < 3) {
-            showError("Minimal 3 karakter untuk pencarian!");
-            pause();
-            return;
-        }
-        
-        bool ditemukan = false;
-        string cariLower = toLowerManual(cari); 
-        vector<json> hasilPencarian;
-        for (const auto &hero : data["heroes"]) {
-            string namaHero = hero["name"].get<string>();
-            string namaLower = toLowerManual(namaHero); 
-            if (namaLower.find(cariLower) == 0) {
-                hasilPencarian.push_back(hero);
+        while (true) {
+            daftarSuperhero();
+            cout << emas << "\n<|     CARI DATA SUPERHERO     |>" << putih << endl;
+            cout << kuning << "💡 Input '0' untuk batal dan kembali ke menu sebelumnya." << putih << endl;
+            cout << "\nMasukkan Nama Superhero: ";
+            string cari;
+            getline(cin, cari);
+            
+            // ✅ Cek jika user ingin batal (input "0")
+            if (cari == "0") {
+                cout << kuning << "\n🔙 Pembatalan. Kembali ke menu sebelumnya." << putih << endl;
+                pause();
+                break; // ✅ Keluar dari loop pencarian, kembali ke menu sebelumnya
             }
-        }
+            
+            // ✅ Validasi 1: Tidak boleh kosong
+            if (isEmptyInput(cari)) {
+                showError("Pencarian tidak boleh kosong!");
+                pause();
+                continue;
+            }
+            
+            // ✅ Validasi 2: Minimal 3 karakter
+            if (cari.length() < 3) {
+                showError("Minimal 3 karakter untuk pencarian!");
+                pause();
+                continue; 
+            }
+            
+            // ✅ Lakukan pencarian (prefix match)
+            bool ditemukan = false;
+            string cariLower = toLowerManual(cari); 
+            vector<json> hasilPencarian;
+            for (const auto &hero : data["heroes"]) {
+                string namaHero = hero["name"].get<string>();
+                string namaLower = toLowerManual(namaHero); 
+                if (namaLower.find(cariLower) == 0) {
+                    hasilPencarian.push_back(hero);
+                }
+            }
 
-        if (!hasilPencarian.empty()) {
-            clearScreen();
-            cout << cyan << "\n<|     HASIL PENCARIAN (" << hasilPencarian.size() << " DITEMUKAN)     |>" << putih << endl;
-            for (const auto& hero : hasilPencarian) {
-                cout << putih << "\n" << hero["name"].get<string>() 
-                     << " | " << (hero.contains("aliases") ? hero["aliases"].get<string>() : "-") << endl;
-                cout << "Poin: " << hero["points"].get<int>() << endl;
-                cout << "------------------------" << endl;
+            if (!hasilPencarian.empty()) {
+                clearScreen();
+                cout << cyan << "\n<|     HASIL PENCARIAN DITEMUKAN     |>" << putih << endl;
+                for (const auto& hero : hasilPencarian) {
+                    cout << putih << "\n" << hero["name"].get<string>() 
+                         << " | " << (hero.contains("aliases") ? hero["aliases"].get<string>() : "-") << endl;
+                    cout << "\n| " << hero["profilType"].get<string>() << " |\n" << endl;
+                    cout << "------------------------" << endl;
+                    cout << "\nUmur         : " << (hero.contains("age") ? hero["age"].get<string>() : "-") << endl;
+                    cout << "Tinggi       : " << (hero.contains("height") ? hero["height"].get<string>() : "-") << endl;
+                    cout << "Tempat lahir : " << (hero.contains("birthplace") ? hero["birthplace"].get<string>() : "-") << endl;
+                    cout << "Kemampuan    : " << (hero.contains("abilities") ? hero["abilities"].get<string>() : "-") << endl;
+                    cout << "Deskripsi    : " << (hero.contains("description") ? hero["description"].get<string>() : "-") << endl;
+                    cout << "Poin         : " << hero["points"].get<int>() << endl;
+                    cout << "\n------------------------" << endl;
+                }
+                cout << "\n💡 Tip: Gunakan nama lebih spesifik untuk hasil yang lebih akurat." << endl;
+                ditemukan = true;
             }
-            cout << "\n💡 Tip: Gunakan nama lebih spesifik untuk hasil yang lebih akurat." << endl;
-            ditemukan = true;
+            
+            if (!ditemukan) {
+                clearScreen();
+                cout << cyan << "\n<|     HASIL PENCARIAN DATA     |>" << putih << endl;
+                cout << merah << "\n❌ Superhero tidak ditemukan!" << putih << endl;
+                cout << kuning << "\n💡 Tip: Cek ejaan atau gunakan awalan nama yang berbeda." << putih << endl;
+            }
+            
+
+            pause();
+            break; 
         }
-        
-        if (!ditemukan) {
-            clearScreen();
-            cout << cyan << "\n<|     HASIL PENCARIAN DATA     |>" << putih << endl;
-            cout << merah << "\n❌ Superhero tidak ditemukan!" << putih << endl;
-            cout << kuning << "\n💡 Tip: Cek ejaan atau gunakan awalan nama yang berbeda." << putih << endl;
-        }
-        pause();
     } catch (const exception& e) {
         cerr << kuning << "\n[ERROR] Gagal mencari  " << e.what() << putih << endl;
         pause();
@@ -808,7 +835,6 @@ void menuLihatDatabase() {
                     pause();
                 } else if (pilihan == 4) {
                     searchingHeroes();
-                    pause();
                 } else if (pilihan == 0) {
                     cout << kuning << "\n🔙 Anda Akan Kembali ke Menu Pengelolaan Superhero!" << putih << endl;
                     pause();
