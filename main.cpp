@@ -1577,23 +1577,24 @@ void tampilHeroShift() {
     }
 }
 
-void tambahHeroShift() {
+// B //
+bool tambahHeroShift() {
     json data = bacaDatabase();
     daftarSuperhero();
-    cout << "\nMasukkan nama hero: ";
-    string nama;
-    getline(cin, nama);
+    
+    // ✅ Gunakan getValidatedName: otomatis handle empty input & minimal 3 karakter
+    string namaInput = getValidatedName("\nMasukkan nama hero: ", "Nama hero");
 
-    if (isEmptyInput(nama)) {
-        showError("Nama hero tidak boleh kosong!");
+    if (!isHeroNameExists(data, namaInput)) {
+        showError("Hero tidak ditemukan dalam database!");
         pause();
-        return;
+        return false; 
     }
 
     for (auto &hero : data["heroes"]) {
-        if (hero["name"] == nama) {
+        if (toLowerManual(hero["name"].get<string>()) == toLowerManual(namaInput)) {
             ShiftHero h;
-            h.name = hero["name"];
+            h.name = hero["name"]; 
             h.combat = hero["stats"]["combat"];
             h.vigor = hero["stats"]["vigor"];
             h.mobility = hero["stats"]["mobility"];
@@ -1604,11 +1605,13 @@ void tambahHeroShift() {
             heroShift.push_back(h);
             cout << hijau << "\nHero berhasil ditambahkan!\n" << putih;
             pause();
-            return;
+            return true; 
         }
     }
-    cout << merah << "\nHero tidak ditemukan!\n" << putih;
+    
+    showError("Gagal memproses hero!");
     pause();
+    return false;
 }
 
 void updateStatsHero() {
@@ -1957,6 +1960,22 @@ void initMission() {
     daftarMisi.push_back({{"Meteor Jatuh", "NASA Indonesia", "Kalimantan"}, {90, 90, 60, 40, 50}, false});
 }
 
+void tutorialShift() {
+    clearScreen();
+    Sleep(200);
+    cout << "[#] Selamat Datang di Dispatcher SDN" << putih << endl;
+    cout << "Salam dan selamat datang di simulasi pelatihan ini!" 
+         << "Kita mungkin superhero tapi kita bukan apa-apa tanpa pahlawan SDN yang sebenarnya; Dispatcher";
+    pause();
+
+    Sleep(100);
+
+    clearScreen();
+    cout << "[#] Langkah Pertama: Tambah Superhero" << putih << endl;
+    cout << "\nTekan 1 untuk menambahkan superhero";
+    tambahHeroShift();
+}
+
 void menuDispatcher() {
     initMission();
     string pilihStr;
@@ -2101,7 +2120,7 @@ int main() {
     SetConsoleOutputCP(65001);
     srand(time(0));
     try {
-        // loadingScreen();  
+        loadingScreen();  
         menuUtama();
     } catch (const exception& e) {
         cerr << "\n[FATAL SYSTEM CRASH] " << e.what() << endl;
