@@ -1,21 +1,21 @@
 {
     "heroes": [
         {
-            "abilities": "Kekebalan Absolut, Massa Besar",
-            "age": "Tidak Diketahui",
-            "aliases": "-",
-            "birthplace": "Tidak Diketahui",
-            "description": "Makhluk absurd dengan kekebalan absolut.",
-            "height": "-",
+            "abilities": "Kinetic-void, Big, Reality-warp",
+            "age": "29",
+            "aliases": "That'll hold em alright",
+            "birthplace": "California, USA",
+            "description": "Sangat lebar, Kebal segalanya, Membuat musuh mempertanyakan realitas.",
+            "height": "210,82",
             "name": "Big Chungus",
             "points": 309,
-            "profilType": "Makhluk Absurd",
+            "profilType": "Guardian & Juggernaut",
             "stats": {
-                "charisma": 16,
-                "combat": 10,
-                "intellect": 8,
-                "mobility": 6,
-                "vigor": 17
+                "charisma": 3,
+                "combat": 7,
+                "intellect": 3,
+                "mobility": 5,
+                "vigor": 6
             }
         },
         {
@@ -26,7 +26,7 @@
             "description": "Misterius, Mematikan dan Tidak bisa didekati",
             "height": "167,64",
             "name": "Coupe",
-            "points": 77,
+            "points": 70,
             "profilType": "Shadow & Assassin",
             "stats": {
                 "charisma": 1,
@@ -37,15 +37,15 @@
             }
         },
         {
-            "abilities": "Serangan Area Beracun, Duri Tajam",
-            "age": "Tidak Diketahui",
-            "aliases": "-",
-            "birthplace": "Tidak Diketahui",
-            "description": "Hero berduri dengan serangan area beracun.",
-            "height": "-",
+            "abilities": "Spike-burst, Toxikinesis, Carapace",
+            "age": "33",
+            "aliases": "The Spiked Hazard",
+            "birthplace": "Samarinda, Indonesia",
+            "description": "Bau menyengat, Penampilan berduri yang mengancam, Sangat keras kepala.",
+            "height": "175,26",
             "name": "Durian",
             "points": 311,
-            "profilType": "Hero Berduri",
+            "profilType": "Bruiser & Area Denier",
             "stats": {
                 "charisma": 6,
                 "combat": 17,
@@ -62,12 +62,12 @@
             "description": "Petarung api dengan kekuatan fisik tinggi. Masalah Amarah, Riwayat Pembakaran yang tidak Mengejutkan",
             "height": "193,04",
             "name": "Flambae",
-            "points": 300,
+            "points": 107,
             "profilType": "Fire & Flame",
             "stats": {
                 "charisma": 1,
                 "combat": 4,
-                "intellect": 4,
+                "intellect": 1,
                 "mobility": 3,
                 "vigor": 2
             }
@@ -80,7 +80,7 @@
             "description": "Massa besar tanah liat dan lumpur, menikmati puisi dan bola basket",
             "height": "213,36",
             "name": "Golem",
-            "points": 305,
+            "points": 91,
             "profilType": "Defender & Versatile",
             "stats": {
                 "charisma": 3,
@@ -91,15 +91,15 @@
             }
         },
         {
-            "abilities": "Kecepatan Super, Gelombang Kejut",
+            "abilities": "Hyperspeed, Shockwave, Endurance",
             "age": "Tidak Diketahui",
-            "aliases": "-",
-            "birthplace": "Tidak Diketahui",
-            "description": "Centaur super cepat dengan gelombang kejut.",
-            "height": "-",
+            "aliases": "The Galloping Sonic",
+            "birthplace": "Athena, Yunani",
+            "description": "Energi meluap, Kecepatan yang memekakkan telinga, Selalu bergerak maju",
+            "height": "190 cm (Centaur form)",
             "name": "Horsegirl",
             "points": 346,
-            "profilType": "Centaur",
+            "profilType": "Centaur & Speedster",
             "stats": {
                 "charisma": 8,
                 "combat": 10,
@@ -116,7 +116,7 @@
             "description": "Remaja perempuan yang bisa menghilang sesuka hati ketika menahan nafas, Penderita Asma, Kasar",
             "height": "167,64",
             "name": "Invisigal",
-            "points": 285,
+            "points": 72,
             "profilType": "Loner & Thief",
             "stats": {
                 "charisma": 1,
@@ -134,7 +134,7 @@
             "description": "Berpenampilan entitas iblis. Memiliki ekor prehensil, Atheist",
             "height": "198,12",
             "name": "Malevola",
-            "points": 295,
+            "points": 101,
             "profilType": "Sorceress & Half-Demon",
             "stats": {
                 "charisma": 3,
@@ -145,6 +145,42 @@
             }
         },
         {
+            "abilities": "Superhuman Strength, Durabillity, Energy Absorption, Flight",
+            "age": "Tak Diketahui",
+            "aliases": "Phenomenal Man",
+            "birthplace": "Urgot-52dc",
+            "description": "Dengan penuh kemurahan hati memilih untuk tinggal di bumi dan melindungi tubuh kita yang lemah",
+            "height": "193,04",
+            "name": "Phenomaman",
+            "points": 403,
+            "profilType": "Impenetrable & Alien",
+            "stats": {
+                "charisma": 3,
+                "combat": 7,
+                "intellect": 1,
+                "mobility": 6,
+                "vigor": 7
+            }
+        },
+        {
+            "abilities": "Photokinesis, Holograpic Manipulation",
+            "age": "26",
+            "aliases": "Trick Of The Light",
+            "birthplace": "Flint, MI",
+            "description": "1.3 Followers, Pop Star, Sangat Dramatic",
+            "height": "162,56",
+            "name": "Prism",
+            "points": 85,
+            "profilType": "Pop Star & Illusionist",
+            "stats": {
+                "charisma": 4,
+                "combat": 4,
+                "intellect": 2,
+                "mobility": 1,
+                "vigor": 1
+            }
+        },
+        {
             "abilities": "Picnokinesis, Superhuman Strength and Durability, Pain Immunity",
             "age": "43",
             "aliases": "Smallest Strongman",
@@ -152,7 +188,7 @@
             "description": "Memiliki kekuatan sepuluh pria dan setengah tinggi badan pria",
             "height": "99,06",
             "name": "Punch Up",
-            "points": 298,
+            "points": 97,
             "profilType": "Brawler & Fighter",
             "stats": {
                 "charisma": 3,
@@ -170,7 +206,7 @@
             "description": "Dapat berubah menjadi kelelawar raksasa dan sangat cerdas",
             "height": "182,88",
             "name": "Sonar",
-            "points": 300,
+            "points": 71,
             "profilType": "Intellectual & Hybrid",
             "stats": {
                 "charisma": 3,
@@ -181,15 +217,15 @@
             }
         },
         {
-            "abilities": "Manipulasi Pikiran, Stealth",
-            "age": "Tidak Diketahui",
-            "aliases": "-",
-            "birthplace": "Tidak Diketahui",
-            "description": "Ahli penyusup dan manipulasi pikiran.",
-            "height": "-",
+            "abilities": "Shadow-step, Telepathy, Technopathy",
+            "age": "29",
+            "aliases": "Shadow of Deceit",
+            "birthplace": "Tokyo, Jepang",
+            "description": "Senyum misterius, Ahli manipulasi pikiran, Tidak pernah meninggalkan jejak.",
+            "height": "180,34",
             "name": "Subterfuge",
             "points": 350,
-            "profilType": "Ahli Penyusup",
+            "profilType": "Assassin & Infiltrator",
             "stats": {
                 "charisma": 10,
                 "combat": 9,
@@ -199,15 +235,15 @@
             }
         },
         {
-            "abilities": "Ilusi Nyata, Manipulasi Persepsi",
-            "age": "Tidak Diketahui",
-            "aliases": "-",
-            "birthplace": "Tidak Diketahui",
-            "description": "Pengendali ilusi yang terasa nyata.",
-            "height": "-",
+            "abilities": "Mind-hack, Holography, Psionics",
+            "age": "31",
+            "aliases": "Reality Weaver",
+            "birthplace": "Milan, Italia",
+            "description": "Berpakaian necis, Menganggap dunia hanyalah panggung sandiwara.",
+            "height": "182",
             "name": "The Illusioneer",
             "points": 343,
-            "profilType": "Pengendali Ilusi",
+            "profilType": "Mage & Controller",
             "stats": {
                 "charisma": 17,
                 "combat": 7,
@@ -219,10 +255,10 @@
         {
             "abilities": "Manipulasi Listrik, Pertumbuhan Ukuran",
             "age": "Tidak Diketahui",
-            "aliases": "-",
+            "aliases": "The Living Storm",
             "birthplace": "Tidak Diketahui",
-            "description": "Raksasa badai yang semakin besar dengan listrik.",
-            "height": "-",
+            "description": "Tubuh raksasa, Tatapan tajam secepat kilat, Suka menghancurkan tanpa sisa",
+            "height": "Fighter & Vanguard",
             "name": "Thundersize",
             "points": 352,
             "profilType": "Raksasa Badai",
@@ -232,18 +268,19 @@
                 "intellect": 9,
                 "mobility": 15,
                 "vigor": 11
-            }
+            },
+            "tagline": "The Living Storm"
         },
         {
-            "abilities": "Manipulasi Es, Zirah Es",
-            "age": "Tidak Diketahui",
-            "aliases": "-",
-            "birthplace": "Tidak Diketahui",
-            "description": "Penguasa musim dingin dengan zirah es.",
-            "height": "-",
+            "abilities": "Cryokinesis, Endothermy, Ice-armor",
+            "age": "38",
+            "aliases": "Eternal Frost",
+            "birthplace": "Yakutsk, Rusia",
+            "description": "Dingin luar dalam, Jarang bicara, Pelindung tim yang tidak tergoyahkan.",
+            "height": "180,34",
             "name": "Winter",
             "points": 326,
-            "profilType": "Penguasa Musim Dingin",
+            "profilType": "Tank & Crowd Control",
             "stats": {
                 "charisma": 7,
                 "combat": 16,
