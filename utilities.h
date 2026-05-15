@@ -45,8 +45,6 @@ json bacaDatabase();
 json bacaDatabaseDispatcher();
 void loadingBar();
 
-// Bagian Error Handling
-
 string toLowerManual(string s) {
     string result = s;
     for (int i = 0; i < result.length(); i++) {
@@ -115,7 +113,7 @@ void showError(const string& message) {
 }
 
 string getValidatedLine(const string& prompt, const string& fieldName, 
-                        bool allowDefaultDash, bool allowEmpty) { // <--- Hapus "= false" di kedua parameter
+                        bool allowDefaultDash, bool allowEmpty) { 
     string input;
     while (true) {
         cout << putih << prompt;
@@ -341,8 +339,6 @@ void showError(const string& message, bool autoPause) {
         pause();
     }
 }
-
-// Bagian Title
 
 string title = R"(
 

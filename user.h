@@ -6,23 +6,13 @@
 #include <string>
 #include <algorithm>
 #include <stdexcept>
-#include <windows.h> // Untuk Sleep
+#include <windows.h>
 
-// 1. Include struct.h DULUAN agar ShiftHero & ActiveMission dikenali
 #include "struct.h" 
-
-// 2. Include utilities.h KEDUA (karena isinya butuh struct.h)
 #include "utilities.h"
-
-// 3. JANGAN include admin.h di sini untuk menghindari circular dependency.
-// Jika butuh fungsi dari admin.h (seperti daftarSuperhero), kita akan definisikan lokal atau panggil via extern jika perlu.
-// Namun, di kode ini saya akan menyertakan versi sederhana dari tampilkan database agar user.h berdiri sendiri.
 
 using namespace std;
 using json = nlohmann::json;
-
-// Forward declaration jika diperlukan, tapi sebaiknya hindari antar-header function call yang rumit.
-// Kita asumsikan fungsi-fungsi helper di utilities.h sudah cukup.
 
 void tampilkanTabelHeroShift() {
     string header(64, '=');
@@ -57,7 +47,6 @@ void tampilkanTabelHeroShift() {
     }
 }
 
-// Fungsi bantu lokal untuk menampilkan list hero dari JSON (pengganti daftarSuperhero dari admin.h)
 void tampilkanListHeroDariJSON(const json& data) {
     string header(68, '=');
     if (data["heroes"].empty()) {
@@ -530,7 +519,6 @@ bool tambahHeroShift() {
         
         cout << cyan << "\n--- DATABASE SUPERHERO (TERSEDIA) ---" << putih << endl;
         
-        // Gunakan fungsi lokal yang sudah kita buat di atas, jangan panggil daftarSuperhero() dari admin.h
         tampilkanListHeroDariJSON(data);
 
         tampilkanTabelHeroShift();
@@ -558,7 +546,6 @@ bool tambahHeroShift() {
                 found = true;
                 ShiftHero h;
                 h.name = hero["name"]; 
-                // Pastikan field stats ada, jika tidak beri default 0
                 if(hero.contains("stats")) {
                     h.combat = hero["stats"]["combat"];
                     h.vigor = hero["stats"]["vigor"];
@@ -570,9 +557,7 @@ bool tambahHeroShift() {
                 }
                 h.dariPhoenix = false;
                 h.totalPointsEarned = 0;
-                
-                // INI BARIS YANG ERROR SEBELUMNYA:
-                // Sekarang seharusnya berhasil karena ShiftHero sudah didefinisikan di struct.h
+
                 heroShift.push_back(h);
                 
                 cout << hijau << "\n✅ Hero '" << h.name << "' berhasil ditambahkan ke shift!" << putih << endl;
@@ -613,7 +598,6 @@ void tutorialShift() {
     }
 
     heroShift.clear(); 
-    // Inisialisasi hero tutorial
     heroShift.push_back({"Sonar",       2, 1, 2, 3, 4, true, 71});
     heroShift.push_back({"Flambae",     4, 2, 3, 1, 1, true, 107});
     heroShift.push_back({"Punch Up",    3, 4, 1, 3, 1, true, 97});
@@ -636,11 +620,6 @@ void tutorialShift() {
     pause();
     Sleep(100);
 
-    // ... (Sisa kode tutorialShift, menuDispatcher, dll tetap sama seperti kodemu sebelumnya) ...
-    // Pastikan kamu menyalin sisa fungsi tutorialShift, inisialisasiMisiDispatcher, menuIstirahat, dan menuDispatcher
-    // dari kode user.h kamu yang sebelumnya ke sini.
-    
-    // Contoh potongan lanjutan untuk memastikan struktur benar:
     while (true) {
         clearScreen();
         cout << "\n" << emas << tutorialHeader << putih << endl;
@@ -683,12 +662,7 @@ void tutorialShift() {
         }
     } 
     
-    // LANJUTKAN DENGAN KODE TUTORIAL SELANJUTNYA SESUAI FILE ASLI MU...
-    // (Karena keterbatasan panjang jawaban, pastikan kamu copy-paste sisa fungsi dari kodemu yang lama ke file baru ini)
 }
-
-// PASTIKAN FUNGSI inisialisasiMisiDispatcher(), menuIstirahat(), DAN menuDispatcher() 
-// JUGA ADA DI FILE INI (copy dari kodemu sebelumnya)
 
 void inisialisasiMisiDispatcher() {
     daftarMisi.clear();  
