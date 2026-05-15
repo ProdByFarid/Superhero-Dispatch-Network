@@ -2631,6 +2631,7 @@ int main() {
     srand(time(0));
     try {
         loadingScreen();
+        pause();
         menuUtama();
     } catch (const exception& e) {
         cerr << "\n[FATAL SYSTEM CRASH] " << e.what() << endl;
