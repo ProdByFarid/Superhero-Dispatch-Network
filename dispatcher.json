@@ -7,6 +7,14 @@
             "password": "robert087",
             "status": "Freelance",
             "username": "robert"
+        },
+        {
+            "id": "0813567",
+            "jabatan": "dispatcher",
+            "level": 0,
+            "password": "aditya111",
+            "status": "aktif",
+            "username": "athaaaa"
         }
     ]
 }

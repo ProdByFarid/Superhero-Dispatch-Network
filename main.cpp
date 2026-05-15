@@ -337,10 +337,18 @@ struct ShiftHero {
     int totalPointsEarned;
 };
 
+
+
 struct ActiveMission {
     Mission info;
     Requirement req;
     bool selesai;
+    string narasi;                  
+    vector<string> objectives;       
+    ActiveMission() : selesai(false) {}
+    ActiveMission(Mission _info, Requirement _req, string _narasi, 
+                  vector<string> _obj, bool _selesai = false) 
+        : info(_info), req(_req), narasi(_narasi), objectives(_obj), selesai(_selesai) {}
 };
 
 string title = R"(
@@ -487,7 +495,7 @@ string titleI = R"(
 
    [1]. 📄 Lihat Semua Data
    [2]. 📶 Urutkan Nama
-   [3]. 📶 Urutkan Berdasarkan Level
+   [3]. 📶 Urutkan Berdasarkan ID
    [4]. 🔍 Cari Nama Dispatcher
    [0]. 🔙 Kembali
 
@@ -502,7 +510,7 @@ string titleJ = R"(
 ===========================================
 
    [1]. 🔤 Urutkan Nama              
-   [2]. 🌟 Urutkan Berdasarkan Level         
+   [2]. 🌟 Urutkan Berdasarkan ID        
    [0]. 🔙 Kembali                        
 
 ===========================================
@@ -1290,9 +1298,10 @@ void sortingDispatcher() {
             int n = data["dispatchers"].size();
             for(int i = 0; i < n-1; i++) {
                 for(int j = 0; j < n-i-1; j++) {
-                    int lvlA = data["dispatchers"][j].contains("level") ? data["dispatchers"][j]["level"].get<int>() : 0;
-                    int lvlB = data["dispatchers"][j+1].contains("level") ? data["dispatchers"][j+1]["level"].get<int>() : 0;
-                    if(lvlA < lvlB) {
+                    string idA = data["dispatchers"][j].contains("id") ? data["dispatchers"][j]["id"].get<string>() : "";
+                    string idB = data["dispatchers"][j+1].contains("id") ? data["dispatchers"][j+1]["id"].get<string>() : "";
+                    
+                    if(idA > idB) {
                         swap(data["dispatchers"][j], data["dispatchers"][j+1]);
                     }
                 }
@@ -1300,7 +1309,7 @@ void sortingDispatcher() {
             simpanDatabaseDispatcher(data);
             clearScreen(); 
             daftarDispatcher();
-            cout << hijau << "\n✅ Data diurutkan berdasarkan Level Tertinggi!" << putih << endl; 
+            cout << hijau << "\n✅ Data diurutkan berdasarkan ID!" << putih << endl; 
             pause();
         } else if (pilihan == 0) {
             cout << kuning << "\n🔙 Kembali ke menu sebelumnya." << putih << endl;
@@ -1358,15 +1367,16 @@ void menuLihatDatabaseDispatcher() {
                 int n = data["dispatchers"].size();
                 for(int i = 0; i < n-1; i++) {
                     for(int j = 0; j < n-i-1; j++) {
-                        int lvlA = data["dispatchers"][j].contains("level") ? data["dispatchers"][j]["level"].get<int>() : 0;
-                        int lvlB = data["dispatchers"][j+1].contains("level") ? data["dispatchers"][j+1]["level"].get<int>() : 0;
-                        if(lvlA < lvlB) {
+                        string idA = data["dispatchers"][j].contains("id") ? data["dispatchers"][j]["id"].get<string>() : "";
+                        string idB = data["dispatchers"][j+1].contains("id") ? data["dispatchers"][j+1]["id"].get<string>() : "";
+                        
+                        if(idA > idB) {
                             swap(data["dispatchers"][j], data["dispatchers"][j+1]);
                         }
                     }
                 }
                 simpanDatabaseDispatcher(data);
-                cout << hijau << "\n✅ Data berhasil diurutkan berdasarkan Level Tertinggi!" << putih << endl; 
+                cout << hijau << "\n✅ Data berhasil diurutkan berdasarkan ID!" << putih << endl; 
                 pause();
             }
             else if (subPilihan == 4) { 
@@ -2050,6 +2060,48 @@ void updateStatsHero() {
     }
 }
 
+void tampilkanBriefingMisi(const ActiveMission& misi) {
+    clearScreen();
+    Sleep(100);
+    
+    cout << "\n" << emas << "<|   🚨 MISSION BRIEFING 🚨   |>" << putih << endl;
+    cout << cyan << "═══════════════════════════════════════" << putih << endl << endl;
+    
+    cout << emas << "📢 " << putih << misi.info.judul << endl << endl;
+    
+    cout << cyan << "📍 " << putih << misi.info.lokasi << endl;
+    
+    cout << cyan << "📞 " << putih << misi.info.caller << endl << endl;
+    
+    cout << putih << "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" << endl;
+    cout << cyan << "📜 INTEL BRIEFING:" << putih << endl;
+    
+    if (!misi.narasi.empty()) {
+        cout << "   " << kuning << "\"" << misi.narasi << "\"" << putih << endl;
+    } else {
+        cout << "   " << abu << "(Tidak ada intel tambahan)" << putih << endl;
+    }
+    cout << endl;
+    
+    cout << putih << "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" << endl;
+    cout << cyan << "📋 Persyaratan:" << putih << endl;
+    
+    if (!misi.objectives.empty()) {
+        for (const string& obj : misi.objectives) {
+            cout << "   🔹 " << putih << obj << endl;
+        }
+    } else {
+        cout << "   " << abu << "(Tidak ada persyaratan khusus)" << putih << endl;
+    }
+    cout << endl;
+    
+    
+    cout << cyan << "═══════════════════════════════════════" << putih << endl;
+    cout << kuning << "💡 Pilih hero yang memenuhi persyaratan untuk hasil optimal!" << putih << endl;
+    
+    pause("\n[Tekan Enter untuk lanjut memilih hero...]");
+}
+
 struct HasilMisi {
     bool berhasil;
     int persentase;
@@ -2097,7 +2149,7 @@ HasilMisi tentukanHasilMisi(int persentase) {
 
 void kirimHero() {
     if (heroShift.empty()) {
-        showError("Tidak ada hero dalam shift! Tambahkan hero terlebih dahulu.");
+        showError("❌ Tidak ada hero dalam shift! Tambah hero terlebih dahulu.");
         pause();
         return;
     }
@@ -2107,117 +2159,156 @@ void kirimHero() {
         return;
     } 
 
-    ActiveMission& misiAktif = daftarMisi[0];
+    int indexMisiTerpilih = 0;
+    if (daftarMisi.size() > 1) {
+        while (true) {
+            clearScreen();
+            cout << "\n" << emas << "<| 🎯 PILIH MISI AKTIF |>" << putih << endl;
+            cout << cyan << "Pilih misi yang akan dikerjakan:" << putih << endl << endl;
+            
+            for (int i = 0; i < (int)daftarMisi.size(); i++) {
+                cout << "  [" << i + 1 << "] " << emas << daftarMisi[i].info.judul << putih << endl;
+                cout << "      📍 " << daftarMisi[i].info.lokasi << " | 📞 " << daftarMisi[i].info.caller << endl;
+                if (i < (int)daftarMisi.size() - 1) cout << "  " << cyan << "---" << putih << endl;
+            }
+            cout << "\n  [0] Batal Kembali ke Menu" << endl;
+            cout << "\n" << kuning << "Masukkan Nomor Misi: " << putih;
+            
+            string inputMisi;
+            getline(cin, inputMisi);
+            
+            if (inputMisi == "0" || isEmptyInput(inputMisi)) {
+                cout << kuning << "⚠️  Pemilihan misi dibatalkan." << putih << endl;
+                pause();
+                return;
+            }
+            
+            try {
+                validateMenuChoice(inputMisi);
+                int pilih = stoi(inputMisi);
+                if (pilih < 1 || pilih > (int)daftarMisi.size()) throw out_of_range("Nomor tidak valid");
+                indexMisiTerpilih = pilih - 1;
+                break;
+            } catch (const exception& e) {
+                showError("Input tidak valid! Masukkan angka 1-" + to_string(daftarMisi.size()));
+                pause();
+            }
+        }
+    }
 
+    ActiveMission& misiTerpilih = daftarMisi[indexMisiTerpilih];
+
+    tampilkanBriefingMisi(misiTerpilih);
+
+    clearScreen();
+    cout << "\n" << emas << "<| 🦸 PILIH HERO UNTUK MISI |>" << putih << endl;
+    cout << cyan << "Misi: " << putih << misiTerpilih.info.judul << endl;
+    cout << cyan << "📍 " << misiTerpilih.info.lokasi << putih << endl << endl;
+    
+    tampilkanTabelHeroShift();
+    
     int maxHeroIdx = (int)heroShift.size() - 1;
-    int hero1Idx = getValidHeroIndex("\n" + string(cyan) + "Pilih Hero Pertama (Wajib): " + string(putih), false, maxHeroIdx);
-    int hero2Idx = getValidHeroIndex("\nPilih Hero Kedua (Opsional, Enter untuk skip): ", true, maxHeroIdx);
+    int hero1Idx = -1, hero2Idx = -1;
+    bool gunakan2Hero = false;
 
-    bool gunakan2Hero = (hero2Idx != -1);
+    while (true) {
+        hero1Idx = getValidHeroIndex("\n" + string(cyan) + "👉 Pilih Hero Pertama (Wajib): " + string(putih), false, maxHeroIdx);
+        break;
+    }
 
-    if (gunakan2Hero && hero2Idx == hero1Idx) {
-        showError("Hero kedua tidak boleh sama dengan hero pertama!");
-        pause();
-        return;
+    while (true) {
+        hero2Idx = getValidHeroIndex("\n👉 Pilih Hero Kedua (Opsional, tekan Enter jika cukup 1 hero): ", true, maxHeroIdx);
+        
+        if (hero2Idx == -1) {
+            gunakan2Hero = false;
+            break;
+        }
+        if (hero2Idx == hero1Idx) {
+            showError("⚠️  Hero kedua tidak boleh sama dengan hero pertama!");
+            continue;
+        }
+        gunakan2Hero = true;
+        break;
     }
 
     loadingBar();
-    Sleep(500);
+    Sleep(300);
 
-    ShiftHero combinedStats;
+    ShiftHero combinedStats = heroShift[hero1Idx];
     if (gunakan2Hero) {
-        combinedStats.combat   = heroShift[hero1Idx].combat + heroShift[hero2Idx].combat;
-        combinedStats.vigor    = heroShift[hero1Idx].vigor + heroShift[hero2Idx].vigor;
-        combinedStats.mobility = heroShift[hero1Idx].mobility + heroShift[hero2Idx].mobility;
-        combinedStats.charisma = heroShift[hero1Idx].charisma + heroShift[hero2Idx].charisma;
-        combinedStats.intellect= heroShift[hero1Idx].intellect + heroShift[hero2Idx].intellect;
-    } else {
-        combinedStats = heroShift[hero1Idx];
+        combinedStats.combat   += heroShift[hero2Idx].combat;
+        combinedStats.vigor    += heroShift[hero2Idx].vigor;
+        combinedStats.mobility += heroShift[hero2Idx].mobility;
+        combinedStats.charisma += heroShift[hero2Idx].charisma;
+        combinedStats.intellect+= heroShift[hero2Idx].intellect;
     }
 
     auto hitungPersen = [](int heroStat, int misiStat) -> int {
         if (misiStat <= 0) return 100;
         double persen = ((double)heroStat / misiStat) * 100.0;
-        if (persen > 100) persen = 100;
-        return (int)persen;
+        return (int)(persen > 100 ? 100 : persen);
     };
 
-    int pCombat   = hitungPersen(combinedStats.combat,   misiAktif.req.combat);
-    int pVigor    = hitungPersen(combinedStats.vigor,    misiAktif.req.vigor);
-    int pMobility = hitungPersen(combinedStats.mobility, misiAktif.req.mobility);
-    int pCharisma = hitungPersen(combinedStats.charisma, misiAktif.req.charisma);
-    int pIntellect= hitungPersen(combinedStats.intellect,misiAktif.req.intellect);
+    int pCombat   = hitungPersen(combinedStats.combat,   misiTerpilih.req.combat);
+    int pVigor    = hitungPersen(combinedStats.vigor,    misiTerpilih.req.vigor);
+    int pMobility = hitungPersen(combinedStats.mobility, misiTerpilih.req.mobility);
+    int pCharisma = hitungPersen(combinedStats.charisma, misiTerpilih.req.charisma);
+    int pIntellect= hitungPersen(combinedStats.intellect,misiTerpilih.req.intellect);
 
     int avgPersentase = (pCombat + pVigor + pMobility + pCharisma + pIntellect) / 5;
-    
     HasilMisi hasil = tentukanHasilMisi(avgPersentase);
 
     clearScreen();
-    cout << cyan << "\n=== HASIL DISPATCH MISI ===\n" << putih;
-    Sleep(500);
+    cout << cyan << "\n=== 🎬 HASIL DISPATCH MISI ===\n" << putih;
+    Sleep(300);
     
-    cout << "\n Hero Ditugaskan:" << endl;
-    cout << "   • " << hijau << heroShift[hero1Idx].name << putih;
-    if (gunakan2Hero) {
-        cout << " & " << hijau << heroShift[hero2Idx].name << putih;
-    }
+    cout << "\n 🦸 Hero Ditugaskan: " << hijau << heroShift[hero1Idx].name << putih;
+    if (gunakan2Hero) cout << " & " << hijau << heroShift[hero2Idx].name << putih;
     cout << endl;
-    Sleep(200);
 
-    cout << "\n🎯 Misi: " << misiAktif.info.judul << endl;
-    cout << "📍 Lokasi: " << misiAktif.info.lokasi << endl;
+    cout << "\n 🎯 Misi: " << misiTerpilih.info.judul << endl;
+    cout << " 📍 Lokasi: " << misiTerpilih.info.lokasi << endl;
 
-    cout << "\n" << emas << "--- Perbandingan Statistik ---\n" << putih << endl;
-    
-
-    cout << left << setw(11) << "Stats Misi" << " | " << setw(15) << "Stats Hero" << endl;
-    cout << string(29, '-') << endl;
+    cout << "\n" << emas << "--- 📊 Perbandingan Statistik ---\n" << putih << endl;
+    cout << left << setw(12) << "Stats Misi" << " | " << setw(15) << "Stats Hero" << endl;
+    cout << string(30, '-') << endl;
 
     auto printStatRow = [&](const string& label, int mVal, int hVal) {
-        cout << left << setw(4) << label << ": " << setw(3) << mVal 
-             << "   |   " 
-             << setw(4) << label << ": " << setw(3) << hVal << endl;
+        cout << left << setw(4) << label << ": " << setw(3) << mVal << "   |   " << setw(4) << label << ": " << setw(3) << hVal << endl;
     };
-
-    printStatRow("COM", misiAktif.req.combat,   combinedStats.combat);
-    printStatRow("VIG", misiAktif.req.vigor,    combinedStats.vigor);
-    printStatRow("MOB", misiAktif.req.mobility, combinedStats.mobility);
-    printStatRow("CHA", misiAktif.req.charisma, combinedStats.charisma);
-    printStatRow("INT", misiAktif.req.intellect,combinedStats.intellect);
+    printStatRow("COM", misiTerpilih.req.combat,   combinedStats.combat);
+    printStatRow("VIG", misiTerpilih.req.vigor,    combinedStats.vigor);
+    printStatRow("MOB", misiTerpilih.req.mobility, combinedStats.mobility);
+    printStatRow("CHA", misiTerpilih.req.charisma, combinedStats.charisma);
+    printStatRow("INT", misiTerpilih.req.intellect,combinedStats.intellect);
 
     cout << string(35, '-') << endl;
-    cout << "Rata-rata Kecocokan: " << kuning << avgPersentase << "%" << putih << endl;
+    cout << "📈 Rata-rata Kecocokan: " << kuning << avgPersentase << "%" << putih << endl;
 
-    Sleep(500);
+    Sleep(400);
     cout << "\n" << (hasil.berhasil ? hijau : merah);
-    if (hasil.berhasil) {
-        cout << "✅ MISI BERHASIL DISELESAIKAN!" << endl;
-    } else {
-        cout << "❌ MISI GAGAL! Hero perlu latihan lagi." << endl;
-    }
-    cout << putih << endl;
-
-    cout << "🏆 Reward Points: +" << hasil.points << " points";
+    cout << (hasil.berhasil ? "✅ MISI BERHASIL DISELESAIKAN!" : "❌ MISI GAGAL! Hero perlu latihan lagi.") << endl;
+    cout << putih << "\n🏆 Reward Points: +" << hasil.points << " points";
     if (gunakan2Hero) cout << " (masing-masing hero)";
     cout << endl;
-    Sleep(500);
 
-    heroShift[hero1Idx].totalPointsEarned += hasil.points;
-    if (gunakan2Hero) {
-        heroShift[hero2Idx].totalPointsEarned += hasil.points;
-    }
+   heroShift[hero1Idx].totalPointsEarned += hasil.points;
+    if (gunakan2Hero) heroShift[hero2Idx].totalPointsEarned += hasil.points;
 
     if (hasil.berhasil) {
-        daftarMisi.erase(daftarMisi.begin());
+        cout << cyan << "\n📦 Misi '" << misiTerpilih.info.judul << "' telah diselesaikan!" << putih << endl;
+        
+        daftarMisi.erase(daftarMisi.begin() + indexMisiTerpilih);
         
         if (daftarMisi.empty()) {
-            cout << cyan << "\n🎉 SELAMAT! Semua misi telah selesai!" << putih << endl;
-            cout << "Shift akan berakhir setelah Anda menekan Enter." << endl;
+            cout << hijau << "\n Semua misi telah diselesaikan!" << putih << endl;
+        } else {
+            cout << kuning << "\n⚡ Sisa misi: " << daftarMisi.size() << " misi aktif" << putih << endl;
         }
     } else {
-        cout << kuning << "\n⚠️ Misi belum selesai. Coba lagi dengan hero yang lebih kuat!" << putih << endl;
-    }
+        cout << kuning << "\n⚠️ Coba lagi dengan hero yang lebih kuat!" << putih << endl;
 
+    }
     pause();
 }
 
@@ -2370,9 +2461,16 @@ void pauseAndClear(const string& msg = "\n[Tekan enter untuk melanjutkan...]") {
 
 void tutorialShift() {
     daftarMisi.clear();
-    daftarMisi.push_back({{"Serangan di Tempat Persembunyian", "Sipil", "S Hill St"}, {5, 4, 3, 3, 1}, false});
-    daftarMisi.push_back({{"Balon", "Sipil", "S Hill St"}, {5, 4, 3, 3, 1}, false}); // misi yang perlu di ganti
-    daftarMisi.push_back({{"Balon", "Sipil", "S Hill St"}, {5, 4, 3, 3, 1}, false}); // misi yang perlu di ganti
+{
+        Mission infoTutorial = {"Serangan di Tempat Persembunyian", "Sipil", "S Hill St"};
+        Requirement reqTutorial = {5, 4, 3, 3, 1};  // combat, vigor, mobility, charisma, intellect
+        string narasiTutorial = "Laporan darurat: kelompok bersenjata menguasai lokasi. Warga sipil membutuhkan bantuan segera!";
+        vector<string> objTutorial = {
+            "Serang markas operasi devils yang Dibentengi",
+            "Pertahankan dirimu melawan musuh Bersenjata"
+        };
+        daftarMisi.push_back(ActiveMission(infoTutorial, reqTutorial, narasiTutorial, objTutorial, false));
+    }
 
     heroShift.clear(); 
     heroShift.push_back({"Sonar",       2, 1, 2, 3, 4, true, 71});
@@ -2384,6 +2482,15 @@ void tutorialShift() {
     heroShift.push_back({"Golem",       3, 4, 1, 3, 1, true, 91});
 
     string tutorialHeader = "<|   DISPATCHING TUTORIAL   |>";
+    heroShift.clear(); 
+    heroShift.push_back({"Sonar",       2, 1, 2, 3, 4, true, 71});
+    heroShift.push_back({"Flambae",     4, 2, 3, 1, 1, true, 107});
+    heroShift.push_back({"Punch Up",    3, 4, 1, 3, 1, true, 97});
+    heroShift.push_back({"Invisigal",   3, 2, 3, 1, 2, true, 97});
+    heroShift.push_back({"Prism",       4, 1, 1, 4, 2, true, 85});
+    heroShift.push_back({"Malevola",    3, 4, 1, 3, 1, true, 101});
+    heroShift.push_back({"Golem",       3, 4, 1, 3, 1, true, 91});
+
 
     clearScreen();
     Sleep(200);
@@ -2449,7 +2556,6 @@ void tutorialShift() {
     cout << "    Kamu akan menerima " << emas << "Persyaratan " << putih << "untuk menentukan" << endl << emas 
          << "    Hero " << putih << " mana yang akan dikirim" << endl;
     
-    // -= Misi Mulai  =-
     if (!daftarMisi.empty()) {
         cout << "\n=========================" << endl;
         cout << "\n📢 : " << daftarMisi[0].info.judul << endl; 
@@ -2473,7 +2579,6 @@ void tutorialShift() {
 
     kirimHero();
 
-    // -= Misi Selesai =-
     clearScreen();
     Sleep(200);
     
@@ -2565,12 +2670,150 @@ void tutorialShift() {
             pause();
         }
     }
-
+    clearScreen();  
     cout << "\n" << emas << tutorialHeader << putih << endl;
     cout << cyan << "\n[#] Langkah Kelima: ✅ Selesaikan Semua Misi" << putih << endl;
     cout << "    " << endl;
 
     pause();
+}
+
+void inisialisasiMisiDispatcher() {
+    daftarMisi.clear();  
+    
+    {
+        Mission info1 = {"Cepat kejar dan tangkap Lightningstruck", "Alarm SDN", "Toko Donat Granny"};
+        Requirement req1 = {5, 4, 4, 3, 1};  // combat, vigor, mobility, charisma, intellect
+        string narasi1 = "[suara erangan dan suara tabrakan]";
+        vector<string> obj1 = {
+            "Cepat menuju Granny Donut",
+            "Tangkap Lightningstruck"
+        };
+        daftarMisi.push_back(ActiveMission(info1, req1, narasi1, obj1, false));
+    }
+    
+    {
+        Mission info2 = {"Penyergapan dan penyamaran ke markas narkoba", "Anonim", "Gedung terbengkalai dibelakang bioskop"};
+        Requirement req2 = {2, 2, 1, 4, 5};
+        string narasi2 = "ada transaksi mencurigakan di belakang bioskop,sepertinya berhubungan dengan narkoba";
+        vector<string> obj2 = {
+            "lakukan penyamaran dengan hati hati",
+            "sebaiknya orang yang memiliki IQ tinggi dan pintar negosiasi"
+        };
+        daftarMisi.push_back(ActiveMission(info2, req2, narasi2, obj2, false));
+    }
+}
+
+void menuDispatcher() {
+
+
+    string pilihStr;
+    int pilih;
+
+    do {
+
+        clearScreen();
+
+        cout << cyan;
+        cout << "\n=== SHIFT DISPATCHER #" << currentShift << " ===\n";
+        cout << putih;
+
+        cout << "\n" << emas << "<| HERO DALAM SHIFT |>" << putih << "\n";
+        
+        if (heroShift.empty()) {
+            cout << merah << "  (Belum ada hero)\n" << putih;
+        } else {
+            for (int i = 0; i < heroShift.size(); i++) {
+                cout << "  [" << i + 1 << "] " << heroShift[i].name 
+                     << " | Points: " << heroShift[i].totalPointsEarned << "\n";
+                Sleep(150);
+            }
+        }
+
+        cout << "\n" << emas << "<| DAFTAR MISI AKTIF |>" << putih << "\n";
+        
+        if (daftarMisi.empty()) {
+            cout << hijau << "  (Tidak ada misi - Shift akan selesai)\n" << putih;
+        } else {
+            for (int i = 0; i < daftarMisi.size(); i++) {
+                cout << "  [" << i + 1 << "] " 
+                     << daftarMisi[i].info.judul 
+                     << " | " << daftarMisi[i].info.lokasi << "\n";
+                Sleep(150);
+            }
+        }
+
+        cout << "\n" << kuning << "=== MENU OPTIONS ===" << putih << "\n";
+        cout << "[1] Tambah Hero\n";
+        cout << "[2] Update Stats Hero\n";
+        cout << "[3] Kirim Hero ke Misi\n";
+        cout << "[4] Hapus Hero dari Shift\n";
+        cout << "[0] Keluar\n";
+
+        cout << "\nPilihan: ";
+        getline(cin, pilihStr);
+
+        try {
+            validateMenuChoice(pilihStr);
+            pilih = stoi(pilihStr);
+        } catch (const exception& e) {
+            showError(e.what());
+            pilih = -1;
+            pause();
+            continue;
+        }
+
+        switch (pilih) {
+
+            case 1:
+                tambahHeroShift();
+                break;
+
+            case 2:
+                updateStatsHero();
+                break;
+
+            case 3:
+                kirimHero();
+                
+                if (daftarMisi.empty()) {
+                    cout << hijau << "\n✅ Semua misi telah diselesaikan!" << putih << endl;
+                    cout << "Shift berakhir secara otomatis.\n";
+                    
+                    cout << cyan << "\n<| RINGKASAN SHIFT |>\n" << putih;
+                    int totalPoints = 0;
+                    for (const auto& hero : heroShift) {
+                        cout << hero.name << " : " << hero.totalPointsEarned << " points\n";
+                        totalPoints += hero.totalPointsEarned;
+                    }
+                    cout << "\nTotal Points Shift: " << totalPoints << "\n";
+                    
+                    currentShift++;
+                    heroShift.clear();
+                    pause();
+                    menuIstirahat();
+                    return;
+                }
+                break;
+
+            case 4:
+                hapusHeroShift();
+                break;
+
+            case 0:
+                cout << kuning << "\nMengakhiri shift...\n" << putih;
+                cout << "Catatan: Shift yang belum selesai akan dihapus.\n";
+                currentShift++;
+                heroShift.clear();
+                pause();
+                return;
+
+            default:
+                showError("Pilihan tidak valid!");
+                pause();
+        }
+
+    } while (true);
 }
 
 void menuUtama() {
@@ -2604,6 +2847,9 @@ void menuUtama() {
                     else if (role == "dispatcher") {
                         cout << endl;
                         tutorialShift();
+                        pause();
+                        inisialisasiMisiDispatcher();
+                        menuDispatcher();
                     }
                     else if (role == "invalid") {
                         showError("Login gagal! Silakan coba lagi.");
