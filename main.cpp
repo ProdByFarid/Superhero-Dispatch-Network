@@ -487,7 +487,7 @@ string titleI = R"(
 
    [1]. 📄 Lihat Semua Data
    [2]. 📶 Urutkan Nama
-   [3]. 📶 Urutkan Berdasarkan Level
+   [3]. 📶 Urutkan Berdasarkan ID
    [4]. 🔍 Cari Nama Dispatcher
    [0]. 🔙 Kembali
 
@@ -502,7 +502,7 @@ string titleJ = R"(
 ===========================================
 
    [1]. 🔤 Urutkan Nama              
-   [2]. 🌟 Urutkan Berdasarkan Level         
+   [2]. 🌟 Urutkan Berdasarkan ID        
    [0]. 🔙 Kembali                        
 
 ===========================================
@@ -1290,9 +1290,10 @@ void sortingDispatcher() {
             int n = data["dispatchers"].size();
             for(int i = 0; i < n-1; i++) {
                 for(int j = 0; j < n-i-1; j++) {
-                    int lvlA = data["dispatchers"][j].contains("level") ? data["dispatchers"][j]["level"].get<int>() : 0;
-                    int lvlB = data["dispatchers"][j+1].contains("level") ? data["dispatchers"][j+1]["level"].get<int>() : 0;
-                    if(lvlA < lvlB) {
+                    string idA = data["dispatchers"][j].contains("id") ? data["dispatchers"][j]["id"].get<string>() : "";
+                    string idB = data["dispatchers"][j+1].contains("id") ? data["dispatchers"][j+1]["id"].get<string>() : "";
+                    
+                    if(idA > idB) {
                         swap(data["dispatchers"][j], data["dispatchers"][j+1]);
                     }
                 }
@@ -1300,7 +1301,7 @@ void sortingDispatcher() {
             simpanDatabaseDispatcher(data);
             clearScreen(); 
             daftarDispatcher();
-            cout << hijau << "\n✅ Data diurutkan berdasarkan Level Tertinggi!" << putih << endl; 
+            cout << hijau << "\n✅ Data diurutkan berdasarkan ID!" << putih << endl; 
             pause();
         } else if (pilihan == 0) {
             cout << kuning << "\n🔙 Kembali ke menu sebelumnya." << putih << endl;
@@ -1358,15 +1359,16 @@ void menuLihatDatabaseDispatcher() {
                 int n = data["dispatchers"].size();
                 for(int i = 0; i < n-1; i++) {
                     for(int j = 0; j < n-i-1; j++) {
-                        int lvlA = data["dispatchers"][j].contains("level") ? data["dispatchers"][j]["level"].get<int>() : 0;
-                        int lvlB = data["dispatchers"][j+1].contains("level") ? data["dispatchers"][j+1]["level"].get<int>() : 0;
-                        if(lvlA < lvlB) {
+                        string idA = data["dispatchers"][j].contains("id") ? data["dispatchers"][j]["id"].get<string>() : "";
+                        string idB = data["dispatchers"][j+1].contains("id") ? data["dispatchers"][j+1]["id"].get<string>() : "";
+                        
+                        if(idA > idB) {
                             swap(data["dispatchers"][j], data["dispatchers"][j+1]);
                         }
                     }
                 }
                 simpanDatabaseDispatcher(data);
-                cout << hijau << "\n✅ Data berhasil diurutkan berdasarkan Level Tertinggi!" << putih << endl; 
+                cout << hijau << "\n✅ Data berhasil diurutkan berdasarkan ID!" << putih << endl; 
                 pause();
             }
             else if (subPilihan == 4) { 
