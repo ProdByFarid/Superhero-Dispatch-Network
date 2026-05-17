@@ -618,15 +618,18 @@ void kelolaSuperhero() {
                             }
                         } catch (const invalid_argument&) {
                             showError("Input harus berupa angka, bukan string!");
+                            pause();
                             continue;
                         } catch (const out_of_range&) {
                             showError("Nomor terlalu besar!");
+                            pause();
                             continue;
                         }
                         
                         int indexArray = pilihanHapus - 1;
                         if (indexArray < 0 || indexArray >= (int)data["heroes"].size()) {
                             showError("Nomor tidak valid! Pilih antara 1 - " + to_string(data["heroes"].size()));
+                            pause();
                             continue;
                         }
                         
