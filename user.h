@@ -252,7 +252,6 @@ void tampilkanBriefingMisi(const ActiveMission& misi) {
     cout << cyan << "═══════════════════════════════════════" << putih << endl;
     cout << kuning << "💡 Pilih hero yang memenuhi persyaratan untuk hasil optimal!" << putih << endl;
     
-    pause("\n[Tekan Enter untuk lanjut memilih hero...]");
 }
 
 HasilMisi tentukanHasilMisi(int persentase) {
@@ -327,7 +326,6 @@ void kirimHero() {
 
     tampilkanBriefingMisi(misiTerpilih);
 
-    clearScreen();
     cout << "\n" << emas << "<| 🦸 PILIH HERO UNTUK MISI |>" << putih << endl;
     cout << cyan << "Misi: " << putih << misiTerpilih.info.judul << endl;
     cout << cyan << "📍 " << misiTerpilih.info.lokasi << putih << endl << endl;
@@ -662,6 +660,105 @@ void tutorialShift() {
         }
     } 
     
+    clearScreen();
+    Sleep(200);
+    
+    cout << "\n" << emas << tutorialHeader << putih << endl;
+    cout << cyan << "\n[#] Langkah Kedua: ⭕ Selesaikan Misi" << putih << endl;
+    cout << "    Sepertinya kita mendapat " << emas << "Panggilan " << putih << "dari seorang" << emas << " Pelanggan." << putih << endl;
+    cout << "    Kamu akan menerima " << emas << "Persyaratan " << putih << "untuk menentukan" << endl << emas 
+         << "    Hero " << putih << " mana yang akan dikirim" << endl;
+
+    pause();
+
+    kirimHero();
+
+    clearScreen();
+    Sleep(200);
+
+    
+    while (true) {
+        clearScreen();
+        
+        cout << "\n" << emas << tutorialHeader << putih << endl;
+        cout << cyan << "\n[#] Langkah Ketiga: ✏️ Upgrade Stats Hero" << putih << endl;
+        cout << "    Setelah menyelesaikan " << emas << "Misi" << putih << ", kamu bisa mengupgrade" << emas << " Stats" << putih << endl;
+        cout << "    Superhero yang telah kamu dispatch tadi" << endl;
+        
+        cout << magenta << titleLa
+             << "   [1]. ➕ Tambah Superhero Ke Shift\n" 
+             << "   [2]. ✏️  Upgrade Stats Superhero"; 
+        cout << titleLb << putih;
+        
+        cout << "\nMasukkan Pilihan: ";
+        try {
+            string inputStr;
+            getline(cin, inputStr);
+            if (isEmptyInput(inputStr)) {
+                throw invalid_argument("Input tidak boleh kosong!");
+            }
+            validateMenuChoice(inputStr);
+            int pilih = stoi(inputStr);
+            if (pilih == 2) {
+                updateStatsHero();
+                break; 
+            } else {
+                throw out_of_range("Pilihan tidak valid. Anda harus memilih pilihan 2");
+            }
+        } catch (const invalid_argument& e) {
+            showError(e.what());
+            pause();
+        } catch (const out_of_range& e) {
+            showError(e.what());
+            pause();
+        } catch (const exception& e) {
+            showError(string("Terjadi kesalahan: ") + e.what());
+            pause();
+        }
+    }
+    while (true) {
+        clearScreen();
+        
+        cout << "\n" << emas << tutorialHeader << putih << endl;
+        cout << cyan << "\n[#] Langkah Keempat: 🗑️  Hapus Hero" << putih << endl;
+        cout << "    Kamu dapat menghapus " << emas << "Superhero" << putih << ", apabila kamu tidak" << emas << " Memerlukannya " << putih << "lagi" << endl;
+        cout << "    Tetapi jika kamu tetap" << emas << " Memerlukannya " << putih << "kamu bisa tekan" <<  " '0' " << "Untuk membatalkannya" << endl;
+
+        cout << magenta << titleLa
+             << "   [1]. ➕ Tambah Superhero Ke Shift\n" 
+             << "   [2]. ✏️  Upgrade Stats Superhero\n" 
+             << "   [3]. 🗑️  Hapus Superhero"; 
+        cout << titleLb << putih;
+        
+        cout << "\nMasukkan Pilihan: ";
+        try {
+            string inputStr;
+            getline(cin, inputStr);
+            if (isEmptyInput(inputStr)) {
+                throw invalid_argument("Input tidak boleh kosong!");
+            }
+            validateMenuChoice(inputStr);
+            int pilih = stoi(inputStr);
+            if (pilih == 3) {
+                hapusHeroShift();
+                break; 
+            } else {
+                throw out_of_range("Pilihan tidak valid. Anda harus memilih pilihan 3");
+            }
+        } catch (const invalid_argument& e) {
+            showError(e.what());
+            pause();
+        } catch (const out_of_range& e) {
+            showError(e.what());
+            pause();
+        } catch (const exception& e) {
+            showError(string("Terjadi kesalahan: ") + e.what());
+            pause();
+        }
+    }
+    clearScreen();  
+    cout << "\n" << emas << tutorialHeader << putih << endl;
+    cout << cyan << "\n[#] Langkah Kelima: ✅ Selesaikan Semua Misi" << putih << endl;
 }
 
 void inisialisasiMisiDispatcher() {
