@@ -262,7 +262,7 @@ HasilMisi tentukanHasilMisi(int persentase) {
         hasil.points = 50;
     } else {
         int random = rand() % 70; 
-        if (random > 30) {
+        if (random > 50) {
             hasil.berhasil = true;
             hasil.points = 30;
         } else {
@@ -766,7 +766,7 @@ void inisialisasiMisiDispatcher() {
     
     {
         Mission info1 = {"Cepat kejar dan tangkap Lightningstruck", "Alarm SDN", "Toko Donat Granny"};
-        Requirement req1 = {5, 4, 4, 3, 1};
+        Requirement req1 = {6, 5, 4, 3, 1};
         string narasi1 = "[suara erangan dan suara tabrakan]";
         vector<string> obj1 = {
             "Cepat menuju Granny Donut",
@@ -777,7 +777,7 @@ void inisialisasiMisiDispatcher() {
     
     {
         Mission info2 = {"Penyergapan dan penyamaran ke markas narkoba", "Anonim", "Gedung terbengkalai dibelakang bioskop"};
-        Requirement req2 = {2, 2, 1, 4, 5};
+        Requirement req2 = {2, 3, 2, 5, 6};
         string narasi2 = "ada transaksi mencurigakan di belakang bioskop,sepertinya berhubungan dengan narkoba";
         vector<string> obj2 = {
             "lakukan penyamaran dengan hati hati",
