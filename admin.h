@@ -522,12 +522,6 @@ void kelolaSuperhero() {
                                 if(!temp.empty()) {
                                     heroToUpdate["birthplace"] = temp;
                                 }
-
-                                cout << "Edit Tempat lahir (Enter untuk skip): "; 
-                                getline(cin, temp); 
-                                if(!temp.empty()) {
-                                    heroToUpdate["birthplace"] = temp;
-                                }
                                 
                                 cout << "Edit Deskripsi (Enter untuk skip): ";
                                 getline(cin, temp); 
@@ -879,11 +873,35 @@ void kelolaDispatcher() {
                     }
                     newDisp["password"] = password;
                     
-                    string status = getValidatedLine("Status (Aktif/Training): ", "Status", false, false);
+                    string status;
+                    while (true) {
+                        cout << putih << "\nPilih Status:\n";
+                        cout << "[1] Aktif\n[2] Training\n[3] Freelance\n";
+                        cout << "Pilihan: ";
+                        string pStat;
+                        getline(cin, pStat);
+                        if (pStat == "1") { status = "Aktif"; break; }
+                        else if (pStat == "2") { status = "Training"; break; }
+                        else if (pStat == "3") { status = "Freelance"; break; }
+                        else { showError("Pilihan tidak valid!"); }
+                    }
                     newDisp["status"] = status;
                     
-                    string jabatan = getValidatedLine("Jabatan: ", "Jabatan", false, false);
+                    string jabatan;
+                    while (true) {
+                        cout << putih << "\nPilih Jabatan:\n";
+                        cout << "[1] Trainee\n[2] Junior\n[3] Senior\n[4] Asisten\n";
+                        cout << "Pilihan: ";
+                        string pJab;
+                        getline(cin, pJab);
+                        if (pJab == "1") { jabatan = "Trainee"; break; }
+                        else if (pJab == "2") { jabatan = "Junior"; break; }
+                        else if (pJab == "3") { jabatan = "Senior"; break; }
+                        else if (pJab == "4") { jabatan = "Asisten"; break; }
+                        else { showError("Pilihan tidak valid!"); }
+                    }
                     newDisp["jabatan"] = jabatan;
+                    
                     newDisp["level"] = 0;
                     
                     data["dispatchers"].push_back(newDisp);
@@ -1000,16 +1018,41 @@ void kelolaDispatcher() {
                                         disp["password"] = temp; 
                                     }
                                     break; 
-                                case 3: 
-                                    cout << "Status Baru (Aktif/Training) [Enter untuk skip]: ";
+                                case 3: {
+                                    cout << putih << "\nPilih Status Baru [0 untuk skip]:\n";
+                                    cout << "[1] Aktif\n[2] Training\n[3] Freelance\n";
+                                    cout << "Pilihan: ";
                                     getline(cin, temp);
-                                    if(!temp.empty()) disp["status"] = temp; 
+                                    
+                                    if (!temp.empty() && temp != "0") {
+                                        if (temp == "1") disp["status"] = "Aktif";
+                                        else if (temp == "2") disp["status"] = "Training";
+                                        else if (temp == "3") disp["status"] = "Freelance";
+                                        else {
+                                            showError("Pilihan tidak valid!");
+                                            pause();
+                                        }
+                                    }
                                     break;
-                                case 4: 
-                                    cout << "Jabatan Baru [Enter untuk skip]: ";
+                                }
+                                case 4: {
+                                    cout << putih << "\nPilih Jabatan Baru [0 untuk skip]:\n";
+                                    cout << "[1] Trainee\n[2] Junior\n[3] Senior\n[4] Asisten\n";
+                                    cout << "Pilihan: ";
                                     getline(cin, temp);
-                                    if(!temp.empty()) disp["jabatan"] = temp; 
+                                    
+                                    if (!temp.empty() && temp != "0") {
+                                        if (temp == "1") disp["jabatan"] = "Trainee";
+                                        else if (temp == "2") disp["jabatan"] = "Junior";
+                                        else if (temp == "3") disp["jabatan"] = "Senior";
+                                        else if (temp == "4") disp["jabatan"] = "Asisten";
+                                        else {
+                                            showError("Pilihan tidak valid!");
+                                            pause();
+                                        }
+                                    }
                                     break;
+                                }
                                 case 0:
                                     break;
                                 default:
@@ -1095,6 +1138,8 @@ void kelolaDispatcher() {
                                 }
                             }
                         } while (!validInput);
+                        
+                        if (konf == 'y') break;
                     }
                 } 
                 else if (pilihan == 0) {

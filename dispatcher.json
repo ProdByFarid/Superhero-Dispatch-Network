@@ -5,7 +5,7 @@
             "jabatan": "Po",
             "level": 0,
             "password": "aditya111",
-            "status": "training",
+            "status": "Aktif",
             "username": "athaaaa"
         },
         {
@@ -13,8 +13,32 @@
             "jabatan": "Trainee Dispatcher",
             "level": 0,
             "password": "farid087",
-            "status": "Training",
+            "status": "Aktif",
             "username": "farid"
+        },
+        {
+            "id": "3334256",
+            "jabatan": "Trainee",
+            "level": 0,
+            "password": "23444345",
+            "status": "Aktif",
+            "username": "makksu"
+        },
+        {
+            "id": "5543456",
+            "jabatan": "Junior",
+            "level": 0,
+            "password": "00929321",
+            "status": "Aktif",
+            "username": "makurd"
+        },
+        {
+            "id": "4443456",
+            "jabatan": "Trainee",
+            "level": 0,
+            "password": "35532235",
+            "status": "Aktif",
+            "username": "2fwsfr"
         }
     ]
 }
