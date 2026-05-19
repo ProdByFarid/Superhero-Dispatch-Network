@@ -1,20 +1,20 @@
 {
     "dispatchers": [
         {
-            "id": "5318008",
-            "jabatan": "Trainee Dispatcher",
-            "level": 0,
-            "password": "robert087",
-            "status": "Freelance",
-            "username": "robert"
-        },
-        {
             "id": "0813567",
-            "jabatan": "dispatcher",
+            "jabatan": "Po",
             "level": 0,
             "password": "aditya111",
-            "status": "aktif",
+            "status": "training",
             "username": "athaaaa"
+        },
+        {
+            "id": "0809090",
+            "jabatan": "Trainee Dispatcher",
+            "level": 0,
+            "password": "farid087",
+            "status": "Training",
+            "username": "farid"
         }
     ]
 }

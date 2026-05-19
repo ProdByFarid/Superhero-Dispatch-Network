@@ -112,8 +112,7 @@ void showError(const string& message) {
     cout << merah << "\n❌ Error: " << message << putih << endl;
 }
 
-string getValidatedLine(const string& prompt, const string& fieldName, 
-                        bool allowDefaultDash, bool allowEmpty) { 
+string getValidatedLine(const string& prompt, const string& fieldName, bool allowDefaultDash, bool allowEmpty) { 
     string input;
     while (true) {
         cout << putih << prompt;

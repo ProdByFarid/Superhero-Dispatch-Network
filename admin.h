@@ -1095,8 +1095,6 @@ void kelolaDispatcher() {
                                 }
                             }
                         } while (!validInput);
-                        
-                        if (konf == 'y') break;
                     }
                 } 
                 else if (pilihan == 0) {

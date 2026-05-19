@@ -7,7 +7,7 @@
 string prosesLogin() {
     int percobaan = 0;
     string inputUser, inputPass;
-    Akun akunManager = {237218, "blazer", "blazer123", "manager"};
+    Akun akunManager = {237218, "admin", "admin1234", "manager"};
 
     while (percobaan < 3) {
         clearScreen();

@@ -1,24 +1,6 @@
 {
     "heroes": [
         {
-            "abilities": "Superhuman Strength, Durabillity, Energy Absorption, Flight",
-            "age": "Tak Diketahui",
-            "aliases": "Phenomenal Man",
-            "birthplace": "Urgot-52dc",
-            "description": "Dengan penuh kemurahan hati memilih untuk tinggal di bumi dan melindungi tubuh kita yang lemah",
-            "height": "193,04",
-            "name": "Phenomaman",
-            "points": 19,
-            "profilType": "Impenetrable & Alien",
-            "stats": {
-                "charisma": 2,
-                "combat": 7,
-                "intellect": 1,
-                "mobility": 3,
-                "vigor": 6
-            }
-        },
-        {
             "abilities": "Manipulasi Listrik, Pertumbuhan Ukuran",
             "age": "Tidak Diketahui",
             "aliases": "The Living Storm",
@@ -182,6 +164,24 @@
             }
         },
         {
+            "abilities": "miss",
+            "age": "10000000000",
+            "aliases": "nad",
+            "birthplace": "jakarta",
+            "description": "100",
+            "height": "190",
+            "name": "Nadya",
+            "points": 100,
+            "profilType": "a",
+            "stats": {
+                "charisma": 10,
+                "combat": 10,
+                "intellect": 10,
+                "mobility": 10,
+                "vigor": 20
+            }
+        },
+        {
             "abilities": "Picnokinesis, Superhuman Strength and Durability, Pain Immunity",
             "age": "43",
             "aliases": "Smallest Strongman",
@@ -287,6 +287,24 @@
                 "intellect": 3,
                 "mobility": 3,
                 "vigor": 1
+            }
+        },
+        {
+            "abilities": "Superhuman Strength, Durabillity, Energy Absorption, Flight",
+            "age": "Tak Diketahui",
+            "aliases": "Phenomenal Man",
+            "birthplace": "Urgot-52dc",
+            "description": "Dengan penuh kemurahan hati memilih untuk tinggal di bumi dan melindungi tubuh kita yang lemah",
+            "height": "193,04",
+            "name": "Phenomaman",
+            "points": 19,
+            "profilType": "Impenetrable & Alien",
+            "stats": {
+                "charisma": 2,
+                "combat": 7,
+                "intellect": 1,
+                "mobility": 3,
+                "vigor": 6
             }
         }
     ]
