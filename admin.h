@@ -3,6 +3,13 @@
 
 #include "utilities.h"
 
+inline string trimInputLocal(const string& str) {
+    size_t first = str.find_first_not_of(" \t\r\n");
+    if (first == string::npos) return "";
+    size_t last = str.find_last_not_of(" \t\r\n");
+    return str.substr(first, (last - first + 1));
+}
+
 void kelolaSuperhero();
 void kelolaDispatcher();
 void menuLihatDatabase();
@@ -22,6 +29,7 @@ void menuAdmin() {
         cout << emas << titleC << putih << endl;
         cout << "Masukkan Pilihan: ";
         getline(cin, pilihanStr);
+        pilihanStr = trimInputLocal(pilihanStr);
         
         try {
             validateMenuChoice(pilihanStr);
@@ -143,6 +151,7 @@ void searchingHeroes() {
             cout << kuning << "💡 Input '0' untuk batal." << putih << endl;
             cout << "\nMasukkan Nama Superhero: ";
             getline(cin, cari);
+            cari = trimInputLocal(cari);
             
             if (cari == "0") {
                 break;
@@ -226,6 +235,7 @@ void menuLihatDatabase() {
         cout << emas << titleF << putih << endl;
         cout << "Masukkan Pilihan: ";
         getline(cin, pilihanStr);
+        pilihanStr = trimInputLocal(pilihanStr);
         
         try {
             validateMenuChoice(pilihanStr);
@@ -323,6 +333,7 @@ void kelolaSuperhero() {
         cout << cyan << titleE << putih << endl;
         cout << "Masukkan Pilihan: ";
         getline(cin, pilihanStr);
+        pilihanStr = trimInputLocal(pilihanStr);
         
         try {
             validateMenuChoice(pilihanStr);
@@ -396,6 +407,7 @@ void kelolaSuperhero() {
                         
                         string inputNomor;
                         getline(cin, inputNomor);
+                        inputNomor = trimInputLocal(inputNomor);
 
                         if (isEmptyInput(inputNomor)) {
                             showError("Input tidak boleh kosong!");
@@ -456,6 +468,7 @@ void kelolaSuperhero() {
 
                             string subPilihanStr;
                             getline(cin, subPilihanStr);
+                            subPilihanStr = trimInputLocal(subPilihanStr);
                             int subPilihan = -1;
 
                             try {
@@ -476,78 +489,104 @@ void kelolaSuperhero() {
                             if (subPilihan == 1) {
                                 cout << "\n--- EDIT BIOGRAFI ---\n";
                                 
-                                // PERBAIKAN: Menggunakan isEmptyInput untuk semua field agar spasi dianggap skip
-                                cout << "Edit Nama (Enter untuk skip): "; 
-                                string temp; 
-                                getline(cin, temp); 
-                                if (!isEmptyInput(temp)) {
+                                while (true) {
+                                    cout << "Edit Nama (Enter untuk skip): "; 
+                                    string rawTemp; getline(cin, rawTemp);
+                                    if (rawTemp.empty()) break;
+                                    string temp = trimInputLocal(rawTemp);
+                                    if (temp.empty()) { showError("Input tidak boleh hanya spasi!"); continue; }
+                                    if (temp.length() < 3) { showError("Minimal 3 karakter"); continue; }
                                     try {
-                                        if (temp.length() < 3) throw invalid_argument("Minimal 3 karakter");
                                         validateGenericInput(temp, "Nama", false);
-
-                                        if (temp != heroToUpdate["name"]) {
-                                            validateHeroNameUnique(data, temp);
-                                        }
+                                        if (temp != heroToUpdate["name"]) validateHeroNameUnique(data, temp);
                                         heroToUpdate["name"] = temp;
+                                        break;
                                     } catch (const exception& e) {
                                         showError(string("Gagal ubah nama: ") + e.what());
                                     }
                                 }
 
-                                cout << "Edit Alias (Enter untuk skip): "; 
-                                getline(cin, temp); 
-                                if (!isEmptyInput(temp)) {
+                                while (true) {
+                                    cout << "Edit Alias (Enter untuk skip): "; 
+                                    string rawTemp; getline(cin, rawTemp);
+                                    if (rawTemp.empty()) break;
+                                    string temp = trimInputLocal(rawTemp);
+                                    if (temp.empty()) { showError("Input tidak boleh hanya spasi!"); continue; }
                                     heroToUpdate["aliases"] = temp;
+                                    break;
                                 }
 
-                                cout << "Edit Profile Type (Enter untuk skip): "; 
-                                getline(cin, temp); 
-                                if (!isEmptyInput(temp)) {
+                                while (true) {
+                                    cout << "Edit Profile Type (Enter untuk skip): "; 
+                                    string rawTemp; getline(cin, rawTemp);
+                                    if (rawTemp.empty()) break;
+                                    string temp = trimInputLocal(rawTemp);
+                                    if (temp.empty()) { showError("Input tidak boleh hanya spasi!"); continue; }
                                     heroToUpdate["profilType"] = temp;
+                                    break;
                                 }
 
-                                cout << "Edit Umur (Enter untuk skip): "; 
-                                getline(cin, temp); 
-                                if (!isEmptyInput(temp)) {
+                                while (true) {
+                                    cout << "Edit Umur (Enter untuk skip): "; 
+                                    string rawTemp; getline(cin, rawTemp);
+                                    if (rawTemp.empty()) break;
+                                    string temp = trimInputLocal(rawTemp);
+                                    if (temp.empty()) { showError("Input tidak boleh hanya spasi!"); continue; }
                                     heroToUpdate["age"] = temp;
+                                    break;
                                 }
 
-                                cout << "Edit Tinggi (Enter untuk skip): "; 
-                                getline(cin, temp); 
-                                if (!isEmptyInput(temp)) {
+                                while (true) {
+                                    cout << "Edit Tinggi (Enter untuk skip): "; 
+                                    string rawTemp; getline(cin, rawTemp);
+                                    if (rawTemp.empty()) break;
+                                    string temp = trimInputLocal(rawTemp);
+                                    if (temp.empty()) { showError("Input tidak boleh hanya spasi!"); continue; }
                                     heroToUpdate["height"] = temp;
+                                    break;
                                 }
 
-                                cout << "Edit Tempat lahir (Enter untuk skip): "; 
-                                getline(cin, temp); 
-                                if (!isEmptyInput(temp)) {
+                                while (true) {
+                                    cout << "Edit Tempat lahir (Enter untuk skip): "; 
+                                    string rawTemp; getline(cin, rawTemp);
+                                    if (rawTemp.empty()) break;
+                                    string temp = trimInputLocal(rawTemp);
+                                    if (temp.empty()) { showError("Input tidak boleh hanya spasi!"); continue; }
                                     heroToUpdate["birthplace"] = temp;
+                                    break;
                                 }
                                 
-                                cout << "Edit Deskripsi (Enter untuk skip): ";
-                                getline(cin, temp); 
-                                if (!isEmptyInput(temp)) {
+                                while (true) {
+                                    cout << "Edit Deskripsi (Enter untuk skip): ";
+                                    string rawTemp; getline(cin, rawTemp);
+                                    if (rawTemp.empty()) break;
+                                    string temp = trimInputLocal(rawTemp);
+                                    if (temp.empty()) { showError("Input tidak boleh hanya spasi!"); continue; }
                                     heroToUpdate["description"] = temp;
+                                    break;
                                 }
 
-                                cout << "Edit Kemampuan (Enter untuk skip): ";
-                                getline(cin, temp); 
-                                if (!isEmptyInput(temp)) {
+                                while (true) {
+                                    cout << "Edit Kemampuan (Enter untuk skip): ";
+                                    string rawTemp; getline(cin, rawTemp);
+                                    if (rawTemp.empty()) break;
+                                    string temp = trimInputLocal(rawTemp);
+                                    if (temp.empty()) { showError("Input tidak boleh hanya spasi!"); continue; }
                                     heroToUpdate["abilities"] = temp;
+                                    break;
                                 }
 
-                                // PERBAIKAN: Konversi poin ke integer agar JSON tetap valid
-                                cout << "Edit Poin (Enter untuk skip): ";
-                                getline(cin, temp); 
-                                if (!isEmptyInput(temp)) {
+                                while (true) {
+                                    cout << "Edit Poin (Enter untuk skip): ";
+                                    string rawTemp; getline(cin, rawTemp);
+                                    if (rawTemp.empty()) break;
+                                    string temp = trimInputLocal(rawTemp);
+                                    if (temp.empty()) { showError("Input tidak boleh hanya spasi!"); continue; }
                                     try {
-                                        size_t idx = 0;
-                                        int newPoints = stoi(temp, &idx);
-                                        if (idx != temp.length()) throw invalid_argument("Input harus angka murni");
-                                        if (newPoints < 0) throw invalid_argument("Poin tidak boleh negatif");
-                                        heroToUpdate["points"] = newPoints;
-                                    } catch (const exception& e) {
-                                        showError(string("Gagal ubah poin: ") + e.what());
+                                        heroToUpdate["points"] = stoi(temp);
+                                        break;
+                                    } catch (...) {
+                                        showError("Input Poin harus berupa angka!");
                                     }
                                 }
                                 
@@ -557,11 +596,31 @@ void kelolaSuperhero() {
                             else if (subPilihan == 2) {
                                 cout << "\n--- EDIT STATISTIK ---\n";
                                 
-                                heroToUpdate["stats"]["combat"] = getValidatedInt("Edit Combat (0-30): ", 0, 30, "Combat");
-                                heroToUpdate["stats"]["vigor"] = getValidatedInt("Edit Vigor (0-30): ", 0, 30, "Vigor");
-                                heroToUpdate["stats"]["mobility"] = getValidatedInt("Edit Mobility (0-30): ", 0, 30, "Mobility");
-                                heroToUpdate["stats"]["charisma"] = getValidatedInt("Edit Charisma (0-30): ", 0, 30, "Charisma");
-                                heroToUpdate["stats"]["intellect"] = getValidatedInt("Edit Intellect (0-30): ", 0, 30, "Intellect");
+                                auto editStat = [](const string& promptMsg, json& statsObj, const string& key) {
+                                    while (true) {
+                                        cout << promptMsg;
+                                        string rawTemp; getline(cin, rawTemp);
+                                        if (rawTemp.empty()) break; 
+                                        string temp = trimInputLocal(rawTemp);
+                                        if (temp.empty()) { showError("Input tidak boleh hanya spasi!"); continue; }
+                                        try {
+                                            size_t idx;
+                                            int val = stoi(temp, &idx);
+                                            if (idx != temp.length()) throw invalid_argument("Bukan angka murni");
+                                            if (val < 0 || val > 30) { showError("Nilai harus 0-30!"); continue; }
+                                            statsObj[key] = val;
+                                            break;
+                                        } catch (...) {
+                                            showError("Input harus berupa angka!");
+                                        }
+                                    }
+                                };
+
+                                editStat("Edit Combat (0-30) [Enter untuk skip]: ", heroToUpdate["stats"], "combat");
+                                editStat("Edit Vigor (0-30) [Enter untuk skip]: ", heroToUpdate["stats"], "vigor");
+                                editStat("Edit Mobility (0-30) [Enter untuk skip]: ", heroToUpdate["stats"], "mobility");
+                                editStat("Edit Charisma (0-30) [Enter untuk skip]: ", heroToUpdate["stats"], "charisma");
+                                editStat("Edit Intellect (0-30) [Enter untuk skip]: ", heroToUpdate["stats"], "intellect");
                                 
                                 int total = heroToUpdate["stats"]["combat"].get<int>() + 
                                            heroToUpdate["stats"]["vigor"].get<int>() + 
@@ -601,6 +660,7 @@ void kelolaSuperhero() {
                         cout << "\nMasukkan nomor superhero yang ingin dipecat (0 untuk batal): ";
                         string inputNomor;
                         getline(cin, inputNomor);
+                        inputNomor = trimInputLocal(inputNomor);
                         
                         if (isEmptyInput(inputNomor)) {
                             showError("Input tidak boleh kosong!");
@@ -695,6 +755,7 @@ void menuLihatDatabaseDispatcher() {
         cout << cyan << titleI << putih << endl;
         cout << "Masukkan Pilihan: ";
         getline(cin, subPilihanStr);
+        subPilihanStr = trimInputLocal(subPilihanStr);
 
         try {
             validateMenuChoice(subPilihanStr);
@@ -753,6 +814,7 @@ void menuLihatDatabaseDispatcher() {
                     string cari; 
                     cout << "\nMasukkan Nama Dispatcher: "; 
                     getline(cin, cari);
+                    cari = trimInputLocal(cari);
                     
                     if (cari == "0") {
                         cout << kuning << "\n🔙 Kembali ke menu sebelumnya." << putih << endl;
@@ -815,6 +877,7 @@ void kelolaDispatcher() {
         cout << emas << titleH << putih << endl;
         cout << "Masukkan Pilihan: ";
         getline(cin, pilihanStr);
+        pilihanStr = trimInputLocal(pilihanStr);
         
         try {
             validateMenuChoice(pilihanStr);
@@ -890,6 +953,7 @@ void kelolaDispatcher() {
                         cout << "Pilihan: ";
                         string pStat;
                         getline(cin, pStat);
+                        pStat = trimInputLocal(pStat);
                         if (pStat == "1") { status = "Aktif"; break; }
                         else if (pStat == "2") { status = "Training"; break; }
                         else if (pStat == "3") { status = "Freelance"; break; }
@@ -904,6 +968,7 @@ void kelolaDispatcher() {
                         cout << "Pilihan: ";
                         string pJab;
                         getline(cin, pJab);
+                        pJab = trimInputLocal(pJab);
                         if (pJab == "1") { jabatan = "Trainee"; break; }
                         else if (pJab == "2") { jabatan = "Junior"; break; }
                         else if (pJab == "3") { jabatan = "Senior"; break; }
@@ -941,6 +1006,7 @@ void kelolaDispatcher() {
                         cout << "\nMasukkan Nomor Dispatcher yang ingin diubah: ";
                         string inputNomor;
                         getline(cin, inputNomor);
+                        inputNomor = trimInputLocal(inputNomor);
                         
                         if (isEmptyInput(inputNomor)) {
                             showError("Input tidak boleh kosong!");
@@ -982,6 +1048,7 @@ void kelolaDispatcher() {
                             cout << titleK << putih << endl;
                             cout << "\nMasukkan Pilihan: ";
                             getline(cin, upStr);
+                            upStr = trimInputLocal(upStr);
                             
                             try {
                                 validateMenuChoice(upStr);
@@ -994,115 +1061,166 @@ void kelolaDispatcher() {
                             }
                             
                             string temp;
+                            bool berhasil = false;
+                            
                             switch(up) {
-                                case 1: // Update Username
-                                    cout << "Username Baru (Min 5 Karakter) [Enter untuk skip]: ";
-                                    getline(cin, temp);
-                                    // PERBAIKAN: Gunakan isEmptyInput agar spasi dianggap skip
-                                    if (!isEmptyInput(temp)) {
+                                case 1: 
+                                    while (true) {
+                                        cout << "Username Baru (Min 5 Karakter) [Enter untuk skip]: ";
+                                        string rawTemp;
+                                        getline(cin, rawTemp);
+                                        
+                                        if (rawTemp.empty()) {
+                                            cout << merah << "❌ Dibatalkan" << putih << endl;
+                                            berhasil = false;
+                                            break;
+                                        }
+
+                                        temp = trimInputLocal(rawTemp);
+                                        if (temp.empty()) {
+                                            showError("Input tidak boleh hanya spasi!");
+                                            continue; 
+                                        }
+
                                         if (temp.length() < 5) {
                                             showError("Username minimal 5 karakter!");
-                                            pause();
-                                            break;
+                                            continue; 
                                         }
                                         if (temp != disp["username"]) {
                                             try {
                                                 validateDispatcherUnique(data, temp);
                                             } catch (const exception& e) {
                                                 showError(e.what());
-                                                pause();
-                                                break;
+                                                continue; 
                                             }
                                         }
                                         disp["username"] = temp;
-                                        cout << hijau << "\n✅ Username berhasil diubah!" << putih << endl;
+                                        berhasil = true;
+                                        cout << hijau << "✅ Username Berhasil Diupdate" << putih << endl;
+                                        break;
                                     }
                                     break; 
-
-                                case 2: // Update Password
-                                    cout << "Password Baru (Min 8 Karakter) [Enter untuk skip]: ";
-                                    getline(cin, temp);
-                                    // PERBAIKAN: Gunakan isEmptyInput agar spasi dianggap skip
-                                    if (!isEmptyInput(temp)) {
-                                        if (temp.length() < 8) {
-                                            showError("Password minimal 8 karakter!");
-                                            pause();
+                                    
+                                case 2: 
+                                    while (true) {
+                                        cout << "Password Baru (Min 8 Karakter) [Enter untuk skip]: ";
+                                        string rawTemp;
+                                        getline(cin, rawTemp);
+                                        
+                                        if (rawTemp.empty()) {
+                                            cout << merah << "❌ Dibatalkan" << putih << endl;
+                                            berhasil = false;
                                             break;
                                         }
+
+                                        temp = trimInputLocal(rawTemp);
+                                        if (temp.empty()) {
+                                            showError("Input tidak boleh hanya spasi!");
+                                            continue; 
+                                        }
+
+                                        if (temp.length() < 8) {
+                                            showError("Password minimal 8 karakter!");
+                                            continue; 
+                                        }
                                         disp["password"] = temp; 
-                                        cout << hijau << "\n✅ Password berhasil diubah!" << putih << endl;
+                                        berhasil = true;
+                                        cout << hijau << "✅ Password Berhasil Diupdate" << putih << endl;
+                                        break;
                                     }
                                     break; 
-
-                                case 3: // Update Status
-                                    cout << putih << "\nPilih Status Baru [0 untuk skip]:\n";
-                                    cout << "[1] Aktif\n[2] Training\n[3] Freelance\n";
-                                    cout << "Pilihan: ";
-                                    getline(cin, temp);
                                     
-                                    // PERBAIKAN: Gunakan isEmptyInput
-                                    if (!isEmptyInput(temp) && temp != "0") {
-                                        if (temp == "1") {
-                                            disp["status"] = "Aktif";
-                                            cout << hijau << "\n✅ Status diubah ke Aktif." << putih << endl;
+                                case 3: 
+                                    while (true) {
+                                        cout << putih << "\nPilih Status Baru [Enter/0 untuk skip]:\n";
+                                        cout << "[1] Aktif\n[2] Training\n[3] Freelance\n";
+                                        cout << "Pilihan: ";
+                                        
+                                        string rawTemp;
+                                        getline(cin, rawTemp);
+                                        
+                                        if (rawTemp.empty()) {
+                                            cout << merah << "❌ Dibatalkan" << putih << endl;
+                                            berhasil = false;
+                                            break;
                                         }
-                                        else if (temp == "2") {
-                                            disp["status"] = "Training";
-                                            cout << hijau << "\n✅ Status diubah ke Training." << putih << endl;
+
+                                        temp = trimInputLocal(rawTemp);
+                                        if (temp.empty()) {
+                                            showError("Input tidak boleh hanya spasi!");
+                                            continue; 
                                         }
-                                        else if (temp == "3") {
-                                            disp["status"] = "Freelance";
-                                            cout << hijau << "\n✅ Status diubah ke Freelance." << putih << endl;
+
+                                        if (temp == "0") {
+                                            cout << merah << "❌ Dibatalkan" << putih << endl;
+                                            berhasil = false;
+                                            break;
                                         }
+                                        
+                                        if (temp == "1") { disp["status"] = "Aktif"; berhasil = true; }
+                                        else if (temp == "2") { disp["status"] = "Training"; berhasil = true; }
+                                        else if (temp == "3") { disp["status"] = "Freelance"; berhasil = true; }
                                         else {
                                             showError("Pilihan tidak valid!");
-                                            pause();
+                                            continue;
                                         }
+                                        if (berhasil) cout << hijau << "✅ Status Berhasil Diupdate" << putih << endl;
+                                        break;
                                     }
                                     break;
-
-                                case 4: // Update Jabatan
-                                    cout << putih << "\nPilih Jabatan Baru [0 untuk skip]:\n";
-                                    cout << "[1] Trainee\n[2] Junior\n[3] Senior\n[4] Asisten\n";
-                                    cout << "Pilihan: ";
-                                    getline(cin, temp);
                                     
-                                    // PERBAIKAN: Gunakan isEmptyInput
-                                    if (!isEmptyInput(temp) && temp != "0") {
-                                        if (temp == "1") {
-                                            disp["jabatan"] = "Trainee";
-                                            cout << hijau << "\n✅ Jabatan diubah ke Trainee." << putih << endl;
+                                case 4: 
+                                    while (true) {
+                                        cout << putih << "\nPilih Jabatan Baru [Enter/0 untuk skip]:\n";
+                                        cout << "[1] Trainee\n[2] Junior\n[3] Senior\n[4] Asisten\n";
+                                        cout << "Pilihan: ";
+                                        
+                                        string rawTemp;
+                                        getline(cin, rawTemp);
+                                        
+                                        if (rawTemp.empty()) {
+                                            cout << merah << "❌ Dibatalkan" << putih << endl;
+                                            berhasil = false;
+                                            break;
                                         }
-                                        else if (temp == "2") {
-                                            disp["jabatan"] = "Junior";
-                                            cout << hijau << "\n✅ Jabatan diubah ke Junior." << putih << endl;
+
+                                        temp = trimInputLocal(rawTemp);
+                                        if (temp.empty()) {
+                                            showError("Input tidak boleh hanya spasi!");
+                                            continue; 
                                         }
-                                        else if (temp == "3") {
-                                            disp["jabatan"] = "Senior";
-                                            cout << hijau << "\n✅ Jabatan diubah ke Senior." << putih << endl;
+
+                                        if (temp == "0") {
+                                            cout << merah << "❌ Dibatalkan" << putih << endl;
+                                            berhasil = false;
+                                            break;
                                         }
-                                        else if (temp == "4") {
-                                            disp["jabatan"] = "Asisten";
-                                            cout << hijau << "\n✅ Jabatan diubah ke Asisten." << putih << endl;
-                                        }
+                                        
+                                        if (temp == "1") { disp["jabatan"] = "Trainee"; berhasil = true; }
+                                        else if (temp == "2") { disp["jabatan"] = "Junior"; berhasil = true; }
+                                        else if (temp == "3") { disp["jabatan"] = "Senior"; berhasil = true; }
+                                        else if (temp == "4") { disp["jabatan"] = "Asisten"; berhasil = true; }
                                         else {
                                             showError("Pilihan tidak valid!");
-                                            pause();
+                                            continue;
                                         }
+                                        if (berhasil) cout << hijau << "✅ Jabatan Berhasil Diupdate" << putih << endl;
+                                        break;
                                     }
                                     break;
-
+                                    
                                 case 0:
                                     break;
-
+                                    
                                 default:
                                     showError("Pilihan tidak valid!");
                                     pause();
                                     continue;
                             }
-                            if (up != 0) { 
+                            if (up != 0 && berhasil) { 
                                 simpanDatabaseDispatcher(data); 
-                                cout << hijau << "\n✅ Perubahan berhasil disimpan!" << putih << endl;
+                                pause();
+                            } else if (up != 0) {
                                 pause();
                             }
                         } while (up != 0);
@@ -1126,6 +1244,7 @@ void kelolaDispatcher() {
                         cout << "\nMasukkan Nomor Dispatcher yang ingin dipecat: ";
                         string inputNomor; 
                         getline(cin, inputNomor);
+                        inputNomor = trimInputLocal(inputNomor);
                         
                         if (isEmptyInput(inputNomor)) {
                             showError("Input tidak boleh kosong!");
@@ -1178,7 +1297,7 @@ void kelolaDispatcher() {
                                 }
                             }
                         } while (!validInput);
-                    
+                        
                     }
                 } 
                 else if (pilihan == 0) {

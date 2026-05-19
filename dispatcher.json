@@ -1,44 +1,28 @@
 {
     "dispatchers": [
         {
-            "id": "0813567",
-            "jabatan": "Po",
+            "id": "2647082",
+            "jabatan": "Senior",
             "level": 0,
-            "password": "aditya111",
+            "password": "adityana082",
             "status": "Aktif",
-            "username": "athaaaa"
+            "username": "adityana"
         },
         {
-            "id": "0809090",
-            "jabatan": "Trainee Dispatcher",
+            "id": "2647087",
+            "jabatan": "Junior",
             "level": 0,
             "password": "farid087",
-            "status": "Aktif",
+            "status": "Training",
             "username": "farid"
         },
         {
-            "id": "3334256",
+            "id": "2647089",
             "jabatan": "Trainee",
             "level": 0,
-            "password": "23444345",
-            "status": "Aktif",
-            "username": "makksu"
-        },
-        {
-            "id": "5543456",
-            "jabatan": "Junior",
-            "level": 0,
-            "password": "00929321",
-            "status": "Aktif",
-            "username": "makurd"
-        },
-        {
-            "id": "4443456",
-            "jabatan": "Trainee",
-            "level": 0,
-            "password": "35532235",
-            "status": "Aktif",
-            "username": "2fwsfr"
+            "password": "fitri089",
+            "status": "Freelance",
+            "username": "fitri"
         }
     ]
 }
